@@ -1,0 +1,1109 @@
+<?php
+function print_test($array) {
+	echo "<pre>";
+	print_r ( $array );
+	echo "</pre>";
+}
+function td_nombre($nbr, $decimal = 0, $sep_dec = '.', $sep_mill = ",") {
+	if($nbr){
+		return "<div class='pull-right'>" . number_format ( $nbr, $decimal, $sep_dec, $sep_mill ) . "</div>";
+	}else{// s'il n'y a rien
+		return "<div class='pull-right'>" . $nbr . "</div>";
+	}
+	
+}
+function nombre($nbr, $decimal = 0, $sep_dec = '.', $sep_mill = " ") {
+	return  number_format ( $nbr, $decimal, $sep_dec, $sep_mill );
+}
+function td_right($text) {
+	return "<div style='text-align:right'>" . $text . "</div>";
+}
+
+
+function Slug($string) // function for URL Friendly Username
+{
+	$string = strtolower ( trim ( preg_replace ( '~[^0-9a-z]+~i', '_', html_entity_decode ( preg_replace ( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities ( $string, ENT_QUOTES, 'UTF-8' ) ), ENT_QUOTES, 'UTF-8' ) ), '_' ) );
+	if (strlen ( $string ) > 50)
+		$string = substr ( $string, 0, 50 );
+	
+	return $string;
+}
+
+function remove_secial_caracters($string){
+	$string =preg_replace ( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities ( $string, ENT_QUOTES, 'UTF-8' ) );
+	return $string;
+}
+
+function get_top_button($type='add',$title='',$link='',$label=" ",$icon=' fa-plus ',$icon2='',$bt_class=' btn-info ',$get_li=True){
+	$button="";
+	$label=trim($label);
+	$title=trim($title);
+	
+	if(!empty($label))
+		$label=lng_min($label);
+
+	if(!empty($title))
+		$title=lng_min($title);
+	switch ($type) {
+		case 'add':
+			$button=anchor($link,'<button class="btn btn-success"><i class="fa fa-plus"></i>'.$label.'</button>','title="'.$title.'"');
+
+			break;
+		case 'edit':
+			$button=anchor($link,'<button class="btn btn-info"><i class="fa fa-pencil"></i>'.$label.'</button>','title="'.$title.'"');
+
+			break;
+		case 'close':
+			$button=anchor($link,'<button class="btn btn-danger"><i class="fa fa-close"></i> </button>','title="'.$title.'"  ');
+			break;
+
+		case 'delete':
+			$button=anchor($link,'<button type="button" class="btn btn-danger"><i class="fa fa-trash"></i> '.$label.'
+                          </button>','title="'.$title.'"  onClick="return confirm_delete()" ');
+			break;
+
+		case 'back'://	$button='<a href="javascript:history.go(-1)" title="'.$title.'"><button type="button" class="btn btn-danger"><i class="icon-arrow-left  icon-white"></i></button></a>';
+			$button='<a href="javascript:history.go(-1)" title="Back"><button class="btn btn-danger"><i class="fa fa-arrow-circle-left"></i></button></a>';
+			$ci = get_instance();
+			
+			if ($ci->session->userdata('previous_page')){
+			$button='<a href="'.base_url().$ci->session->userdata('previous_page').'" title="Back"><button class="btn btn-danger"><i class="fa fa-arrow-circle-left"></i></button></a>';
+			}else{
+				$button='<a href="'.base_url().'home" title="Back"><button class="btn btn-danger"><i class="fa fa-arrow-circle-left"></i></button></a>';
+					
+				
+			}
+			
+			$button='<a href="javascript:history.go(-1)" title="Back"><button class="btn btn-danger"><i class="fa fa-arrow-circle-left"></i></button></a>';
+				
+			break;
+
+	 case 'all':
+	 	$button=anchor($link,'<button class="btn '.$bt_class.'">  <i class=" fa '.$icon.'"></i> <i class=" fa '.$icon2.' "></i>'.$label.'</button></li>','title="'.$title.'"');
+
+	 	break;
+	}
+
+
+	if($get_li)	
+	return "<li>".$button."</li>";
+	else 
+		return $button;
+}
+
+function set_previous_page(){
+	$ci = get_instance();
+	$prev=str_replace("/relis/ci_relis/", "", $_SERVER['REQUEST_URI']);
+	
+	
+	//$ci->session->set_userdata('previous_page',$prev);
+	
+	
+	if($ci->session->userdata('current_page')){
+		if($prev != $ci->session->userdata('current_page') )
+		$ci->session->set_userdata('previous_page',$ci->session->userdata('current_page'));
+	}else{
+		$ci->session->set_userdata('previous_page','home');
+	}
+	
+	$ci->session->set_userdata('current_page',$prev);
+	
+	//$ci->session->set_userdata('previous_page',$_SERVER['QUERY_STRING']);
+}
+
+function form_bm_just_test($label,$text="") {
+
+	
+
+
+
+		
+		$bm = '
+						<div class="form-group">'. form_label ( $label, 'label', array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) )  . '<div class="col-md-6 col-sm-6 col-xs-12">' .$text . '</div></div>';
+	
+		return $bm;				
+}
+//Forms
+
+function input_form_bm($label, $name, $id, $value = "", $max = 100, $classe = " ", $readonly = 'bm',$place_holder="",$pattern="",$pattern_info="") {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+	
+	
+	
+if(!empty($pattern)){
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+									'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+							) )  . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_input ( array (
+									'name' => $name,
+									'id' => $id,
+									'class' => 'form-control col-md-7 col-xs-12 ' . $classe,
+									'maxlength' => $max,
+									'value' => set_value ( $name, $value ),
+									$readonly => 'true' ,
+									'placeholder' => $place_holder,
+									'pattern' => $pattern,
+									'title'=>$pattern_info,
+							) ) . '</div></div>';
+	
+}else{
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+									'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+							) )  . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_input ( array (
+									'name' => $name,
+									'id' => $id,
+									'class' => 'form-control col-md-7 col-xs-12 ' . $classe,
+									'maxlength' => $max,
+									'value' => set_value ( $name, $value ),
+									$readonly => 'true' ,
+									'placeholder' => $place_holder
+							) ) . '</div></div>';
+}
+						
+						return $bm;
+}
+
+function input_password_bm($label, $name, $id, $value = "", $max = 100, $classe = " ", $readonly = 'bm',$place_holder="") {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+	
+	
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) )  . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_password ( array (
+								'name' => $name,
+								'id' => $id,
+								'class' => 'form-control col-md-7 col-xs-12 ' . $classe,
+								'maxlength' => $max,
+								'value' => set_value ( $name, $value ),
+								$readonly => 'true' ,
+								'placeholder' => $place_holder
+									
+						) ) . '</div></div>';
+
+						return $bm;
+}
+
+
+
+
+function input_textarea_bm($label, $name, $id, $value = "", $max = 100, $classe = " ", $readonly = 'bm',$place_holder="") {
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+
+
+	$bm = '
+						<div class="form-group ">' . form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) ) . ': <div class="col-md-6 col-sm-6 col-xs-12">
+									<textarea id="'.$id.'"  name="'.$name.'"   maxlength="'.$max.'"  class="form-control col-md-7 col-xs-12 '.$classe.'" '.$readonly.' placeholder="'.$place_holder.'">'.$value.'</textarea>'.'
+					
+									</div></div>';
+
+
+
+
+	return $bm;
+}
+
+
+
+
+function dropdown_form_bm($label, $name, $id, $values = array(), $selected = 0, $classe = " ",$readonly="") {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+
+	}else{
+		$mandatory="";
+	}
+
+	if($readonly=='readonly'){
+		$readonly=' disabled=disabled ';
+	}else{
+		$readonly="";
+	}
+	$bm = '
+
+						<div class="form-group ">' . form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) ) . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_dropdown ( $name, $values, $selected, 'id="' . $id . '" class="form-control col-md-7 col-xs-12  select2_single '.$classe.' "  '.$readonly ) . '</div></div>';
+
+	return $bm;
+}
+
+function dropdown_multi_form_bm($label, $name, $id, $values = array(), $selected = array(), $classe = " ",$readonly="",$number_of_values="*") {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+
+	}else{
+		$mandatory="";
+	}
+
+	if($readonly=='readonly'){
+		$readonly=' disabled=disabled ';
+	}else{
+		$readonly="";
+	}
+	
+	$bm = '
+
+						<div class="form-group ">'  . form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) ) . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_dropdown ( $name."[]", $values, $selected, 'id="' . $id . '"  multiple="multiple" class=" class_'.$id.' form-control col-md-7 col-xs-12 select2_multiplexx '.$classe.' "  '.$readonly ) . '</div></div>';
+
+	$number_selected="";
+	if($number_of_values!="*"){
+		$number_selected="maximumSelectionLength: $number_of_values ,";
+	}
+	$script='
+			<script>
+			 $(".class_'.$id.'").select2({
+          
+          placeholder: "'.lng_min('Select multi').' ...",
+          '.$number_selected .'
+          allowClear: true
+        });
+			</script>';
+	
+	return $bm.$script;
+}
+
+function input_datepicker_bm($label, $name, $id, $value = "", $max = 100, $classe = " ", $readonly = 'bm') {
+	
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+	
+	if($readonly=='readonly'){
+		$datepicker="";
+	}else{
+		$datepicker="datepicker";
+	}
+	
+
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) )  . '<div class="col-md-6 col-sm-6 col-xs-12"><div class="input-group">
+								
+								<input name="' . $name . '" id="' . $id . '"  class=" '.$datepicker.' form-control  droite ' . $classe . '" readonly type="text" value="' . $value . '">
+									<span class="input-group-addon add-on  "><i class="fa fa-calendar" ></i></span>							
+								</div></div></div>';
+
+						return $bm;
+}
+
+function input_colorpicker_bm($label, $name, $id, $value = "", $max = 20, $classe = " ", $readonly = 'bm') {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+
+
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) )  . '<div class="col-md-6 col-sm-6 col-xs-12  "><div  id="color_p" class="input-group  colorpicker-component" >
+
+								<input name="' . $name . '" id="' . $id . '"  class=" form-control  droite ' . $classe . '" type="text" value="' . $value . '">
+									 <span class="input-group-addon  " ><i></i></span>
+								</div></div></div>';
+
+	return $bm;
+}
+
+function input_image_bm($label, $name, $id, $value = "", $max = 20, $classe = " ", $readonly = 'bm') {
+
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+	}else{
+		$mandatory="";
+	}
+
+
+	$bm = '
+						<div class="form-group">'. form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) )  . '<div class="col-md-6 col-sm-6 col-xs-12  "><div >
+
+								<input class="input-file uniform_on ' . $classe . ' " id="' . $id . '" name="' . $name . '" type="file">
+									 
+								</div></div></div>';
+
+	return $bm;
+}
+
+
+function checkbox_form_bm($label, $name, $id, $values = 1, $selected = 0, $classe = " ",$readonly="") {
+	if(empty($values))
+		$values=1;
+	if(strpos($classe,'mandatory')){
+		$mandatory='<span class="mandatory"> *</span>';
+		$classe=str_replace('mandatory', "", $classe);
+
+	}else{
+		$mandatory="";
+	}
+
+	if($readonly=='readonly'){
+		$readonly=' disabled=disabled ';
+	}else{
+		$readonly="";
+	}
+	
+	if($selected=='1'){
+		$val=1;
+		$checked=" checked ";
+	}else{
+		$checked=" ";
+		$val=0;
+	}
+	
+	
+	
+	
+	/*$bm = '
+
+						<div class="form-group ">' . form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) ) . '<div class="col-md-6 col-sm-6 col-xs-12">' . form_dropdown ( $name, $values, $selected, 'id="' . $id . '" class="form-control col-md-7 col-xs-12  '.$classe.' "  '.$readonly ) . '</div></div>';   
+						
+						*/
+
+	$bm = '
+
+						<div class="form-group "><input name="'. $name. '" value="0" type="hidden"  />' . form_label ( $label.$mandatory, $name, array (
+								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
+						) ) . '<div class="col-md-6 col-sm-6 col-xs-12"> <input name="'. $name. '" value="'. $values. '" type="checkbox" class="js-switch '.$classe.' " '.$checked.$readonly.' /></div></div>';
+
+	
+	
+	
+	return $bm;
+}
+
+
+
+
+
+function create_button_link($url,$label,$button_class="btn-info",$title="",$type="onlist",$alert_message="") {
+	
+	if(empty($alert_message)){
+	$button=anchor ( $url, $label, 'class=" btn '.$button_class.' btn-xs " , title=" '.$title.' "' );
+	}else{
+		$button=anchor ( $url, $label, 'class=" btn '.$button_class.' btn-xs " , title=" '.$title.' " onClick="return confirm_delete()" ' );
+	
+	}
+
+	return $button;
+}
+
+function create_button_link_dropdown($arr_buttons,$btn_label="Action") {
+
+	//print_test($arr_buttons);
+	if(!empty($arr_buttons)){
+	//	print_test(count($arr_buttons));
+	//	print_test($arr_buttons);
+		if(count($arr_buttons)==1){
+			
+			$button=create_button_link($arr_buttons[0]['url'], $arr_buttons[0]['label'],'btn-info',$arr_buttons[0]['title']);
+			
+		}else{
+			
+			$button='<div class="btn-group">
+			<button class="btn btn-primary dropdown-toggle btn-xs" aria-expanded="false" data-toggle="dropdown" type="button">
+				'.$btn_label.'<span class="caret"></span>
+				<span class="sr-only">Toggle Dropdown</span>
+			</button>
+		<ul class="dropdown-menu" role="menu">';
+			
+			foreach ($arr_buttons as $key => $value) {
+				$button.='<li>'.anchor ( $value['url'], !empty($value['label'])?($value['label']):"", 'class=""  title=" '.!empty($value['title'])?($value['title']):"".' "' ).'</li>';
+			}
+			
+			
+			
+			$button.='</ul></div>'; //close the UL
+			
+		}
+		
+		
+	}else{
+		$button="";
+	}
+
+	
+
+	return $button;
+}
+
+function set_log($log_type,$log_event,$log_publish=1,$log_user_id=0,$log_poste_id=0){
+
+	$ci = get_instance();
+
+	$log=array();
+	$log['log_type']=$log_type;
+	$log['log_event']=$log_event;
+	$log['log_publish']=$log_publish;
+	$log['log_time']=date('Y-m-d H:i:s');
+	if(!empty($_SERVER['REMOTE_ADDR']))
+	{
+		$log['log_ip_address']= $_SERVER['REMOTE_ADDR'];
+	}
+	if($ci->session->userdata('user_agent')){
+		$log['log_user_agent']= $ci->session->userdata('user_agent');
+	}
+	if($log_user_id){
+		$log['log_user_id']=$log_user_id;
+	}else{
+		if($ci->session->userdata('user_id')){
+			$log['log_user_id']=$ci->session->userdata('user_id');
+		}
+	}
+	if($log_poste_id){
+		$log['log_poste_id']=$log_poste_id;
+	}
+	$log['table_config']='logs';
+	$log['operation_type']='new';
+	//print_test($log);
+	$ci->DBConnection_mdl->save_reference($log);
+}
+function project_db() {
+	
+	$ci = get_instance ();
+	if($ci->session->userdata ( 'project_db' ))
+	return $ci->session->userdata ( 'project_db' );
+	else 
+	return 'default';
+}
+
+function active_user_name() {
+
+	$ci = get_instance ();
+	if($ci->session->userdata ( 'user_username' ))
+		return $ci->session->userdata ( 'user_username' );
+		else
+			return 'user_unknown';
+}
+
+function active_user_id() {
+
+	$ci = get_instance ();
+	if($ci->session->userdata ( 'user_id' ))
+		return $ci->session->userdata ( 'user_id' );
+		else
+			return 0;
+}
+function top_msg() {
+	$ci = get_instance ();
+	if ($ci->session->userdata ( 'msg_err' )) {
+	/*	echo '<br/><br/><br/><div class="alert alert-danger alert-dismissible fade in" role="alert">
+				<button class="close" aria-label="Close" data-dismiss="alert" type="button">
+					<span aria-hidden="true">×</span>
+					</button>' . $ci->session->userdata ( 'msg_err' ) . '
+			</div>';*/
+		?>
+		
+		<script>
+		$(document).ready(function() {
+			new PNotify({
+				title: '',
+				text: '<?php echo $ci->session->userdata ( 'msg_err' );?>',
+				type: 'error',
+				styling: 'bootstrap3',
+				 addclass: "stack-topleft"
+						});
+		
+		});
+		</script>
+		
+		<?php 
+		$ci->session->set_userdata ( 'msg_err', '' );
+	} elseif ($ci->session->userdata ( 'msg' )) {
+		/*echo '<br/><br/><br/><div class="alert alert-success alert-dismissible fade in" role="alert">
+				<button class="close" aria-label="Close" data-dismiss="alert" type="button">
+					<span aria-hidden="true">×</span>
+					</button>' . $ci->session->userdata ( 'msg' ) . '
+			</div>';
+		*/
+		?>
+				
+				<script>
+				$(document).ready(function() {
+					new PNotify({
+						title: '',
+						text: '<?php echo $ci->session->userdata ( 'msg' );?>',
+						type: 'success',
+						styling: 'bootstrap3',
+						 addclass: "stack-topleft"
+					});
+				
+				});
+				</script>
+				
+				<?php
+				
+		$ci->session->set_userdata ( 'msg', '' );
+	}
+}
+
+function set_top_msg($message,$type='success'){
+	
+	if(!empty($message))
+		$message=lng_min($message);
+	
+	$ci = get_instance ();
+
+	if($type=='success')
+		$ci->session->set_userdata('msg',$message);
+	else
+		$ci->session->set_userdata('msg_err',$message);
+}
+
+
+//String management
+function lng_min($str,$category="default",$lang='en'){
+	$res=lng($str,$category,$lang,FALSE);
+	return $res;
+}
+function lng($str,$category="default",$lang='en',$edit_allowed=True){
+	if(empty($str)){
+		return $str;
+	}
+	//return $str;
+	$ci = get_instance ();
+	if($ci->session->userdata('active_language')){
+		$lang=$ci->session->userdata('active_language');
+	}
+	
+	$ci = get_instance ();
+	$res_str=$ci->DBConnection_mdl->get_str($str,$category,$lang);
+	//print_test($res_str);
+	if(!empty($res_str)){
+		$res=$res_str['str_text'];
+		$id=$res_str['str_id'];
+		
+	}else{
+		
+		$id=$ci->DBConnection_mdl->set_str($str,$category,$lang);
+		
+		$res= $str;
+	}
+	if($ci->session->userdata('language_edit_mode')=='yes' AND $edit_allowed){
+		
+		$res='<a style=" color:red" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/edit_element/str_mng/'.$id.'/modal"  data-modal_title="Edit text ">'.$res.' </a>';
+	}
+	return $res;
+	
+}
+
+function get_appconfig($element="all",$source="db"){
+	$ci = get_instance ();
+	
+	$config=$ci->DBConnection_mdl->get_row_details('config','1');
+	
+	return $config;
+}
+
+function get_appconfig_element($element="all",$source="db"){
+	$ci = get_instance ();
+
+	$config=$ci->DBConnection_mdl->get_row_details('config','1');
+	
+	if(!empty($config[$element])){
+		return $config[$element];
+	}else{
+			return "0";
+		}
+	
+}
+
+function get_ci_config($element){
+	$ci = get_instance ();
+
+	$config=$ci->config->item($element);
+
+	return $config;
+}
+
+function get_project_config($project_label){
+	$ci = get_instance ();
+
+	$config=$ci->manage_mdl->get_project_config($project_label);
+
+	return $config;
+}
+
+
+
+
+function admin_config($config,$config_name=True,$type='config'){
+	
+	if($type=='table'){
+		$admin_configs=array('users','usergroup','log','projects','userproject');
+	}else{
+		$admin_configs=array('users','usergroup','logs','project','user_project');
+	}
+	
+	if($config_name){
+		$cfg=$config;
+	}else{
+		$cfg=$config['config_label'];
+		
+	}
+	
+	if(in_array($cfg,$admin_configs))
+	{
+		return TRUE;
+	}else{
+		return FALSE;
+	}
+	
+
+	
+}	 
+function user_project($project_id , $user=0){
+		$ci = get_instance ();
+		
+		if($user==0){
+			$user=$ci->session->userdata('user_id');
+		}
+		$sql="select project_id from userproject where userproject_active=1 AND user_id=$user ";
+		
+		$user_projects = $ci->db->query($sql)->num_rows();
+		
+		if($user_projects>0){
+			$sql="select project_id from userproject where userproject_active=1 AND user_id=$user AND project_id=$project_id ";
+			
+			$user_projects = $ci->db->query($sql)->num_rows();
+			if($user_projects>0){
+				return TRUE;
+			}else{
+				return FALSE;
+			}
+		}else{
+			return TRUE;
+		}
+		$config=$ci->DBConnection_mdl->get_row_details('config','1');
+	
+		return $config;
+	}
+	
+	function file_upload_error($code){
+		$phpFileUploadErrors = array(
+				0 => 'There is no error, the file uploaded with success',
+				1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+				2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+				3 => 'The uploaded file was only partially uploaded',
+				4 => 'No file was uploaded',
+				6 => 'Missing a temporary folder',
+				7 => 'Failed to write file to disk.',
+				8 => 'A PHP extension stopped the file upload.',
+		);
+		if($phpFileUploadErrors[$code]){
+			return $phpFileUploadErrors[$code];
+		}else{
+			return"Error code unknown!";
+		}
+	}
+	
+	function is_project_creator($project_id='current' , $user=0,$use='project_label'){
+		$ci = get_instance ();
+		if($project_id=='current'){
+			$project_id=project_db();// active project
+		}
+		if($user==0){
+			$user=$ci->session->userdata('user_id');
+		}
+		$sql="select project_id from projects where project_creator=$user AND $use='$project_id' AND project_active=1 ";
+	
+		$user_projects = $ci->db->query($sql)->num_rows();
+	
+		if($user_projects>0){
+			return TRUE;
+		}else{
+			return FALSE;
+		}
+		
+	}
+	
+	function has_usergroup($usergroup_id , $user=0){
+		$ci = get_instance ();
+	
+		if($user==0){
+			$user=$ci->session->userdata('user_id');
+		}
+		$sql="select user_id from users where user_usergroup=$usergroup_id AND user_id=$user AND user_active=1 ";
+	
+		$user_res = $ci->db->query($sql)->num_rows();
+	
+		if($user_res>0){
+			return TRUE;
+		}else{
+			return FALSE;
+		}
+	
+	}
+	
+	function box_header($title="",$content="",$w1=6,$w2=6,$w6=6){
+		echo  '<div class="col-md-'.$w1.' col-sm-'.$w1.' col-xs-'.$w1.'">
+              <div class="x_panel tile  overflow_hidden">
+                <div class="x_title">
+                  <h2>'.$title.'</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">'.$content;
+	
+	}
+	
+	
+	function box_footer(){
+		echo "</div>
+              </div>
+            </div>";
+	}
+	
+	function  save_metrics($info,$type="metric"){
+		
+		$message=time()."__--~~".$type."__--~~".$info;
+		
+		//$metrics_path = get_ci_config('metrics_save_path');
+		
+		project_db();
+		$filename="cside/metrics/".date('Y_M_d')."/".active_user_name()."_".date('H').".txt";
+		
+		$dirname = dirname($filename);
+		if (!is_dir($dirname))
+		{
+		    mkdir($dirname, 0755, true);
+		}
+		$f_new = fopen($filename,'a+');
+		fputs($f_new, $message. "\n");
+		fclose($f_new);
+		//echo $message;
+	}
+	
+	// -----
+	
+	// Récupération de la configuration d'une entité
+	function get_table_config($_table,$target_db='current')
+	{
+		
+		$ci = get_instance ();
+		return $ci->entity_config_lib->get_table_config($_table,$target_db);
+	}
+	
+	
+	function  old_version($text="Old version"){
+		
+		echo '<h1 class="red">'.$text.'</h1>';
+	}
+	
+	function display_picture_from_db($picture){
+		
+		return 'data:image/png;base64,'.base64_encode( $picture);
+	}
+	
+	function activate_update_stored_procedure(){
+		
+		//return true;
+	}
+	
+	function get_relis_common_configs(){
+		return get_ci_config('common_relis_configs');
+	}
+	
+	function valid_install_configuration_file($config_table){
+		
+		if(!empty($config_table['project_title']) AND !empty($config_table['project_short_name']) AND !empty($config_table['config']['classification']['table_name']) AND !empty($config_table['config']['classification']['fields'])){
+			return True;
+		}else{
+			return False;
+			
+		}
+	}
+	
+	
+	
+	function header_perspective($type='gen'){
+		$s_active="";
+		$c_active="";
+		$g_active="";
+	
+		if($type=='screen'){
+			$s_active='active';
+		}elseif($type=='class'){
+			$c_active='active';
+			$g_active='active';
+				
+		}else{
+			$g_active='active';
+			$c_active='active';
+		}
+	if($type=='screen' AND !get_appconfig_element('classification_on')){
+		
+	}else{
+		echo '<div class="" role="tabpanel" data-example-id="togglable-tabs">
+                      <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
+                       <li role="presentation" class="'.$g_active.'"><a href="'.base_url().'home/" id="home-tabb" >Classification</a>
+                        </li>
+                        <li role="presentation" class="'.$s_active.'"><a href="'.base_url().'home/screening"  id="profile-tabb" >Screening</a>
+                        </li>
+            
+            
+                      </ul>
+                      <div id="myTabContent2" class="tab-content">
+	
+                      </div>
+                    </div>';
+	}
+	}
+	
+	
+	function get_paper_screen_result($paper_id){
+		$ci = get_instance();
+		$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
+		$criteria=$ci->manager_lib->get_reference_select_values('ref_exclusioncrieria;ref_value');
+		
+		
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+		
+		
+		$sql= "select A.*,S.screening_id,S.decision,S.exclusion_criteria,S.note as screening_note,S.screening_time from assignment_screen A 	LEFT JOIN screening S ON (A.assignment_id = S.assignment_id AND S.	screening_active=1)  where A.paper_id = $paper_id AND 	A.assignment_active  ";
+		
+		$res_assignment=$ci->db2->query($sql)->result_array();
+		
+		//print_test($res_assignment);
+		
+		$pending=0;
+		$accepted=0;
+		$excluded=0;
+		$reviewers="";
+		$started=False;
+		$exclude_crit=array();
+		foreach ($res_assignment as $key => $value) {
+				
+			$res_assignment[$key]['user_name']=$users[$value['user_id']];
+			$reviewers .=$users[$value['user_id']]." | ";
+			
+			$res_assignment[$key]['exclusion_criteria']=empty($value['exclusion_criteria'])?"":$criteria[$value['exclusion_criteria']];
+			
+			if (empty($value['screening_id'])){
+				$pending++;
+			}else{
+				if($value['decision']=='accepted'){
+					$accepted++;
+				}else{
+		
+					$excluded++;
+					$exclude_crit[$value['exclusion_criteria']]=isset($exclude_crit[$value['exclusion_criteria']])?($exclude_crit[$value['exclusion_criteria']]+1):1;
+				}
+			}
+			$started=TRUE;
+				
+		}
+		
+		//print_test($exclude_crit);
+		$paper_decision='Pending';
+		if(!$started){
+			$paper_decision="Pending";
+		}
+		
+		elseif($pending>0){
+			if($pending == count($res_assignment)){
+				$paper_decision="Pending";
+			}else{
+				$paper_decision="In review";
+			}
+				
+		}else
+		{
+			
+			if(get_appconfig_element('screening_conflict_resolution')=='Majority'){
+				
+				if($accepted > $excluded){
+					
+					$paper_decision="Included";
+					
+				}elseif($accepted < $excluded){
+					
+					$paper_decision="Excluded";
+					
+				}else{
+					$paper_decision="In conflict";
+				}
+				
+			}else{
+				if($accepted==0){
+				$paper_decision="Excluded";
+				if(get_appconfig_element('screening_conflict_type')=='ExclusionCriteria' AND count($exclude_crit) > 1){ //Conflict when different exclusion criteria
+				
+					$paper_decision="In conflict";
+				
+				}
+				
+			}elseif($excluded==0){
+			
+				$paper_decision="Included";
+			}else{
+			
+				$paper_decision="In conflict";
+			}
+			}
+		}
+		
+		
+		
+		
+		$data['screenings']=$res_assignment;
+		$data['screening_result']=$paper_decision;
+		$data['reviewers']=$reviewers;
+		//print_test($data);
+		return $data;
+	}
+	
+	
+	
+	function get_paper_screen_status($paper_id){
+		$ci = get_instance();
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+	
+	
+		$sql= "select A.*,S.screening_id,S.decision,S.exclusion_criteria,S.note,S.screening_time from assignment_screen A 	LEFT JOIN screening S ON (A.assignment_id = S.assignment_id AND S.	screening_active=1)  where A.paper_id = $paper_id AND 	A.assignment_active  ";
+	
+		$res_assignment=$ci->db2->query($sql)->result_array();
+	
+		//print_test($res_assignment);
+	
+		$pending=0;
+		$accepted=0;
+		$excluded=0;
+		$started=False;
+		$exclude_crit=array();
+		foreach ($res_assignment as $key => $value) {
+			
+			if (empty($value['screening_id'])){
+				$pending++;
+			}else{
+				if($value['decision']=='accepted'){
+					$accepted++;
+				}else{
+	
+					$excluded++;
+					$exclude_crit[$value['exclusion_criteria']]=isset($exclude_crit[$value['exclusion_criteria']])?($exclude_crit[$value['exclusion_criteria']]+1):1;
+						
+				}
+			}
+			
+			$started=TRUE;
+		}
+	
+	
+		$paper_decision='Pending';
+		if(!$started){
+			$paper_decision="Pending";
+		}
+	
+		elseif($pending>0){
+			if($pending == count($res_assignment)){
+				$paper_decision="Pending";
+			}else{
+				$paper_decision="In review";
+			}
+			
+		}else
+		{
+			
+			if(get_appconfig_element('screening_conflict_resolution')=='Majority'){
+				
+				if($accepted > $excluded){
+					
+					$paper_decision="Included";
+					
+				}elseif($accepted < $excluded){
+					
+					$paper_decision="Excluded";
+					
+				}else{
+					$paper_decision="In conflict";
+				}
+				
+			}else{
+				if($accepted==0){
+				$paper_decision="Excluded";
+				if(get_appconfig_element('screening_conflict_type')=='ExclusionCriteria' AND count($exclude_crit) > 1){ //Conflict when different exclusion criteria
+				
+					$paper_decision="In conflict";
+				
+				}
+				
+			}elseif($excluded==0){
+			
+				$paper_decision="Included";
+			}else{
+			
+				$paper_decision="In conflict";
+			}
+			}
+		}
+	
+	
+		//print_test($data);
+		return $paper_decision;
+	}
+	
+	
+	function update_paper_status_status($paper_id){
+		$ci = get_instance();
+		$paper_status=get_paper_screen_status($paper_id);
+		
+		
+		if($paper_status=='Included'){
+			$ci->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'To classify'),array('id'=>$paper_id));
+		}else{
+		
+			$ci->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'Waiting'),array('id'=>$paper_id));
+		}
+	}
+	
+	
+	function update_paper_status_all(){
+		$ci = get_instance();
+		$papers=$ci->DBConnection_mdl->get_papers('screen',get_table_config('papers'),"_",0,-1);
+	//	print_test($papers);
+		foreach ($papers['list'] as $key => $value) {
+			update_paper_status_status($value['id']);
+		}
+	}
+	
+	

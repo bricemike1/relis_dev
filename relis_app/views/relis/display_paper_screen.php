@@ -1,0 +1,143 @@
+	<!-- page content -->
+        <div class="right_col <?php echo $paper_excluded?" red ":""; ?>" role="main">
+          <div class="">
+          <?php top_msg(); ?>
+          <div class="page-title">
+              
+              <?php 
+                   if(isset($search_view)){
+                   		$this->load->view($search_view);
+                   	}
+                ?>
+              
+            </div>
+            
+            <div class="clearfix"></div>
+
+            <div class="row">
+
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel" >
+                  <div class="x_title">
+                    <h2><?php echo isset($page_title) ? $page_title :"" ; ?></h2>
+                    <?php 
+                    if(isset($top_buttons)){
+                    	echo "<ul class='nav navbar-right panel_toolbox'>$top_buttons</ul>";
+                    
+                    }                    
+                    ?>
+                    
+                    
+                    
+                    <div class="clearfix"></div>
+                  </div>
+                  
+                  
+                  
+                  <div class="x_content" style="min-height:400px ">
+                  
+                 
+                  <?php
+                   //print_test($item_data);         	
+                            	
+                  $tmpl = array (
+                  		'table_open'  => '<table class="table table-striped projects">',
+                  		'table_close'  => '</table>'
+                  );
+                  	
+                  $this->table->set_template($tmpl);
+                  	
+                  echo $this->table->generate($item_data);
+                  
+             ?>
+				
+				
+				
+				
+				
+				
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+							<h2><?php echo lng('Screening')." - Result : $screening_result"?>
+							
+							</h2>
+							<ul class='nav navbar-right panel_toolbox'>
+							 <?php 
+		                    if(isset($assign_new_button)){//put 
+		                    	echo "$assign_new_button ";
+		                    
+		                    }                    
+		                    ?>
+							<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li></ul>
+							<div class="clearfix"></div>
+							</div>
+							<div class="x_content" style="display: ;">
+							<?php 
+							
+							
+							
+							
+							
+							if(empty($screenings)){
+								 
+								echo lng("No screening data");
+							}else{
+								
+								echo "<table class='table table-striped'>";
+								echo "<tr>";
+								echo "<th style='width:20%'>".lng('User')."</th>";
+								echo "<th style='width:20%'>".lng('Decision')."</th>";
+								echo "<th style='width:20%'>".lng('Criteria')."</th>";
+								echo "<th style='width:20%'>".lng('Note')."</th>";
+								echo "<th style='width:20%'>".lng('Time')."</th>";
+								if(!empty($screen_edit_link)){
+									echo "<th ></th>";
+								}
+								echo "<tr>";
+								foreach($screenings as $k=>$v){
+									 
+									echo "<tr>";
+									echo "<td style='width:20%'>".$v['user_name']."</td>";
+									echo "<td style='width:20%'>".$v['decision']."</td>";
+									echo "<td style='width:20%'>".$v['exclusion_criteria']."</td>";
+									echo "<td style='width:20%'>".$v['screening_note']."</td>";
+									echo "<td style='width:20%'>".$v['screening_time']."</td>";
+									if(!empty($screen_edit_link)){
+										echo "<td style=''>".$v['edit_link']."</td>";
+									}
+									echo "<tr>";
+									
+								}
+								echo "</table>"."<br/><br/>";
+								
+							
+							}
+							?>
+							
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+				
+				
+            
+                
+                
+                  </div>
+                  
+                  
+                 
+                  
+                  
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /page content -->
