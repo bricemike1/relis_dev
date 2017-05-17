@@ -1,0 +1,48 @@
+
+.centre{
+	text-align:center;
+}
+.droite{
+	text-align:right;
+}
+
+.gauche{
+	text-align:left;
+}
+
+.pagination_mine {
+    margin: 0px 0;
+	display: inline-block;
+	text-align: right;
+
+}
+.dropdown-menu{
+	
+	min-width: 100px;
+}
+
+.tile_count  a:hover div{
+	
+	  text-decoration: underline;
+}
+.drilldown_link a{
+	color:green;
+
+	
+}.drilldown_link a:hover{
+	
+	text-decoration: underline;
+}
+table.sql_result{table-layout:auto;}
+
+ span.change_lang {
+    cursor: pointer;
+    font-weight: 400;
+    margin-bottom: 0;
+    min-height: 20px;
+    padding-left: 5px;
+    margin-top: 20px;
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #eee;
+}

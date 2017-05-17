@@ -1,0 +1,4 @@
+#,Paper,"Transformation name",Domain,Goal,"Transformation language","Source language","Target language",Scope,"Emplementation Status",Industrial,"Is HOT",Intent,"Intent relation",Note
+1,"paper_1 - 5W+1H pattern: A perspective of systematic mapping studies and a case study on cloud software testing",Transfo3,"Collaborative systeme",Research,"Code Smith | EMF Text | Java","EMF Text | Java","Code Smith","Outplace | Exogenous",pending,Yes,No,"Updating | Updating | Intent2","Relation1 | Relation2",
+2,"paper_2 - A Mapping Study of Software Causal Factors for Improving Maintenance",Test,"Artificial Intelligence",Implementation,"EMF Text","EMF Text","EMF Text",Outplace,pending,Yes,No,"Upgrading Application",Relation2,
+3,"paper_4 - A systematic literature review of literature reviews in software testing",test,"Artificial Intelligence",Implementation,,,"EMF Text",Inplace,done,No,No,,,
