@@ -1,4 +1,15 @@
 -- TABLES
+DROP TABLE IF EXISTS `admin_config`$$
+CREATE TABLE IF NOT EXISTS `admin_config` (
+  `config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `config_label` varchar(100) NOT NULL,
+  `config_value` varchar(100) NOT NULL,
+  `config_description` varchar(500) DEFAULT NULL,
+  `config_user` int(11) NOT NULL DEFAULT '0',
+  `config_active` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`config_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;$$
+
 DROP TABLE IF EXISTS `config`$$
 CREATE TABLE IF NOT EXISTS `config` (
   `config_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -11,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `config` (
   `rec_per_page` int(4) NOT NULL DEFAULT '30',
   `config_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 $$
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1$$
 
 
 INSERT INTO `config` (`config_id`, `config_type`, `project_title`, `project_description`, `default_lang`, `creator`, `run_setup`, `rec_per_page`, `config_active`) VALUES
@@ -82,8 +93,11 @@ INSERT INTO `usergroup` (`usergroup_id`, `usergroup_name`, `usergroup_descriptio
 DROP TABLE IF EXISTS `userproject`$$
 CREATE TABLE IF NOT EXISTS `userproject` (
   `userproject_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL ,
   `project_id` int(11) NOT NULL,
+  `user_role` varchar(50) NOT NULL DEFAULT 'Reviewer',
+  `added_by` int(11) NOT NULL DEFAULT '1',
+  `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `userproject_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`userproject_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 $$
@@ -98,7 +112,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_mail` varchar(100) DEFAULT NULL,
   `user_usergroup` int(11) DEFAULT NULL,
   `user_picture` varchar(300) DEFAULT NULL,
-  `user_default_lang` varchar(3) NOT NULL DEFAULT 'en',
+  `created_by` int(11) DEFAULT 0,
+  `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_status` int(1) NOT NULL DEFAULT '1',
   `user_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`user_id`),
@@ -148,10 +163,10 @@ COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `add_users`$$
-CREATE   PROCEDURE `add_users`(_user_id INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205), _user_default_lang  VARCHAR(5))
+CREATE   PROCEDURE `add_users`(_user_id INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205), _created_by  VARCHAR(5))
 BEGIN
 START TRANSACTION;
-INSERT INTO users (user_name , user_username , user_mail , user_usergroup , user_password , user_picture,user_default_lang) VALUES (_user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture,_user_default_lang);
+INSERT INTO users (user_name , user_username , user_mail , user_usergroup , user_password , user_picture,created_by) VALUES (_user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture,_created_by);
 SELECT user_id AS id_value FROM users WHERE user_id = LAST_INSERT_ID();
 COMMIT;
 END$$
@@ -478,17 +493,17 @@ COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `update_users`$$
-CREATE   PROCEDURE `update_users`(_element_id INT , _user_id INT , _user_name  VARCHAR(55) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205), _user_default_lang  VARCHAR(5) )
+CREATE   PROCEDURE `update_users`(_element_id INT , _user_id INT , _user_name  VARCHAR(55) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205))
 BEGIN
 START TRANSACTION;
-UPDATE  users SET user_id = _user_id , user_name = _user_name , user_mail = _user_mail , user_usergroup = _user_usergroup , user_password = _user_password , user_picture = _user_picture, user_default_lang = _user_default_lang
+UPDATE  users SET user_id = _user_id , user_name = _user_name , user_mail = _user_mail , user_usergroup = _user_usergroup , user_password = _user_password , user_picture = _user_picture
 WHERE (user_id = _element_id);
 COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `update_user_project`$$
-CREATE   PROCEDURE `update_user_project`(_element_id INT , _userproject_id INT , _user_id INT , _project_id INT)
-BEGIN START TRANSACTION; UPDATE userproject SET userproject_id = _userproject_id , user_id = _user_id , project_id = _project_id WHERE (userproject_id = _element_id); COMMIT; END$$
+CREATE   PROCEDURE `update_user_project`(_element_id INT , _userproject_id INT , _user_id INT , _project_id INT, _user_role VARCHAR(55))
+BEGIN START TRANSACTION; UPDATE userproject SET userproject_id = _userproject_id , user_id = _user_id , project_id = _project_id , user_role=_user_role WHERE (userproject_id = _element_id); COMMIT; END$$
 
 DROP PROCEDURE IF EXISTS`add_project`$$
 CREATE   PROCEDURE `add_project`(_project_id INT , _project_label  VARCHAR(105) , _project_title  VARCHAR(255) , _project_description  VARCHAR(1005) , _project_creator INT , _project_icon  VARCHAR(205))

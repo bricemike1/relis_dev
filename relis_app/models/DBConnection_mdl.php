@@ -356,17 +356,18 @@ class DBConnection_mdl extends CI_Model
 		/*
 		 * Fonction pour récupérer le détail d'un élément de la table de référence
 		 */
-		function get_row_details($config,$ref_id) {
+		function get_row_details($config,$ref_id,$stored_procedure_provided=False) {
 			if(!admin_config($config)){
 			$this->db2 = $this->load->database(project_db(), TRUE);
 			}
+			$stored_procedure=$stored_procedure_provided?$config:"get_detail_".$config;
 			
 			if(admin_config($config)){
-				$data=$this->db->query ( "CALL get_detail_".$config."('".$ref_id."') " );				
+				$data=$this->db->query ( "CALL ".$stored_procedure."('".$ref_id."') " );				
 				mysqli_next_result( $this->db->conn_id );
 				
 			}else{
-				$data=$this->db2->query ( "CALL get_detail_".$config."('".$ref_id."') " );				
+				$data=$this->db2->query ( "CALL ".$stored_procedure."('".$ref_id."') " );				
 				mysqli_next_result( $this->db2->conn_id );
 			}
 			
@@ -517,16 +518,21 @@ class DBConnection_mdl extends CI_Model
 		/*
 		 * Fonction pour supprimer un élément
 		 */
-		function remove_element($id,$config) {
-		
+		function remove_element($id,$config,$strored_procedure_provided=False) {
+			if($strored_procedure_provided){
+				$strored_procedure=$config;
+			}else{
+				$strored_procedure=" remove_".$config;
+			}
 			if(!admin_config($config)){
 				$this->db2 = $this->load->database(project_db(), TRUE);
 			}
-				
+			
+			
 			if(admin_config($config)){
-				$result=$this->db->query ( "CALL remove_".$config."(".$id.")" );
+				$result=$this->db->query ( "CALL ".$strored_procedure."(".$id.")" );
 			}else{
-				$result=$this->db2->query ( "CALL remove_".$config."(".$id.")" );
+				$result=$this->db2->query ( "CALL ".$strored_procedure."(".$id.")" );
 			}
 			
 			return $result;
@@ -656,6 +662,116 @@ class DBConnection_mdl extends CI_Model
 			}
 		}
 		
+		function save_reference_mdl($content,$type='normal') {
+		
+				
+			$config=$content['table_config'];
+			if(admin_config($config)){
+				$this->db3 = $this->load->database('default', TRUE);
+			}else{
+				$this->db3 = $this->load->database(project_db(), TRUE);
+			}
+		
+			
+			//print_test($content);
+			
+			//exit;
+			$table_config=get_table_configuration($config);
+			$current_operation=$content['current_operation'];
+			$param="";
+			$i=0;
+			
+			foreach ($table_config['operations'][$current_operation]['fields'] as $key => $v_field) {
+			
+				$value=$table_config['fields'][$key];
+				if( $v_field['field_state']!='drill_down' AND $v_field['field_state']!='disabled' AND !((isset($value['multi-select']) AND isset($value['multi-select'])=='Yes'))){
+					//print_test($key);
+					if(!empty($content[$key])){
+						$val=$content[$key];
+					}else{
+						$val=NULL;
+					}
+					if($i==0){
+			
+						if(isset($value['input_type']) AND $value['input_type']=='date' AND empty($val)){
+							$param.= "NULL" ;
+						}else{
+							$param.= "'".mysqli_real_escape_string($this->db3->conn_id,$val) . "'";
+						}
+						
+			
+			
+					}
+					else{
+						if(isset($value['input_type']) AND $value['input_type']=='date' AND empty($val)){
+							$param.= ", "."NULL" ;
+						}else{
+							$param.= ",'".mysqli_real_escape_string($this->db3->conn_id,$val) . "'";
+			
+					}
+					
+				}
+				$i=1;
+			}
+			
+			}
+			
+			if($content['operation_type']=='new'){
+				
+				if(!empty($table_config['operations'][$current_operation]['db_save_model'])){
+					$stored_procedure=" CALL ".$table_config['operations'][$current_operation]['db_save_model']."($param)";
+				}else{
+					$stored_procedure=" CALL add_".$config."($param)";
+				}
+			}else{
+				
+				
+				$id=$content[$table_config['table_id']];
+				
+				if(!empty($table_config['operations'][$current_operation]['db_save_model'])){
+					$stored_procedure=" CALL ".$table_config['operations'][$current_operation]['db_save_model']."($id ,$param)";
+				}else{
+					$stored_procedure=" CALL update_".$config."($id , $param)";
+				}
+				//$stored_procedure=" CALL update_".$config."($id , $param)";
+			}
+				
+			//echo $stored_procedure;
+			//exit;
+			if (  $content ['operation_type']=='new' ) {
+		
+				$data=$this->db3->query ( $stored_procedure);
+				//echo $this->db->last_query();
+				mysqli_next_result( $this->db3->conn_id );
+		
+		
+				$res=$data->row_array();
+				if(!empty($res)){
+					$result=1;
+					$id=$res['id_value'];
+				}else{
+					$result=0;
+					$id=0;
+				}
+					
+		
+			} else {
+				if($this->db3->simple_query ( $stored_procedure )){
+					$result=1;
+				}else{
+					$result=0;
+				}
+			}
+				
+				
+			//print_test($result); exit;
+				
+			if($type=='get_id'){
+				return $id;
+			}else{
+				return $result;
+			}
+		}
 		
 		/*
 		 * Fonction pour récupérer la correspondance d'une chaine de caractère dans une langue donnée
@@ -695,6 +811,7 @@ class DBConnection_mdl extends CI_Model
 		
 			
 			$data=$this->db->query ( "CALL check_login('".$login."')" );
+			
 			mysqli_next_result( $this->db->conn_id );
 			$result=$data->row_array();
 			if($result['number']>0){
@@ -771,5 +888,85 @@ class DBConnection_mdl extends CI_Model
 		
 		
 		}
+		
+		
+
+		/*
+		 * Fonction pour appeler la procédure stockée qui récupère la liste d'éléments suivant les paramètres reçus
+		 * Input: $ref_table_config: le nom donné à le stucture de la table à récuperer
+		 * 		$val: contien un critère de recherche di il y en a si non contient '_'
+		 * 		$page : retourner le liste à partir de quel element?
+		 * 		$rec_per_page : nombre d'elements à recupérer
+		 * 		$extra_condition : autre critères de recherche
+		 *
+		 */
+		
+		function get_list_mdl($ref_table_config,$val='_',$page=0,$rec_per_page=0,$extra_condition=''){
+		
+			$current_operation=	$ref_table_config['current_operation'];
+			
+			
+			$stored_procedure=$ref_table_config['operations'][$current_operation]['data_source'];
+			$extra_parameters="";
+			if(!empty($ref_table_config['operations'][$current_operation]['conditions'])){
+				foreach ($ref_table_config['operations'][$current_operation]['conditions'] as $key_cond => $condition) {
+					
+					if(!$condition['add_on_generation']){
+						
+						$extra_parameters.=" , '".$condition['value']."'";
+				
+					}
+				}
+			}
+			
+			
+			$config=$ref_table_config['config_label'];
+				
+			if(!admin_config($config)){
+				$this->db2 = $this->load->database(project_db(), TRUE);
+			}
+				
+				
+			if($val!='_'){
+				$search=$val;
+			}else{
+				$search="";
+			}
+				
+			if(admin_config($config)){
+				$data=$this->db->query ( "CALL ".$stored_procedure."(0,0,'".$search."' ".$extra_parameters.") " );
+				mysqli_next_result( $this->db->conn_id );
+		
+			}else{
+				$data=$this->db2->query ( "CALL ".$stored_procedure."(0,0,'".$search."' ".$extra_parameters.") " );
+				mysqli_next_result( $this->db2->conn_id );
+			}
+				
+				
+			$result['nombre']=$data->num_rows();
+		
+				
+			if($rec_per_page==0){
+				$rec_per_page=$this->config->item('rec_per_page');
+			}elseif($rec_per_page==-1){
+				$rec_per_page=0;
+			}
+				
+			if(admin_config($config)){
+				$data=$this->db->query ( "CALL ".$stored_procedure."(".$page.",".$rec_per_page.",'".$search."' ".$extra_parameters.") " );
+				mysqli_next_result( $this->db->conn_id );
+			}else{
+				$data=$this->db2->query ( "CALL ".$stored_procedure."(".$page.",".$rec_per_page.",'".$search."' ".$extra_parameters.") " );
+				mysqli_next_result( $this->db2->conn_id );
+			}
+				
+			$result['list']=$data->result_array();
+				
+		
+			return $result;
+		
+		}
+		
+		
 	
 }

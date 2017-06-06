@@ -56,8 +56,8 @@
                               <?php 
                               echo anchor('manager/set_project/'.$value['project_id'],' &nbsp &nbsp <i class="fa fa-paper-plane"></i> ','title="'.lng_min('Go to the project').'"');
                               if(is_project_creator($value['project_label']) or has_usergroup(1)){
-                              echo anchor('manager/display_element/project/'.$value['project_id'],'  &nbsp &nbsp <i class="fa fa-folder"></i>','title="'.lng_min('View').'"');
-                              echo anchor('manager/edit_element/project/'.$value['project_id'],' &nbsp &nbsp <i class="fa fa-pencil"></i>','title="'.lng_min('Edit').'"');
+                              echo anchor('op/display_element/detail_project/'.$value['project_id'],'  &nbsp &nbsp <i class="fa fa-folder"></i>','title="'.lng_min('View').'"');
+                              echo anchor('op/edit_element/edit_project/'.$value['project_id'],' &nbsp &nbsp <i class="fa fa-pencil"></i>','title="'.lng_min('Edit').'"');
                               echo anchor('install/remove_project_validation/'.$value['project_id'],' &nbsp &nbsp <i class="fa fa-trash-o"></i>','title="'.lng_min('Uninstall').'"');
                               }
                               ?>

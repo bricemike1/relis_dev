@@ -36,15 +36,38 @@
                            <form class="form-horizontal" method="post" action="../../relis/manager/import_papers_save_csv" enctype="multipart/form-data">
                         <?php 
                          
-                       
-                        echo dropdown_form_bm('Paper title *','paper_title','paper_title',$csv_fields);
+                       foreach ($paper_config_fields as $key => $value) {
+                       	if(!empty($value['mandatory'])){
+                       		echo dropdown_form_bm($value['title'].' *',$key,$key,$csv_fields);
+                       	}                       	
+                       	else{
+                       		echo dropdown_form_bm($value['title'],$key,$key,$csv_fields_opt,'zz');
+                       	}
+                       	
+                       }
+                  /*      echo dropdown_form_bm('Paper title *','paper_title','paper_title',$csv_fields);
                         echo dropdown_form_bm('Link','paper_link','paper_link',$csv_fields_opt,'zz');
                         echo dropdown_form_bm('Abstract','paper_abstract','paper_abstract',$csv_fields_opt,'zz');
                         echo dropdown_form_bm('Key words','paper_key','paper_key',$csv_fields_opt,'zz');
-                        echo dropdown_form_bm('Authors','paper_author','paper_author',$csv_fields_opt,'zz');
-                        echo input_form_bm('Start import from row ','paper_start_from','paper_start_from','2');
-                        echo form_hidden(array( 'data_array' => isset($json_values)?$json_values:''));
-                     
+                        
+                       
+                        
+                        */
+                       echo '<div class="ln_solid"></div>';
+                       echo form_hidden(array( 'data_array' => isset($json_values)?$json_values:''));
+                       echo input_form_bm('Start import from row ','paper_start_from','paper_start_from','2');
+                       
+                       if(!empty($source_papers)){
+                       		
+                       		echo dropdown_form_bm('Papers source','papers_sources','papers_sources',$source_papers);
+                       }
+                       
+                        
+                       if(!empty($search_strategy)){
+                       	 
+                       	echo dropdown_form_bm('Search strategy used','search_strategy','search_strategy',$search_strategy);
+                       }
+                        
                      ?>
                       <div class="ln_solid"></div>
                       <div class="form-group">

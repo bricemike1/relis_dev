@@ -1206,11 +1206,13 @@ class Install extends CI_Controller {
 		$data['left_menu_admin']=True;
 		$data['array_success']=array();
 
-		$detail_project=$this->DBConnection_mdl->get_row_details ( 'project',$project_id);
-		
+		//$detail_project=$this->DBConnection_mdl->get_row_details ( 'project',$project_id);
+		$detail_project=$this->DBConnection_mdl->get_row_details ( 'get_project_detail',$project_id,true );
+			
 		//print_test($detail_project); exit;
-		$res=$this->DBConnection_mdl->remove_element($project_id,'project');
-
+		//$res=$this->DBConnection_mdl->remove_element($project_id,'project');
+		$res=$this->DBConnection_mdl->remove_element($project_id,'remove_project',True);
+		
 		/*
 		 * Message de confirmation ou erreur
 		 */

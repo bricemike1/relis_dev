@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Manager extends CI_Controller {
+class Op extends CI_Controller {
 
 	function __construct()
 	{
@@ -16,9 +16,14 @@ class Manager extends CI_Controller {
 	 * 			$val : valeur de recherche si une recherche a été faite sur la table en cours
 	 * 			$page: la page affiché : ulilisé dans la navigation
 	 */
-	public function entity_list($ref_table,$val = "_", $page = 0 ,$dynamic_table=0){
-	
-	
+	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=0){
+			
+		$op=check_operation($operation_name,'List');
+		
+		
+		
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
 		/*
 		 * Vérification si il y a une condition de recherche
 		 */
@@ -38,7 +43,7 @@ class Manager extends CI_Controller {
 			/*
 			 * mis à jours de l'url en ajoutant la valeur recherché dans le lien puis rechargement de l'url
 			 */
-			$url = "manager/entity_list/" . $ref_table ."/". $val ."/0/";
+			$url = "op/entity_list/" . $operation_name ."/". $val ."/0/";
 	
 			redirect ( $url );
 		}
@@ -46,9 +51,9 @@ class Manager extends CI_Controller {
 		/*
 		 * Récupération de la configuration(structure) de la table à afficher
 		 */
-		$ref_table_config=get_table_config($ref_table);
+		$ref_table_config=get_table_configuration($ref_table);
 		
-	
+		//print_test($ref_table_config);
 		$table_id=$ref_table_config['table_id'];
 	
 		
@@ -59,15 +64,10 @@ class Manager extends CI_Controller {
 		 */
 		$rec_per_page=($dynamic_table)?-1:0;
 		
-		if($ref_table=="str_mng"){ //pour le string_management une fonction spéciale
-			//todo verifier comment le spécifier dans config
-	
-			$data=$this->DBConnection_mdl->get_list_str_mng($ref_table_config,$val,$page,$rec_per_page,$this->session->userdata('active_language'));
-				
-		}else{
-			
-			$data=$this->DBConnection_mdl->get_list($ref_table_config,$val,$page,$rec_per_page);
-		}
+		
+		$ref_table_config['current_operation']=$ref_table_operation;
+		$data=$this->DBConnection_mdl->get_list_mdl($ref_table_config,$val,$page,$rec_per_page);
+		
 	
 		//print_test($data);
 	
@@ -78,27 +78,31 @@ class Manager extends CI_Controller {
 		
 		
 		$dropoboxes=array();
-		foreach ($ref_table_config['fields'] as $k => $v) {
-	
-			if(!empty($v['input_type']) AND $v['input_type']=='select' AND $v['on_list']=='show'){
-				
-				
-				if($v['input_select_source']=='array'){
-					$dropoboxes[$k]=$v['input_select_values'];
-				}elseif($v['input_select_source']=='table'){
-				//print_test($v);
-					$dropoboxes[$k]= $this->manager_lib->get_reference_select_values($v['input_select_values']);
-					
-				}elseif($v['input_select_source']=='yes_no'){
-					$dropoboxes[$k]=array('0'=>"No",
-										'1'=>"Yes"
-					);
-				}
+		foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k_field => $v) {
+			if(!empty($ref_table_config['fields'][$k_field])){
+					$field_det=$ref_table_config['fields'][$k_field];
+					if(!empty($field_det['input_type']) AND $field_det['input_type']=='select' ){
+						
+						
+						if($field_det['input_select_source']=='array'){
+							//print_test($v);
+							$dropoboxes[$k_field]=$field_det['input_select_values'];
+						}elseif($field_det['input_select_source']=='table'){
+						//print_test($v);
+							$dropoboxes[$k_field]= $this->manager_lib->get_reference_select_values($field_det['input_select_values']);
+							
+						}elseif($v['input_select_source']=='yes_no'){
+							$dropoboxes[$k_field]=array('0'=>"No",
+												'1'=>"Yes"
+							);
+						}
+					}
 			}
-			
 		}
 		
-	
+		//print_test($dropoboxes);
+		
+		//exit;
 	
 		/*
 		 * Vérification des liens (links) a afficher sur la liste
@@ -108,9 +112,10 @@ class Manager extends CI_Controller {
 		$list_links=array();
 		$add_link = false;
 		$add_link_url="";
-		foreach ($ref_table_config['links'] as $link_type => $link) {
-			if(!empty($link['on_list'])){
-				{
+		
+		
+		foreach ($ref_table_config['operations'][$ref_table_operation]['list_links'] as $link_type => $link) {
+			
 					$link['type']=$link_type;
 		
 						
@@ -122,17 +127,7 @@ class Manager extends CI_Controller {
 					$push_link=false;
 					
 					switch ($link_type) {
-						case 'add':
-							
-							$add_link=true; //will appear as a top button
-							
-							if(empty($link['url']))
-								$add_link_url='manager/add_element/' . $ref_table;
-							else
-								$add_link_url=$link['url'];
-							
-						break;
-						
+											
 						case 'view':
 							if(!isset($link['icon']))
 								$link['icon']='folder';
@@ -140,7 +135,7 @@ class Manager extends CI_Controller {
 									
 									
 								if(empty($link['url']))
-									$link['url']='manager/display_element/' . $ref_table.'/';
+									$link['url']='op/display_element/' . $ref_table.'/';
 										
 									
 									$push_link=true;
@@ -154,7 +149,7 @@ class Manager extends CI_Controller {
 								
 							
 							if(empty($link['url']))
-								$link['url']='manager/edit_element/' . $ref_table.'/';
+								$link['url']='op/edit_element/' . $ref_table.'/';
 						
 								$push_link=true;
 						break;
@@ -167,7 +162,7 @@ class Manager extends CI_Controller {
 							
 						
 							if(empty($link['url']))
-								$link['url']='manager/delete_element/' . $ref_table.'/';
+								$link['url']='op/delete_element/' . $ref_table.'/';
 						
 								$push_link=true;
 						break;
@@ -179,7 +174,7 @@ class Manager extends CI_Controller {
 						
 							if(!empty($link['url'])){
 								
-								$link['url']='manager/add_element_child/'.$link['url']."/". $ref_table."/";
+								$link['url']='op/add_element_child/'.$link['url']."/". $ref_table."/";
 								
 								$push_link=true;
 							}
@@ -195,8 +190,7 @@ class Manager extends CI_Controller {
 					array_push($list_links, $link);
 						
 						
-				}
-			}
+				
 				
 		}
 	
@@ -212,15 +206,18 @@ class Manager extends CI_Controller {
 		 */
 		$field_list=array();
 		$field_list_header=array();
-		foreach ($ref_table_config['fields'] as $k => $v) {
-		
-			if( $v['on_list']=='show'){
+		foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k => $v) {
+			//print_test($k);
+			//print_test($v);
+			if(!empty($ref_table_config['fields'][$k])){
+				//$field_det=$ref_table_config['fields'][$k];
+			
 		
 				array_push($field_list, $k);
-				array_push($field_list_header, $v['field_title']);
+				array_push($field_list_header, $ref_table_config['fields'][$k]['field_title']);
 		
+			
 			}
-		
 		}
 		//print_test($field_list);
 		$i=1;
@@ -230,9 +227,12 @@ class Manager extends CI_Controller {
 			
 			$element_array=array();
 			foreach ($field_list as $key_field=> $v_field) {
+				//print_test($v_field);
 				if(isset($value[$v_field])){
 					if(isset($dropoboxes[$v_field][$value[$v_field]]) ){
 						$element_array[$v_field]=$dropoboxes[$v_field][$value[$v_field]];
+					}elseif(empty($value[$v_field])){
+						$element_array[$v_field]="";
 					}else{
 						$element_array[$v_field]=$value[$v_field];
 					}
@@ -342,35 +342,29 @@ class Manager extends CI_Controller {
 		 */
 		
 		$data ['top_buttons']="";
-		if($ref_table=="str_mng"){  //todo à corriger
-			if($this->session->userdata('language_edit_mode')=='yes'){
-				$data ['top_buttons'] .= get_top_button ( 'all', 'Close edition mode', 'config/update_edition_mode/no','Close edition mode','fa-ban','',' btn-warning ' );
-			}else{
-				$data ['top_buttons'] .= get_top_button ( 'all', 'Open edition mode', 'config/update_edition_mode/yes','Open edition mode','fa-check','',' btn-dark ' );
-			}
-		}else{
-			if($add_link)
-				$data ['top_buttons'] .= get_top_button ( 'add', 'Add new', $add_link_url);
-		}
+		//if($ref_table=="str_mng"){  //todo à corriger
+		//	if($this->session->userdata('language_edit_mode')=='yes'){
+		//		$data ['top_buttons'] .= get_top_button ( 'all', 'Close edition mode', 'config/update_edition_mode/no','Close edition mode','fa-ban','',' btn-warning ' );
+		//	}else{
+		//		$data ['top_buttons'] .= get_top_button ( 'all', 'Open edition mode', 'config/update_edition_mode/yes','Open edition mode','fa-check','',' btn-dark ' );
+		//	}
+		//}else{
+		//	if($add_link)
+		//		$data ['top_buttons'] .= get_top_button ( 'add', 'Add new', $add_link_url);
+		//}
 		
 		
-		if(activate_update_stored_procedure())
-		$data ['top_buttons'] .= get_top_button ( 'all', 'Update stored procedure', 'home/update_stored_procedure/'.$ref_table,'Update stored procedure','fa-check','',' btn-dark ' );
 		
-		if($this->session->userdata('working_perspective')=='class'){
-		
-		$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'home' );
-		}else{
-			$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'home/screening' );
-		}
-	
+	//	
+		if(!empty($ref_table_config['operations'][$ref_table_operation]['top_links']))
+		$data ['top_buttons']=$this->create_top_buttons($ref_table_config['operations'][$ref_table_operation]['top_links']);
 		/*
 		 * Titre de la page
 		 */
-		if(isset($ref_table_config['entity_title']['list'])){
-			$data['page_title']=lng($ref_table_config['entity_title']['list']);
+		if(isset($ref_table_config['operations'][$ref_table_operation]['page_title'] )){
+			$data['page_title']=lng($ref_table_config['operations'][$ref_table_operation]['page_title']);
 		}else{
-			$data ['page_title'] = lng("List of ".$ref_table_config['reference_title']);
+			$data ['page_title'] = lng("List of ".$ref_table_config['entity_label']);
 		}
 	
 		/*
@@ -400,6 +394,11 @@ class Manager extends CI_Controller {
 		}else{
 			$data['page']='general/list_dt';
 		}
+		
+	if(!empty($ref_table_config['operations'][$ref_table_operation]['page_template'] )){
+			
+		$data['page']=$ref_table_config['operations'][$ref_table_operation]['page_template'];
+		}
 	
 		if(admin_config($ref_table))
 			$data['left_menu_admin']=True;
@@ -420,9 +419,11 @@ class Manager extends CI_Controller {
 	 *
 	 */
 	
-	public function display_element($ref_table,$ref_id,$allow_redirect="yes") {
+	public function display_element($operation_name,$ref_id,$allow_redirect="yes") {
 	
-		
+		$op=check_operation($operation_name,'Detail');
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
 		// todo correction gestion des utilisateurs
 		if(admin_config($ref_table))
 			$data['left_menu_admin']=True;
@@ -435,7 +436,7 @@ class Manager extends CI_Controller {
 			 */
 			if($ref_table=='papers' AND $allow_redirect=='yes'){
 					
-				redirect('relis/manager/display_paper/'.$ref_id);
+				//redirect('relis/manager/display_paper/'.$ref_id);
 			}elseif($ref_table=='classification' AND $allow_redirect=='yes'){
 					
 				$paper_id=$this->DBConnection_mdl->get_classification_paper($ref_id);
@@ -450,19 +451,27 @@ class Manager extends CI_Controller {
 				redirect('home');
 			}
 	
+			//print_test($op);
+			
+			$table_config=get_table_configuration($ref_table);
+			
+			$table_config['current_operation']=$ref_table_operation;
+		//	exit;
+			
 			
 			/*
 			 * Appel de la fonction  récupérer la ligne à afficher
 			 */
-			$item_data = $this->manager_lib->get_element_detail($ref_table,$ref_id);
+			$item_data = $this->manager_lib->get_detail($table_config,$ref_id);
+			
 			$data['item_data']=$item_data;
 	
-			
+			//print_test($data);exit;
 			/*
 			 * Récupération de la configuration(structure) de la table de l'élément
 			 */
 		
-			$table_config=get_table_config($ref_table);
+		//	$table_config=get_table_configuration($ref_table);
 	
 	
 	
@@ -471,45 +480,30 @@ class Manager extends CI_Controller {
 			 */
 			$data ['top_buttons']="";
 			
-			if(!empty(	$table_config['links']['add_child']['url']) AND !empty($table_config['links']['add_child']['on_view'])  AND ($table_config['links']['add_child']['on_view']== True) ){
-					
-				$data ['top_buttons'] .= get_top_button ( 'all', $table_config['links']['add_child']['title'], 'manager/add_element_child/'.$table_config['links']['add_child']['url']."/". $ref_table.'/'.$ref_id ,$table_config['links']['add_child']['label'] )." ";
-					
-			}
+		
+			//$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
 	
-			if(!empty(	$table_config['links']['edit']) AND !empty($table_config['links']['edit']['on_view'])  AND ($table_config['links']['edit']['on_view']== True) ){
-	
-				$pre_url=isset($table_config['links']['edit']['url'])?$table_config['links']['edit']['url']:'manager/edit_element/'. $ref_table.'/';
-				$data ['top_buttons'] .= get_top_button ( 'edit', $table_config['links']['edit']['title'], $pre_url .$ref_id )." ";
-	
-			}
-	
-			if(!empty(	$table_config['links']['delete']) AND !empty($table_config['links']['delete']['on_view'])  AND ($table_config['links']['delete']['on_view']== True) ){
-				if($ref_table=='project'){
-					$data ['top_buttons'] .= get_top_button ( 'delete', $table_config['links']['delete']['title'], 'install/remove_project_validation/' .$ref_id )." ";
-						
-				}else{
-					
-					$pre_url=isset($table_config['links']['delete']['url'])?$table_config['links']['delete']['url']:'manager/delete_element/';
-					$data ['top_buttons'] .= get_top_button ( 'delete', $table_config['links']['delete']['title'], $pre_url . $ref_table.'/'.$ref_id )." ";
-				}
-			}
-			$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
-	
-	
+			if(!empty($table_config['operations'][$ref_table_operation]['top_links']))
+				$data ['top_buttons']=$this->create_top_buttons($table_config['operations'][$ref_table_operation]['top_links'],$ref_id);
+			
 			/*
 			 * Titre de la page
 			 */
 			
-			if(isset($table_config['entity_title']['view'])){
-				$data['page_title']=lng($table_config['entity_title']['view']);
+			if(isset($table_config['operations'][$ref_table_operation]['page_title'] )){
+				$data['page_title']=lng($table_config['operations'][$ref_table_operation]['page_title']);
 			}else{
-			$data ['page_title'] = lng($table_config['reference_title_min']);
-				}
+				$data ['page_title'] = lng("List of ".$table_config['entity_label']);
+			}
 			/*
 			 * La vue qui va s'afficher
-			 */
-			$data ['page'] = 'general/display_element';
+			 */	
+				$data ['page'] = 'general/display_element';
+				if(!empty($table_config['operations'][$ref_table_operation]['page_template'] )){
+						
+					$data['page']=$table_config['operations'][$ref_table_operation]['page_template'];
+				}
+		
 	
 			/*
 			 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
@@ -532,12 +526,17 @@ class Manager extends CI_Controller {
 	 * 			$operation: type de l'opération ajout (new) ou modification(edit)
 	 * 			$display_type: indique comment le formulaire va être afficher normal ou modal(pop- up)
 	 */
-	public function add_element($ref_table, $data = "", $operation ='new',$display_type="normal") {
-	
+	public function add_element($operation_name, $data = "", $operation ='new',$display_type="normal",$op_type="Add") {
+		
+		$op=check_operation($operation_name,$op_type);
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
 		if($ref_table=='papers'){//Use bibler for papers management
 				
-			redirect("relis/bibler/add_paper");
+			//redirect("relis/bibler/add_paper");
 		}
+		
+		
 		
 		if(admin_config($ref_table))
 			$data['left_menu_admin']=True;
@@ -550,52 +549,68 @@ class Manager extends CI_Controller {
 			/*
 			 * Récupération de la configuration(structure) de la table concerné
 			 */
-			$table_config=get_table_config($ref_table);
+			
+			
+			$table_config=get_table_configuration($ref_table);
 			//print_test($table_config);
 			$table_config['config_id']=$ref_table;
-	
+			$table_config['current_operation']=$ref_table_operation;
 			$type_op=$operation=='new'?"on_add":"on_edit";
 	
 	
 			/*
 			 * récupération des valeurs qui vont apparaitres dans les dropdown boxes
 			 */
-			foreach ($table_config['fields'] as $k => $v) {
-	
-				if(!empty($v['input_type']) AND $v['input_type']=='select'){
-					if($v['input_select_source']=='table' AND ($v[$type_op]=='enabled' OR $v[$type_op]=='disabled')){
-							
-							
-						if(isset($table_config['fields'][$k]['multi-select']) AND $table_config['fields'][$k]['multi-select']=='Yes' )
-						{
-							$table_config['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+			foreach ($table_config['operations'][$ref_table_operation]['fields'] as $k => $v_field) {
+				if(!empty($table_config['fields'][$k])){
+					$v=$table_config['fields'][$k];
+					if(!empty($v['input_type']) AND $v['input_type']=='select'){
+						if($v['input_select_source']=='table'){
 								
 								
-						}else{
-							$table_config['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
-								
+							if(isset($table_config['fields'][$k]['multi-select']) AND $table_config['fields'][$k]['multi-select']=='Yes' )
+							{
+								$table_config['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+									
+									
+							}else{
+								$table_config['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
+									
+							}
 						}
 					}
-				}
-					
+				}	
 			}
-	
+			
 			
 			/*
 			 * Prépartions des valeurs qui vont apparaitres dans le formulaire
 			 */
-			$title_append=$table_config['reference_title_min'];
+		//	$title_append=$table_config['reference_title_min'];
 			
 			$data['table_config']=$table_config;
+			
+			//print_test($data);
+					
+			//		exit;
 	
-	
+					
+			$data['save_function']=isset($table_config['operations'][$ref_table_operation]['save_function']) ? $table_config['operations'][$ref_table_operation]['save_function']:'op/save_element';
+					
 			/*
 			 * Titre de la page
 			 */
-			if ($operation == 'new') {
+			
+			if(isset($table_config['operations'][$ref_table_operation]['page_title'] )){
+				$data['page_title']=lng($table_config['operations'][$ref_table_operation]['page_title']);
+			}else{
+				$data ['page_title'] = lng("List of ".$table_config['entity_label']);
+			}
+			
+		/*	if ($operation == 'new') {
 				// La fonction qui va traiter l'enregistrement dans la DB;
 					
-				$data['save_function']=isset($table_config['save_new_function']) ? $table_config['save_new_function']:'manager/save_element';
+				//$data['save_function']=isset($table_config['save_new_function']) ? $table_config['save_new_function']:'manager/save_element';
 					
 				if(isset($table_config['entity_title']['add'])){
 					$data['page_title']=lng($table_config['entity_title']['add']);
@@ -603,28 +618,41 @@ class Manager extends CI_Controller {
 					$data ['page_title'] = lng('Add '.$title_append);
 				}
 			} else {
-				$data['save_function']=isset($table_config['save_edit_function']) ? $table_config['save_edit_function']:'manager/save_element';
+				//$data['save_function']=isset($table_config['save_edit_function']) ? $table_config['save_edit_function']:'manager/save_element';
 				if(isset($table_config['entity_title']['edit'])){
 					$data['page_title']=lng($table_config['entity_title']['edit']);
 				}else{
 					$data ['page_title'] = lng('Edit '.$title_append);
 				}
 			}
-	
+
+			*/
+			if(!empty($table_config['operations'][$ref_table_operation]['redirect_after_save'])){
+				$after_save_redirect=$table_config['operations'][$ref_table_operation]['redirect_after_save'];
+			}else{
+				$after_save_redirect="home";
+			}
+			
+			$this->session->set_userdata('after_save_redirect',$after_save_redirect);
+			
 			$data['operation_type']=$operation;
 	
 			/*
 			 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
 			 */
-			$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
-	
+			//$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+			$data ['top_buttons']=$this->create_top_buttons($table_config['operations'][$ref_table_operation]['top_links']);
+			
 	
 			/*
 			 * La vue qui va s'afficher
 			 */
-			$data ['page'] = 'general/frm_reference';
+			$data ['page'] = 'general/frm_entity';
 	
-			
+			if(!empty($table_config['operations'][$ref_table_operation]['page_template'] )){
+					
+				$data['page']=$table_config['operations'][$ref_table_operation]['page_template'];
+			}
 			/*
 			 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 			 */
@@ -657,58 +685,60 @@ class Manager extends CI_Controller {
 	}
 	
 	
-	public function add_element_child($ref_table_child,$child_field,$ref_table_parent,$parent_id, $data = "",$operation="new",$display_type="normal") {
+	//public function add_element_child($operation_name,$child_field,$ref_table_parent,$parent_id, $data = "",$operation="new",$display_type="normal") {
+	public function add_element_child($operation_name,$parent_id, $data = "",$operation="new",$display_type="normal") {
+		
+		$op=check_operation($operation_name,'AddChild');
+		$ref_table_child=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+		
+		
 		if(admin_config($ref_table_child))
 			$data['left_menu_admin']=True;
 		/*
 		 * chargement de la manière d'affichage du formulaire
 		 */
 		$this->session->set_userdata('submit_mode',$display_type);
-	
+		
 	
 		/*
 		 * Récupération de la configuration(structure) de la table enfant
 		 */
-		$table_config_child=get_table_config($ref_table_child);
+		$table_config_child=get_table_configuration($ref_table_child);
+		
+		$table_config_child['current_operation']=$ref_table_operation;
+		//print_test($table_config_child['operations'][$ref_table_operation]); exit;
+		$child_field=$table_config_child['operations'][$ref_table_operation]['master_field'];
+		$ref_table_parent=$table_config_child['operations'][$ref_table_operation]['parent_config'];
+		
+		
 		$table_config_child['config_id']=$ref_table_child;
-		$table_config_parent=get_table_config($ref_table_parent);
-	
 		
 		
-		$table_config_child['fields'][$child_field]['on_add']="hidden";
-		$table_config_child['fields'][$child_field]['on_edit']="hidden";
-		$table_config_child['fields'][$child_field]['input_type']="text";
-	
-	
-	
-		/*
-		 * récupération des valeurs qui vont apparaitre dans les champs select
-		 */
-	
-		//print_test($table_config_parent);
 		
-		foreach ($table_config_child['fields'] as $k => $v) {
-	
-			if(!empty($v['input_type']) AND $v['input_type']=='select'){
-				//	print_test($v);
-				if($v['input_select_source']=='table'){
-					if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
-					{
-						$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
-							
-							
-					}else{
-						$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values']);
+			
+		
+		
+		foreach ($table_config_child['operations'][$ref_table_operation]['fields'] as $k => $v_field) {
+			if(!empty($table_config_child['fields'][$k])){
+				$v=$table_config_child['fields'][$k];
+				if(!empty($v['input_type']) AND $v['input_type']=='select'){
+					if($v['input_select_source']=='table'){
+		
+		
+						if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
+						{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+								
+								
+						}else{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
+								
+						}
 					}
-						
 				}
-	
 			}
-				
-				
 		}
-	
-		
 		
 	
 		/*
@@ -728,24 +758,35 @@ class Manager extends CI_Controller {
 		
 		 */
 		
-		if(isset($table_config_parent['entity_title']['add_child'])){
-			$data['page_title']=lng($table_config_parent['entity_title']['add_child']);
+		if(isset($table_config_child['operations'][$ref_table_operation]['page_title'] )){
+			$data['page_title']=lng($table_config_child['operations'][$ref_table_operation]['page_title']);
 		}else{
-			$data ['page_title'] = lng('Add '.$table_config_child['reference_title_min']);
+			$data ['page_title'] = lng("Add ".$table_config_child['entity_label']);
 		}
-		
 	
 	
 		/*
 		 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
 		 */
-		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
-	
+		$data ['top_buttons']=$this->create_top_buttons($table_config_child['operations'][$ref_table_operation]['top_links']);
+			
+		if(!empty($table_config_child['operations'][$ref_table_operation]['redirect_after_save'])){
+			$after_save_redirect=$table_config_child['operations'][$ref_table_operation]['redirect_after_save'];
+			$after_save_redirect=str_replace('~current_element~', $parent_id, $after_save_redirect);
+		}else{
+			$after_save_redirect="home";
+		}
+			
+		$this->session->set_userdata('after_save_redirect',$after_save_redirect);
 		/*
 		 * La vue qui va s'afficher
 		 */
-		$data ['page'] = 'general/frm_reference';
-	//print_test($data);
+		$data ['page'] = 'general/frm_entity';
+		
+		if(!empty($table_config_child['operations'][$ref_table_operation]['page_template'] )){
+				
+			$data['page']=$table_config_child['operations'][$ref_table_operation]['page_template'];
+		}
 	
 		/*
 		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
@@ -757,6 +798,108 @@ class Manager extends CI_Controller {
 		}
 	}
 	
+	
+	
+	
+	public function add_element_child_old($ref_table_child,$child_field,$ref_table_parent,$parent_id, $data = "",$operation="new",$display_type="normal") {
+		if(admin_config($ref_table_child))
+			$data['left_menu_admin']=True;
+			/*
+			 * chargement de la manière d'affichage du formulaire
+			 */
+			$this->session->set_userdata('submit_mode',$display_type);
+	
+	
+			/*
+			 * Récupération de la configuration(structure) de la table enfant
+			 */
+			$table_config_child=get_table_config($ref_table_child);
+			$table_config_child['config_id']=$ref_table_child;
+			$table_config_parent=get_table_config($ref_table_parent);
+	
+	
+	
+			$table_config_child['fields'][$child_field]['on_add']="hidden";
+			$table_config_child['fields'][$child_field]['on_edit']="hidden";
+			$table_config_child['fields'][$child_field]['input_type']="text";
+	
+	
+	
+			/*
+			 * récupération des valeurs qui vont apparaitre dans les champs select
+			 */
+	
+			//print_test($table_config_parent);
+	
+			foreach ($table_config_child['fields'] as $k => $v) {
+	
+				if(!empty($v['input_type']) AND $v['input_type']=='select'){
+					//	print_test($v);
+					if($v['input_select_source']=='table'){
+						if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
+						{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+								
+								
+						}else{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values']);
+						}
+	
+					}
+	
+				}
+	
+	
+			}
+	
+	
+	
+	
+			/*
+			 * Prépartions des valeurs qui vont apparaitres dans le formulaire
+			 */
+			$data['content_item'][$child_field]=$parent_id;
+			$data['table_config']=$table_config_child;
+			$data['operation_type']=$operation;
+			$data['operation_source']="parent";
+			$data['child_field']=$child_field;
+			$data['table_config_parent']=$ref_table_parent;
+			$data['parent_id']=$parent_id;
+	
+	
+			/*
+			 * Titre de la page
+	
+			 */
+	
+			if(isset($table_config_parent['entity_title']['add_child'])){
+				$data['page_title']=lng($table_config_parent['entity_title']['add_child']);
+			}else{
+				$data ['page_title'] = lng('Add '.$table_config_child['reference_title_min']);
+			}
+	
+	
+	
+			/*
+			 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
+			 */
+			$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+	
+			/*
+			 * La vue qui va s'afficher
+			 */
+			$data ['page'] = 'general/frm_reference';
+			//print_test($data);
+	
+			/*
+			 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+			 */
+			if($display_type=='modal'){
+				$this->load->view ( 'general/frm_reference_modal', $data );
+			}else{
+				$this->load->view ( 'body', $data );
+			}
+	}
 	
 	/*
 	 * spécialisation de la fonction add_ref_drilldown lorsque le formulaire s'affiche en pop up
@@ -777,8 +920,18 @@ class Manager extends CI_Controller {
 	 * 			$operation: type de l'opération ajout (new) ou modification(edit)
 	 * 			$display_type: indique comment le formulaire va être afficher normal ou modal(pop- up)
 	 */
-	public function add_element_drilldown($ref_table_child,$ref_table_parent,$parent_field,$parent_id, $data = "",$operation="new",$display_type="normal") {
+	
+	public function add_element_drilldown($operation_name,$parent_id, $data = "",$operation="new",$display_type="normal",$op_type="AddDrill") {
 		
+		$op=check_operation($operation_name,$op_type);
+		$ref_table_child=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+		
+		if(admin_config($ref_table_child))
+			$data['left_menu_admin']=True;
+		//print_test($op);
+		//print_test($data);
+		//exit;
 		/*
 		 * chargement de la manière d'affichage du formulaire
 		 */
@@ -788,14 +941,19 @@ class Manager extends CI_Controller {
 		/*
 		 * Récupération de la configuration(structure) de la table enfant
 		 */
-		$table_config_child=get_table_config($ref_table_child);
+		$table_config_child=get_table_configuration($ref_table_child);
 		$table_config_child['config_id']=$ref_table_child;
 	
-	
+		$table_config_child['current_operation']=$ref_table_operation;
+		//print_test($table_config_child['operations'][$ref_table_operation]); exit;
+		$parent_field=$table_config_child['operations'][$ref_table_operation]['master_field'];
+		$ref_table_parent=$table_config_child['operations'][$ref_table_operation]['parent_config'];
+		
+		
 		/*
 		 * Récupération de la configuration(structure) de la table parent
 		 */
-		$table_config_parent=get_table_config($ref_table_parent);
+		$table_config_parent=get_table_configuration($ref_table_parent);
 		$op_type=($operation=='new')?'on_add':'on_edit';
 	
 	
@@ -803,7 +961,7 @@ class Manager extends CI_Controller {
 		/*
 		 * récupération des valeurs qui vont apparaitre dans les champs select
 		 */
-		foreach ($table_config_child['fields'] as $k => $v) {
+		/*foreach ($table_config_child['fields'] as $k => $v) {
 	
 			if(!empty($v['input_type']) AND $v['input_type']=='select' AND ($v[$op_type]!='hidden' AND $v[$op_type]!='not_set') ){
 				if($v['input_select_source']=='table' ){
@@ -819,9 +977,28 @@ class Manager extends CI_Controller {
 				}
 			}
 	
+		}*/
+	
+		foreach ($table_config_child['operations'][$ref_table_operation]['fields'] as $k => $v_field) {
+			if(!empty($table_config_child['fields'][$k])){
+				$v=$table_config_child['fields'][$k];
+				if(!empty($v['input_type']) AND $v['input_type']=='select'){
+					if($v['input_select_source']=='table'){
+		
+		
+						if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
+						{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+		
+		
+						}else{
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
+		
+						}
+					}
+				}
+			}
 		}
-	
-	
 		
 	
 	
@@ -836,30 +1013,41 @@ class Manager extends CI_Controller {
 		$data['operation_source']="drilldown";
 		$data['parent_field']=$parent_field;
 		$data['table_config_parent']=$ref_table_parent;
-		$data['parent_id']=$parent_id;
+		
 	
 	
 	
 		/*
 		 * Titre de la page
 		 */
-		if($operation=='new')
-			$data ['page_title'] = lng('Add '.$table_config_parent['fields'][$parent_field]['field_title']);
-			else
-				$data ['page_title'] = lng('Edit '.$table_config_parent['fields'][$parent_field]['field_title']);
-	
+		if(isset($table_config_child['operations'][$ref_table_operation]['page_title'] )){
+			$data['page_title']=lng($table_config_child['operations'][$ref_table_operation]['page_title']);
+		}else{
+			$data ['page_title'] = lng($table_config_child['entity_label']);
+		}
 	
 				/*
 				 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
 				 */
-				$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
-	
-				/*
-				 * La vue qui va s'afficher
-				 */
-				$data ['page'] = 'general/frm_reference';
-	
-	
+		$data ['top_buttons']=$this->create_top_buttons($table_config_child['operations'][$ref_table_operation]['top_links']);
+			
+		if(!empty($table_config_child['operations'][$ref_table_operation]['redirect_after_save'])){
+			$after_save_redirect=$table_config_child['operations'][$ref_table_operation]['redirect_after_save'];
+			$after_save_redirect=str_replace('~current_element~', $parent_id, $after_save_redirect);
+		}else{
+			$after_save_redirect="home";
+		}
+			
+		$this->session->set_userdata('after_save_redirect',$after_save_redirect);
+		/*
+		 * La vue qui va s'afficher
+		 */
+		$data ['page'] = 'general/frm_entity';
+		
+		if(!empty($table_config_child['operations'][$ref_table_operation]['page_template'] )){
+		
+			$data['page']=$table_config_child['operations'][$ref_table_operation]['page_template'];
+		}
 				/*
 				 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 				 */
@@ -879,27 +1067,33 @@ class Manager extends CI_Controller {
 	 * $ref_id: id de l'élement
 	 * $display_type: indique comment le formulaire va être afficher normal ou modal(pop- up)
 	 */
-	public function edit_element($ref_table,$ref_id,$display_type="normal") {
+	public function edit_element($operation_name,$ref_id,$display_type="normal") {
 		
+		$op=check_operation($operation_name,'Edit');
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
 		/*
 		 * Récupération de la configuration(structure) de la table de l'element
 		 */
 		if($ref_table=='papers'){
 			
-			redirect("relis/bibler/edit_paper/".$ref_id."/");
+			///redirect("relis/bibler/edit_paper/".$ref_id."/");
 		}
-		$table_config=get_table_config($ref_table);
+		$table_config=get_table_configuration($ref_table);
 	
 	
 		/*
 		 * Appel de la fonction du model pour récupérer la ligne à modifier
 		 */
-		$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
+		//$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
+		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true);
 	
+		
 		/*
 		 * Récuperation des valeurs pour les champs multi-select
 		 */
-		foreach ($table_config['fields'] as $key => $v) {
+		foreach ($table_config['operations'][$ref_table_operation]['fields'] as $key => $v_field) {
+			$v=$table_config['fields'][$key];
 			if(!empty($v['input_type']) AND $v['input_type']=='select' AND $v['input_select_source']=='table'){
 	
 				if(!empty($v['multi-select']) AND $v['multi-select']=='Yes' )
@@ -907,7 +1101,7 @@ class Manager extends CI_Controller {
 						
 					$Tvalues_source=explode(';', $v['input_select_values']);
 	
-					$source_table_config=get_table_config($Tvalues_source[0]);
+					$source_table_config=get_table_configuration($Tvalues_source[0]);
 					$input_select_key_field=$v['input_select_key_field'];
 					$input_child_field=$Tvalues_source[1];
 	
@@ -927,11 +1121,11 @@ class Manager extends CI_Controller {
 	
 	
 		}
-	
+	//print_test($data); exit;
 		/*
 		 * Appel de la fonction d'affichage du formulaire
 		 */
-		$this->add_element ( $ref_table, $data, 'edit' ,$display_type);
+		$this->add_element ( $operation_name, $data, 'edit' ,$display_type,'Edit');
 	}
 	
 	
@@ -948,58 +1142,67 @@ class Manager extends CI_Controller {
 	 * 			$display_type: indique comment le formulaire va être afficher normal ou modal(pop- up)
 	 */
 	
-	public function edit_drilldown($ref_table,$ref_table_parent,$parent_field,$parent_id,$ref_id,$display_type="normal") {
+//	public function edit_drilldown($ref_table,$ref_table_parent,$parent_field,$parent_id,$ref_id,$display_type="normal") {
+	public function edit_drilldown($operation_name,$ref_id,$parent_id,$display_type="normal") {
+		
+		$op=check_operation($operation_name,'EditChild');
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+		
 		
 		$this->session->set_userdata('submit_mode',$display_type);
 	
 		/*
 		 * Récupération de la configuration(structure) de la table de l'element
 		 */
-		$table_config=get_table_config($ref_table);
+		
+		$table_config=get_table_configuration($ref_table);
 	
 	
 		/*
 		 * Appel de la fonction du model pour récupérer la ligne à modifier
 		 */
-		$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
-	
+	//	$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
+		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true);
+		
 	
 		/*
 		 * Récuperation des valeurs pour les champs multi-select
 		 */
-		foreach ($table_config['fields'] as $key => $v) {
+		foreach ($table_config['operations'][$ref_table_operation]['fields'] as $key => $v_field) {
+			$v=$table_config['fields'][$key];
 			if(!empty($v['input_type']) AND $v['input_type']=='select' AND $v['input_select_source']=='table'){
-	
+		
 				if(!empty($v['multi-select']) AND $v['multi-select']=='Yes' )
 				{
-						
+		
 					$Tvalues_source=explode(';', $v['input_select_values']);
-						
-					$source_table_config=$this->ref_table_config($Tvalues_source[0]);
+		
+					$source_table_config=get_table_configuration($Tvalues_source[0]);
 					$input_select_key_field=$v['input_select_key_field'];
 					$input_child_field=$Tvalues_source[1];
-	
+		
 					$extra_condition=" AND $input_select_key_field ='".$ref_id."'";
-	
+		
 					$res_values=$this->DBConnection_mdl->get_reference_select_values($source_table_config,$input_child_field,$extra_condition);
 					$data ['content_item'][$key]=array();
-	
+		
 					foreach ($res_values as $key_r => $value_r) {
 						array_push($data ['content_item'][$key], $value_r['refDesc']);
 					}
-						
+		
 				}
 			}
-	
-	
-	
-	
+		
+		
+		
+		
 		}
 	
 		/*
 		 * Appel de la fonction d'affichage du formulaire
 		 */
-		$this->add_element_drilldown($ref_table,$ref_table_parent,$parent_field,$parent_id,$data,'edit',$display_type);
+		$this->add_element_drilldown($operation_name,$parent_id,$data,'edit',$display_type,'EditChild');
 	}
 	
 	public function save_element() {
@@ -1009,13 +1212,14 @@ class Manager extends CI_Controller {
 		 */
 		$post_arr = $this->input->post ();
 		
-		//print_test($post_arr); exit;
+		
 		
 		/*
 		 * Récupération de la configuration (structure ) de la table qui est concerné
 		 */
-		$table_config= get_table_config($post_arr['table_config']);
-	
+		$table_config= get_table_configuration($post_arr['table_config']);
+		$current_operation=$post_arr['current_operation'];
+		
 		
 		if($post_arr['operation_type']=='new'){
 			$var_check="on_add";
@@ -1025,7 +1229,7 @@ class Manager extends CI_Controller {
 	
 		$operation_type=$post_arr['operation_type'];
 	
-	
+	//print_test($post_arr); exit;
 		/*
 		 * Validation du formulaire: vérification si les valeurs sont rémplis correctement
 		 */
@@ -1037,16 +1241,17 @@ class Manager extends CI_Controller {
 		$images_to_upload=array();
 		$multi_select_values=array();
 	
-		foreach ($table_config['fields'] as $key => $value) {
+		foreach ($table_config['operations'][$current_operation]['fields'] as $key => $value) {
 			$validation="trim";
-			if($value[$var_check]=='enabled'){
+			$field_info=$table_config['fields'][$key];
+			if($value['field_state']=='enabled'){
 	
 				if(!empty($value['mandatory']) AND (trim($value['mandatory'])=="mandatory") ){
-					if((isset($value['multi-select']) AND isset($value['multi-select'])=='Yes')){
+					if((isset($field_info['multi-select']) AND isset($field_info['multi-select'])=='Yes')){
 						if(empty($post_arr[$key])){
 								
 							$other_check = false;
-							$data ['err_msg'] .= " The Field '".$value['field_title']."' is required<br/>";
+							$data ['err_msg'] .= " The Field '".$field_info['field_title']."' is required<br/>";
 						}
 					}else{
 						$validation.="|required";
@@ -1054,29 +1259,30 @@ class Manager extends CI_Controller {
 						
 				}
 	
-				$this->form_validation->set_rules ( $key,'"'. $value['field_title'].'"', $validation );
+				$this->form_validation->set_rules ( $key,'"'. $field_info['field_title'].'"', $validation );
 	
 			}
 			
-			if(isset($value['input_type']) AND $value['input_type']=='email'){
+			if(isset($value['pattern']) AND $value['pattern']=='valid_email'){
 				if(!empty($post_arr[$key])){
-					$this->form_validation->set_rules($key, $value['field_title'], 'trim|valid_email');
+					$this->form_validation->set_rules($key, $field_info['field_title'], 'trim|valid_email');
 						
 				}
-			}	
-			if((isset($value['multi-select']) AND isset($value['multi-select'])=='Yes')){//multi- select
+			}
+			
+			if((isset($field_info['multi-select']) AND isset($field_info['multi-select'])=='Yes')){//multi- select
 				if(!empty($post_arr[$key])){
 					$multi_select_values[$key]['values']=$post_arr[$key];
-					$multi_select_values[$key]['config']=$value;
+					$multi_select_values[$key]['config']=$field_info;
 				}else{
 					$multi_select_values[$key]['values']=array();
-					$multi_select_values[$key]['config']=$value;
+					$multi_select_values[$key]['config']=$field_info;
 				}
 	
 			}
 				
 				
-			if(isset($value['input_type']) AND $value['input_type']=='image' AND !empty($_FILES [$key] ['name'])){
+			if(isset($field_info['input_type']) AND $field_info['input_type']=='image' AND !empty($_FILES [$key] ['name'])){
 				$post_arr[$key]="";
 			
 				if(empty($_FILES [$key] ['tmp_name'])){
@@ -1178,7 +1384,7 @@ class Manager extends CI_Controller {
 		$operation_source=$post_arr ['operation_source'];
 		$parent_id=$post_arr ['parent_id'];
 	
-	
+	//	print_test($table_config); exit;
 		if(isset($post_arr ['table_config_parent']))
 			$table_config_parent=$post_arr ['table_config_parent'];
 	
@@ -1190,8 +1396,31 @@ class Manager extends CI_Controller {
 				 */
 	
 				$data ['content_item'] = $post_arr;
+			
+				if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
+					$submit_mode='modal';
+					//$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'],'modal' );
+				}else{
+					//$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'] );
+					$submit_mode='';
+				}
+					
+				if(($table_config['operations'][$current_operation]['operation_type'])=='Add'){
+					
+					$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode );
 					
 					
+				}elseif($table_config['operations'][$current_operation]['operation_type']=='Edit'){
+					$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode ,'Edit');
+				}elseif($table_config['operations'][$current_operation]['operation_type']=='AddChild'){
+
+					$this->add_element_child ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
+					
+				}elseif($table_config['operations'][$current_operation]['operation_type']=='EditChild'){
+					$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild');
+				}
+				
+				/*
 				if($post_arr ['operation_source']=='parent' )
 				{
 	
@@ -1247,6 +1476,14 @@ class Manager extends CI_Controller {
 						$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'] );
 					}
 				}
+				
+				
+				
+			*/	
+				
+				
+				
+				
 			} else {
 			
 				/*
@@ -1290,68 +1527,17 @@ class Manager extends CI_Controller {
 					 	
 					 	$config_default=array(
 					 			'source_image'=>$image_data['full_path'],
-					 			'new_image' => FCPATH.$image_upload_path.$v_img['picture_name']."_resized.jpg",
+					 			'new_image' => FCPATH.$image_upload_path.$v_img['picture_name']."_resized.png",
 					 			'maintain_ratio' => true,
 					 			'width' => $image_default_size,
 					 			'height' => $image_default_size
 					 	);
-						/*
-					 	$config_thumb=array(
-					 			'source_image'=>$image_data['full_path'],
-					 			'new_image' => FCPATH.$image_upload_path.$v_img['picture_name']."_thumb.jpg",
-					 			'maintain_ratio' => true,
-					 			'width' => $thumb_size,
-					 			'height' => $thumb_size
-					 	);
-	
-					 	$config_medium=array(
-					 			'source_image'=>$image_data['full_path'],
-					 			'new_image' => FCPATH.$image_upload_path.$v_img['picture_name']."_med.jpg",
-					 			'maintain_ration' => true,
-					 			'width' => $medium_size,
-					 			'height' => $medium_size
-					 	);
 						
-					 
-					 	$config_big=array(
-					 			'source_image'=>$image_data['full_path'],
-					 			'new_image' => FCPATH.$image_upload_path.$v_img['picture_name']."_big.jpg",
-					 			'maintain_ration' => true,
-					 			'width' => $big_size,
-					 			'height' =>$big_size
-					 	);
-						*/
 	
 					 	$this->load->library('image_lib');
-					 	$this->image_lib->initialize($config_thumb);
-					 //	print_test($config_thumb);
-					 	 
-					 	/*
-					 	if ( ! $this->image_lib->resize())
-					 	{
-					 		die($this->image_lib->display_errors());
-					 	}
-	
-					 	$this->image_lib->clear();
-					 	 
-					 	$this->image_lib->initialize($config_medium);
-					 	 
-					 	if ( ! $this->image_lib->resize())
-					 	{
-					 		die($this->image_lib->display_errors());
-					 	}
-	
-	
-					 	$this->image_lib->clear();
-					 	 
-					 	$this->image_lib->initialize($config_big);
-					 	if ( ! $this->image_lib->resize())
-					 	{
-					 		die($this->image_lib->display_errors());
-					 	}
-					 	*/
-					 	
-					 	$this->image_lib->clear();
+					 	//$this->image_lib->initialize($config_thumb);
+					 
+					 	//$this->image_lib->clear();
 					 	 
 					 	$this->image_lib->initialize($config_default);
 					 	if ( ! $this->image_lib->resize())
@@ -1365,7 +1551,7 @@ class Manager extends CI_Controller {
 					 		
 					 	$data_img = fread($fp, filesize($res_image));
 					 		
-					 	$data_img = addslashes($data_img);
+					 	//$data_img = addslashes($data_img);
 					 		
 					 	fclose($fp);
 					 	
@@ -1396,7 +1582,24 @@ class Manager extends CI_Controller {
 					 * Si le chagement d'image de marche pas retour au formulaire d'ajout
 					 */
 					$data ['content_item'] = $post_arr;
-						
+					
+					if(($table_config['operations'][$current_operation]['operation_type'])=='Add'){
+							
+						$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode );
+							
+							
+					}elseif($table_config['operations'][$current_operation]['operation_type']=='Edit'){
+						$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode ,'Edit');
+					}elseif($table_config['operations'][$current_operation]['operation_type']=='AddChild'){
+					
+						$this->add_element_child ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
+							
+					}elseif($table_config['operations'][$current_operation]['operation_type']=='EditChild'){
+						$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild');
+					}
+				
+					
+					/*
 						
 					if($post_arr ['operation_source']=='parent' )
 					{
@@ -1420,6 +1623,8 @@ class Manager extends CI_Controller {
 	
 						$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'] );
 					}
+					
+					*/
 	
 				}else{
 	
@@ -1476,12 +1681,12 @@ class Manager extends CI_Controller {
 					$post_arr['table_name']=$table_config['table_name'];
 					$post_arr['table_id']=$table_config['table_id'];
 						
-				//	print_test($post_arr); exit;
+					//print_test($post_arr); exit;
 						
 					/*
 					 * Appel de la fonction dna le modèle pour suvegarder les données dans la BD
 					 */
-					$saved_res=$this->DBConnection_mdl->save_reference ( $post_arr,'get_id' );
+					$saved_res=$this->DBConnection_mdl->save_reference_mdl ( $post_arr,'get_id' );
 						
 					if ($saved_res) {
 	
@@ -1556,6 +1761,7 @@ class Manager extends CI_Controller {
 						 * Si le formulaire sauvegardé n'est affiché en popup on redirige vers la page d'affichage suivant l'élément enregistre
 						 */
 						$after_after_save_redirect=$this->session->userdata('after_save_redirect');
+						
 						if(!empty($after_after_save_redirect)){
 							$this->session->set_userdata('after_save_redirect','');
 							redirect($after_after_save_redirect);
@@ -1652,13 +1858,21 @@ class Manager extends CI_Controller {
 	 * Input: 	$ref_table : nom de la structure de la table ou se trouve l'élément à supprimer
 	 * 			$row_id : id de l'élément à supprimer
 	 * 			$redirect: Y/N rediriger vers la liste d'éléments
+	 * 			$source_id: element ou p'operation a debuté pour la redirection
 	 */
-	public function delete_element ($ref_table,$row_id,$redirect=true){
-	
+	public function delete_element ($operation_name,$row_id,$source_id=0){
+		
+		$op=check_operation($operation_name,'Remove');
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+		$table_configuration=get_table_configuration($ref_table);
+		
+	//	print_test($op);exit;
 		/*
 		 * Appel de la foction dans le model pour appeler la requetter  de suppression de l'élément
 		 */
-		$res=$this->DBConnection_mdl->remove_element($row_id,$ref_table);
+		//$res=$this->DBConnection_mdl->remove_element($row_id,$ref_table);
+		$res=$this->DBConnection_mdl->remove_element($row_id,$table_configuration['operations'][$ref_table_operation]['db_delete_model'],True);
 	
 	
 		/*
@@ -1675,8 +1889,45 @@ class Manager extends CI_Controller {
 		 *
 		 * Rédirection après l'opération si $redirect=true
 		 */
-		if($redirect)
-			redirect ( 'manager/entity_list/' .$ref_table  );
+		//if($redirect){
+			
+			if(!empty($table_configuration['operations'][$ref_table_operation]['redirect_after_delete'])){
+				$redirect_url=$table_configuration['operations'][$ref_table_operation]['redirect_after_delete'];
+				if(!empty($source_id)){
+					$redirect_url=str_replace('~current_element~', $source_id, $redirect_url);
+				}
+				redirect($redirect_url);
+			}else{
+				redirect ( 'home' );
+			}
+			
+	//	}
+	
+	}
+	
+	
+	
+	public function delete_drilldown ($operation_name,$child_id,$parent_id,$parent_field){
+	
+	
+		$this->delete_element($table_config_child, $child_id,FALSE);
+	
+		if($update_parrent=='yes'){
+			$parent_config=get_table_config($table_config_parent);
+	
+			$array_drill=array('operation_type'=>'edit',
+					'table_config'=> $table_config_parent,
+					'table_name'=> $parent_config ['table_name'],
+					'table_id'=> $parent_config ['table_id'],
+					$parent_config ['table_id']=> $parent_id,
+					$parent_field=> 0
+			);
+	
+			$res_drill=	$this->manage_mdl->save_reference ( $array_drill );
+	
+		}
+	
+		redirect ( 'manager/display_element/' .$table_config_parent.'/'.$parent_id  );
 	
 	}
 	
@@ -1689,19 +1940,17 @@ class Manager extends CI_Controller {
 		$this->session->set_userdata('working_perspective','class');
 		$config="project";
 		$this->session->set_userdata('project_db',FALSE);
-		$ref_table_config=get_table_configuration($config);
-		
-		$ref_table_config['current_operation']='list_projects';
+		$ref_table_config=get_table_config($config);
 	
 	
-		$data['projects']=$this->DBConnection_mdl->get_list_mdl($ref_table_config);
+	
+		$data['projects']=$this->DBConnection_mdl->get_list($ref_table_config);
 		
-		//print_test($data);
+		
 		foreach ($data['projects']['list'] as $key => $value) {
 				
 				
-			$detail_project=$this->DBConnection_mdl->get_row_details ( $ref_table_config['operations']['detail_project']['data_source'],$value['project_id'],true );
-			
+			$detail_project=$this->DBConnection_mdl->get_row_details ( $config,$value['project_id'] );
 			if(!empty($detail_project['project_icon']))
 			{
 				
@@ -2164,15 +2413,9 @@ class Manager extends CI_Controller {
 			$res_drill=	$this->manage_mdl->save_reference ( $array_drill );
 	
 		}
-		if($modal=='yes')
-		{
-			//todo à corriger
-			//redirect ( 'manager/edit_element/'.$parent_id  );
-			redirect ( 'manager/display_element/' .$table_config_parent.'/'.$parent_id  );
-		}else{
-			redirect ( 'manager/display_element/' .$table_config_parent.'/'.$parent_id  );
-		}
-	
+		
+		redirect ( 'manager/display_element/' .$table_config_parent.'/'.$parent_id  );
+		
 	}
 	
 	public function remove_picture($ref_table,$table_name,$table_id,$field,$element_id){
@@ -2183,8 +2426,7 @@ class Manager extends CI_Controller {
 		
 		$sql = "UPDATE $table_name SET $field = NULL WHERE $table_id ='".$element_id."'";
 		
-	
-		$res=$this->db->query($sql);
+		$res =	$this->manage_mdl->run_query($sql);
 		
 		if($res){
 			set_top_msg(lng_min("Success - picture removed"));
@@ -2194,7 +2436,8 @@ class Manager extends CI_Controller {
 		}
 		
 	
-			redirect ( 'manager/display_element/' .$ref_table.'/'.$element_id  );
+			//redirect ( 'op/display_element/' .$ref_table.'/'.$element_id  );
+			redirect ( 'op/display_element/' .$ref_table.'/'.$element_id  );
 		
 	}
 	
@@ -2212,6 +2455,39 @@ class Manager extends CI_Controller {
 		$data['content_item']['assignment_mode']='manualy_single';
 		//redirect("manager/add_element/assignment_screen");
 		$this->add_element('assignment_screen',$data);
+	}
+	
+	private function create_top_buttons($top_links,$current_element=0){
+		//print_test($top_links);
+		$top_buttons="";
+		foreach ($top_links as $key => $value) {
+			if(!empty($value['url'])){
+					$icon=!empty($value['icon'])?" fa-".$value['icon']." ":"";	
+					if(in_array($key,array('add','edit','close','delete','back'))){
+							$type=$key;
+						
+					}else{
+							$type="all";
+					}
+					
+					$title=!empty($value['title'])?$value['title']:"";
+					$label=!empty($value['label'])?$value['label']:"";
+					$icon=!empty($value['icon'])?$value['icon']:"";
+					$url=!empty($value['url'])?$value['url']:"";
+					if(!empty($current_element)){
+						
+						$url=str_replace('~current_element~', $current_element, $url);
+						
+					}
+					
+					
+						$top_buttons.= get_top_button ( $type, $title, $url , $label, $icon);
+			}	
+		}
+		
+		
+		return $top_buttons;
+		
 	}
 	
 	

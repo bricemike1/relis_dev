@@ -43,7 +43,7 @@ function get_venue() {
 	   	
 	   	
 	   	$fields['venue_abbreviation']=array(
-	   			'field_title'=>'Abreviation',
+	   			'field_title'=>'Abbreviation',
 	   			'field_type'=>'text',
 	   			'field_value'=>'normal',
 	   			'on_add'=>'enabled',

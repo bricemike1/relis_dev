@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('database','profiler', 'session','table','bm_lib','table_ref_lib','manage_stored_procedure_lib','user_agent','entity_config_lib','manager_lib');
+$autoload['libraries'] = array('database','profiler', 'session','table','bm_lib','table_ref_lib','manage_stored_procedure_lib','user_agent','entity_config_lib','entity_configuration_lib','manager_lib');
 
 /*
 | -------------------------------------------------------------------
@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url', 'file','form','html_bm','bm','html');
+$autoload['helper'] = array('url', 'file','form','html_bm','bm','html','operations');
 
 /*
 | -------------------------------------------------------------------

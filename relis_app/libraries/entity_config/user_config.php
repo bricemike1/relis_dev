@@ -164,19 +164,31 @@ function get_user() {
 			'multi-select' => 'Yes'
 			
 	);
-	   	$fields['user_default_lang']=array(
-	   			'field_title'=>'Default language',
+	   	$fields['created_by']=array(
+	   			'field_title'=>'Created by',
+	   			'field_type'=>'number',
+	   			'field_value'=>'active_user',
+	   			'field_size'=>11,
+	   			'input_type'=>'select',
+	   			'input_select_source'=>'table',
+	   			'input_select_values'=>'users;user_name',//the reference table and the field to be displayed
+				'mandatory'=>' mandatory ',
+				'on_add'=>'hidden',
+				'on_edit'=>'not_set',
+				'on_list'=>'show'
+	   	);
+		
+		$fields['creation_time']=array(
+	   			'field_title'=>'Creation time',
 	   			'field_type'=>'text',
 	   			'field_value'=>'normal',
-	   			'field_size'=>11,
+	   			'on_add'=>'not_set',
+	   			'on_edit'=>'not_set',
+	   			'on_list'=>'show',
+	   			'field_size'=>20,
 	   			'mandatory'=>' mandatory ',
-	   			'input_type'=>'select',
-	   			'input_select_source'=>'array',
-	   			'input_select_values'=>array('en'=>'English','fr'=>'Français'),
-	   			'compute_result'=>'no',
-	   			'on_add'=>'enabled',
-	   			'on_edit'=>'enabled',
-	   			'on_list'=>'hidden'
+				'on_add'=>'not_set',
+				'on_edit'=>'not_set',
 	   	);
 	   	$fields['user_active']=array(
 	   			'field_title'=>'Active',

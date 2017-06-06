@@ -818,10 +818,13 @@ function user_project($project_id , $user=0){
 	// Récupération de la configuration d'une entité
 	function get_table_config($_table,$target_db='current')
 	{
-		
 		$ci = get_instance ();
 		return $ci->entity_config_lib->get_table_config($_table,$target_db);
+		
+		
 	}
+	
+	
 	
 	
 	function  old_version($text="Old version"){
@@ -830,7 +833,7 @@ function user_project($project_id , $user=0){
 	}
 	
 	function display_picture_from_db($picture){
-		
+		//echo $picture;
 		return 'data:image/png;base64,'.base64_encode( $picture);
 	}
 	
@@ -1106,4 +1109,83 @@ function user_project($project_id , $user=0){
 		}
 	}
 	
+	function bm_current_time($format='Y-m-d H:i:s'){
+		return date($format);
+	}
 	
+	
+	function table_name($table_name){
+		$table_index="relis_";
+		$table_index="";
+		
+		return $table_index.$table_name;
+		
+		
+	}
+	
+	
+	
+	
+	
+	// Récupération de la configuration d'une entité
+	function get_table_configuration($_table,$target_db='current')
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->entity_configuration_lib->get_table_configuration($_table,$target_db);
+	}
+	
+	
+	function create_table_configuration($config,$target_db='current')
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->create_table_configuration($config,$target_db);
+	}
+	
+	function generate_stored_procedure_list($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->generate_stored_procedure_list($config,$target_db,$run_query,$verbose);
+	}
+	
+	function generate_stored_procedure_add($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->generate_stored_procedure_add($config,$target_db,$run_query,$verbose);
+	}
+	
+	
+	function generate_stored_procedure_update($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->generate_stored_procedure_update($config,$target_db,$run_query,$verbose);
+	}
+	
+	function generate_stored_procedure_detail($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->generate_stored_procedure_detail($config,$target_db,$run_query,$verbose);
+	}
+	
+	function generate_stored_procedure_remove($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->generate_stored_procedure_remove($config,$target_db,$run_query,$verbose);
+	}
+	
+	function get_active_phase(){
+		return "Screening";
+	}

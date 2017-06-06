@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Entity_config_lib
+class Entity_configuration_lib
 {
 	public function __construct()
 	{
@@ -9,31 +9,68 @@ class Entity_config_lib
 	}
 		
 
-public function get_table_config($_table,$target_db='current')
+public function get_table_configuration($_table,$target_db='current')
 	{
 		$table_configurations=array();
 		switch($_table)
 		{
-		/*	case 'users':
-				require_once("entity_config/user_config.php");
-				$table_configurations['users']=get_user();
+			case 'users':
+				require_once("entity_config/user_configuration.php");
+				$table_configurations['users']=get_config_user();
 				break;
 			
 			case 'usergroup':
-				require_once("entity_config/usergroup_config.php");
-				$table_configurations['usergroup']=get_usergroup();
+				require_once("entity_config/usergroup_configuration.php");
+				$table_configurations['usergroup']=get_config_usergroup();
 				break;
-				
-			case 'user_project':
-				require_once("entity_config/user_project_config.php");
-				$table_configurations['user_project']=get_user_project();
-				break;		
-				
 			case 'project':
-				require_once("entity_config/project_config.php");
+				require_once("entity_config/project_configuration.php");
 				$table_configurations['project']=get_project();
 				break;
-			*/		
+						
+			case 'user_project':
+				require_once("entity_config/user_project_configuration.php");
+				$table_configurations['user_project']=get_user_project();
+				break;	
+				
+				
+			case 'config':
+					require_once("entity_config/config_configuration.php");
+					$table_configurations['config']=get_configuration();
+					break;
+					
+			case 'exclusioncrieria':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['exclusioncrieria']=get_reference('ref_exclusioncrieria','Exclusion criteria','exclusioncrieria');
+					break;
+			case 'papers_sources':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['papers_sources']=get_reference('ref_papers_sources','Papers sources','papers_sources');
+					break;
+			case 'search_strategy':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['search_strategy']=get_reference('ref_search_strategy','Search strategy','search_strategy');
+					break;
+					
+			case 'papers':
+					require_once("entity_config/relis/paper_configuration.php");
+					$table_configurations['papers']=get_papers();
+					break;
+			case 'author':
+					require_once("entity_config/relis/author_configuration.php");
+					$table_configurations['author']=get_author();
+					break;
+			case 'paper_author':
+					require_once("entity_config/relis/paper_author_configuration.php");
+					$table_configurations['paper_author']=get_paper_author();
+					break;
+			case 'venue':
+					require_once("entity_config/relis/venue_configuration.php");
+					$table_configurations['venue']=get_venue();
+					break;
+			
+			/*	
+			
 
 			case 'logs':
 				require_once("entity_config/logs_config.php");
@@ -45,10 +82,7 @@ public function get_table_config($_table,$target_db='current')
 				break;
 						
 						
-			case 'config':
-				require_once("entity_config/config_config.php");
-				$table_configurations['config']=get_configuration();
-				break;
+			
 				
 				
 				// relis project
@@ -116,7 +150,7 @@ public function get_table_config($_table,$target_db='current')
 	
 			
 	
-			
+			*/
 	
 			
 			default:
@@ -169,30 +203,13 @@ public function get_table_config($_table,$target_db='current')
 		{
 		$config=$table_configurations[$_table];
 		
-		if(empty($config['view_list_fields'])){
-			$config['view_list_fields']="";
-			$config['header_list_fields']=array();
-			$i=0;
-			if(!empty($config['fields'] )){
-			foreach ($config['fields'] as $key=>$value) {
-					if($value['on_list']=='show' AND !(isset($value['number_of_values']) AND  $value['number_of_values']!=1)){
-						if($i==0)
-						$config['view_list_fields'].=" ".$key;
-						else
-						$config['view_list_fields'].=" , ".$key;
-						
-						array_push($config['header_list_fields'],lng($value['field_title']));
-					}
-				$i++;
-			}
-			}
-		}
+		
 		}else{
 			
 			$config=array();
 		}
 		
-		//print_test($config);
+	//	print_test($config); 
 		if(empty($config['fields']))
 		{
 			set_top_msg('Error : Page "'.$_table.'" not found!','error');

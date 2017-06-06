@@ -312,3 +312,10 @@ $config['project_db_host'] = "localhost";
  
 
 $config['base_url'] = "http://localhost/relis/relis_dev";
+
+$config['project_db_host'] = "localhost";
+ 	$config['project_db_user'] = "root";
+ 	$config['project_db_pass'] = "";
+ 
+
+$config['base_url'] = "http://localhost/relis/relis_dev";

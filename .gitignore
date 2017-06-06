@@ -1,5 +1,5 @@
 .DS_Store
-
+index.php
 relis_app/cache/*
 !application/cache/index.html
 !application/cache/.htaccess

@@ -80,7 +80,7 @@ function get_logs() {
 	   			'on_add'=>'enabled',
 	   			'on_edit'=>'enabled',
 	   			'on_list'=>'show',
-	   			'field_size'=>200,
+	   			'field_size'=>50,
 	   			'mandatory'=>' mandatory '
 	   	);	
 		$fields['log_ip_address']=array(

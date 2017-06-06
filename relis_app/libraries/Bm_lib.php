@@ -25,7 +25,6 @@ class Bm_lib
 	//$time=time();
 	//$this->CI->session->set_userdata('request_time',  time());
 	
-	
 	}
 		
 	/*

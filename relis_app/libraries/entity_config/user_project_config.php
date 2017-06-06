@@ -71,8 +71,48 @@ function get_user_project() {
 				'on_edit'=>'enabled',
 				'on_list'=>'show'
 		);
-	
+		$fields['user_role']=array(
+			'field_title'=>'User role',
+			'field_type'=>'text',
+			'field_value'=>'normal',
+			'field_size'=>50,
+			'input_type'=>'select',
+			'input_select_source'=>'array',
+			'input_select_values'=>array('Reviewer' => 'Reviewer',
+					'Project admin' => 'Project admin',
+					'Guest' => 'Guest'			
+			),
+			'initial_value'=>'Reviewer',
+			'on_add'=>'enabled',
+			'on_edit'=>'enabled',
+			'on_list'=>'show'
+	);
+		$fields['added_by']=array(
+	   			'field_title'=>'Added by',
+	   			'field_type'=>'number',
+	   			'field_value'=>'active_user',
+	   			'field_size'=>11,
+	   			'input_type'=>'select',
+	   			'input_select_source'=>'table',
+	   			'input_select_values'=>'users;user_name',//the reference table and the field to be displayed
+				'mandatory'=>' mandatory ',
+				'on_add'=>'hidden',
+				'on_edit'=>'not_set',
+				'on_list'=>'show'
+	   	);
 		
+		$fields['add_time']=array(
+	   			'field_title'=>'Added time',
+	   			'field_type'=>'text',
+	   			'field_value'=>'normal',
+	   			'on_add'=>'not_set',
+	   			'on_edit'=>'not_set',
+	   			'on_list'=>'show',
+	   			'field_size'=>20,
+	   			'mandatory'=>' mandatory ',
+				'on_add'=>'hidden',
+				'on_edit'=>'not_set',
+	   	);
 		
 	   	
 		$fields['userproject_active']=array(

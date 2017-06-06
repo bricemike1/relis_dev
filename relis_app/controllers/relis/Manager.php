@@ -1676,22 +1676,54 @@ class Manager extends CI_Controller {
 	
 	public function import_papers_save_csv(){
 		$post_arr = $this->input->post ();
-		
+		//print_test($post_arr); exit;
 		$data_array=json_decode($post_arr['data_array']);
 	
 		$paper_title=$post_arr['paper_title'];
+		$bibtexKey=$post_arr['bibtexKey'];
 		$paper_link=$post_arr['paper_link'];
 		$paper_abstract=$post_arr['paper_abstract'];
+		$bibtex=$post_arr['bibtex'];
 		$paper_key=$post_arr['paper_key'];
 		$paper_author=$post_arr['paper_author'];
-		$paper_start_from=$post_arr['paper_start_from'];
+		$year=$post_arr['year'];
+		
+		//$paper_start_from=$post_arr['paper_start_from'];
+		
+		$papers_sources = (!empty($post_arr['papers_sources'])?$post_arr['papers_sources']:NULL);
+		$search_strategy = (!empty($post_arr['search_strategy'])?$post_arr['search_strategy']:NULL);
+		$paper_start_from = ((!empty($post_arr['paper_start_from']) AND is_numeric($post_arr['paper_start_from']))?$post_arr['paper_start_from']:2);
+		
+		$active_user=active_user_id();
+		$added_active_phase=get_active_phase();
 		$operation_code=active_user_id()."_".time();
 		foreach ($data_array as $key => $value) {
 			if($key >= ($paper_start_from -1 )) {
-				$value['zz']="";
-				$sql="INSERT INTO `paper` (`bibtexKey`, `title`, `doi`, `bibtex`, `preview`,`operation_code`) VALUES('paper_$key','".$this->mres_escape($value[$paper_title])."','".$value[$paper_link]."','<b>Authors:</b><br/>".$value[$paper_author]." <br/><b>Key words:</b><br/>".$this->mres_escape($value[$paper_key])."','".$this->mres_escape($value[$paper_abstract])."','$operation_code')";
 				
+				$value['zz']="";
+				
+				
+				$v_bibtex_key=!empty($value[$bibtexKey])?$this->mres_escape($value[$bibtexKey]):'paper_'.$key;
+				
+				$v_title=$this->mres_escape($value[$paper_title]);
+				//$v_title=$value[$paper_title];
+				$v_paper_link=$this->mres_escape($value[$paper_link]);
+				
+				$v_preview=!empty($value[$paper_author])?"<b>Authors:</b><br/>".$this->mres_escape($value[$paper_author])." <br/>":"";
+				$v_preview.=!empty($value[$paper_key])?"<b>Authors:</b><br/>".$this->mres_escape($value[$paper_key])." <br/>":"";
+				
+				$v_abstract=$this->mres_escape($value[$paper_abstract]);
+				$v_bibtex=$this->mres_escape($value[$bibtex]);
+				$year=(!empty($value[$year]) AND is_numeric($value[$year] ))?$this->mres_escape($value[$year]):NULL;
+				
+				$sql="INSERT INTO `paper` (`bibtexKey`, `title`,  `preview`,`bibtex`, `abstract`, `doi`, `year`, `papers_sources`, `search_strategy`, `added_by`, `addition_mode`, `added_active_phase`,`operation_code`)
+				VALUES
+				('$v_bibtex_key','$v_title','$v_preview','$v_bibtex','$v_abstract','$v_paper_link','$year','$papers_sources','$search_strategy',$active_user,'Automatic','$added_active_phase','$operation_code')";
+				
+				//echo "$sql <br/><br/>";
 				$res_sql = $this->manage_mdl->run_query($sql,False,project_db());
+				
+				//print_test($res_sql);
 				
 			}
 				
@@ -1707,7 +1739,7 @@ class Manager extends CI_Controller {
 		$res2 = $this->manage_mdl->add_operation($operation_arr);
 		
 		
-	//	print_test($res2);
+		//print_test($res2);
 		redirect('home/screening');
 		
 	}
@@ -1802,8 +1834,30 @@ class Manager extends CI_Controller {
 			$data['csv_fields_opt']=array();
 				
 		}
+		
+		$data['paper_config_fields']=array(
+					'paper_title'=>array('title'=>"Paper title ", "mandatory"=>TRUE),
+					'bibtexKey'=>array('title'=>"Paper key <i style='font-size:0.8em'>(If not available It will be generated)</i>", "mandatory"=>False),
+					'paper_link'=>array('title'=>"Link", "mandatory"=>False),
+					'year'=>array('title'=>"Year", "mandatory"=>False),
+					'paper_abstract'=>array('title'=>"Abstract", "mandatory"=>False),
+					'bibtex'=>array('title'=>"Bibtex", "mandatory"=>False),
+					'paper_key'=>array('title'=>"Key words", "mandatory"=>False),
+					'paper_author'=>array('title'=>"Authors", "mandatory"=>False)
+		);
 			
-	
+		if(get_appconfig_element('source_papers_on')){
+			
+			$data['source_papers']= $this->manager_lib->get_reference_select_values('papers_sources;ref_value',True,False);
+			//print_test($data['source_papers']);
+		}
+		
+		
+		if(get_appconfig_element('search_strategy_on')){
+			$data['search_strategy']= $this->manager_lib->get_reference_select_values('search_strategy;ref_value',True,False);
+			//print_test($data['search_strategy']);
+		}
+		
 		$data ['page_title'] = lng('Import papers - match fields');
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 		$data ['page'] = 'relis/import_papers_2';
