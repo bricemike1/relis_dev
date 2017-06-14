@@ -1038,8 +1038,8 @@ END";
 		
 					}elseif(!empty($value['field_type']) AND $value['field_type']=='time'){
 						$field_type=" timestamp ";
-						$field_default="  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ";
-						$field_default="  NOT NULL DEFAULT CURRENT_TIMESTAMP  ";
+					
+						$field_default=(empty($value['mandatory']))?" NULL  DEFAULT NULL ":"   NOT NULL ";
 						
 						if(isset($value['default_value']) AND trim($value['default_value'])=='CURRENT_TIMESTAMP'){
 						
@@ -1047,19 +1047,20 @@ END";
 						}
 							
 					}else{//Free category
-						if(!empty($value['field_value'] ) AND $value['field_value'] == '0_1'){//Yes_no
-		
-						}elseif($value['field_type']=='number' || $value['field_type']=='int'){
+						if($value['field_type']=='number' || $value['field_type']=='int'){
 							$field_type=" int(".$value['field_size'].") ";
-							$field_default="   DEFAULT NULL ";
+							
+							$field_default=(empty($value['mandatory']))?"   DEFAULT NULL ":"   NOT NULL ";
+							
 							if(!empty($value['default_value'])){
 		
 								$field_default="   NOT NULL DEFAULT '".$value['default_value']."' ";
 							}
 		
 						}elseif($value['field_type']=='image' ){
+							$field_default=(empty($value['mandatory']))?"   DEFAULT NULL ":"   NOT NULL ";
 							$field_type=" LONGBLOB ";
-							$field_default="   DEFAULT NULL ";
+							//$field_default="   DEFAULT NULL ";
 							
 		
 						}else{

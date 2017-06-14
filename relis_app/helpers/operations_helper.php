@@ -62,10 +62,13 @@ function check_operation($operation,$type="List") {
 	include_once('operations/op_paper.php');
 	$operations=array_merge($operations,get_operations_paper());
 	
+	include_once('operations/op_screening.php');
+	$operations=array_merge($operations,get_operations_screening());
+	
 	if(isset($operations[$operation]) AND $operations[$operation]['type']==$type ){
 			return $operations[$operation];
 	}else{
-			set_top_msg(lng_min(" Action not available!  "),'error');
+			set_top_msg(lng_min(" Action not available!  ".$operation),'error');
 			redirect('auth/');
 			return false;
 	}

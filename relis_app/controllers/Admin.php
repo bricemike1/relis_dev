@@ -75,7 +75,7 @@ class Admin extends CI_Controller {
 			$configurations=array('users','usergroup','project','user_project');
 			$data['left_menu_admin']=True;
 		}else{
-			$configurations=array('config','exclusioncrieria','papers_sources','search_strategy','author','venue','papers','paper_author');
+			$configurations=array('config','exclusioncrieria','papers_sources','search_strategy','author','venue','papers','paper_author','screen_phase','screening','screen_decison');
 		}
 		
 		 foreach ($configurations as $key => $value_config) {
@@ -84,9 +84,10 @@ class Admin extends CI_Controller {
 		 	array_push($list_config, 
 		 			
 		 			array($key+1,$value_config,
-		 					
+		 					anchor('admin/describe_config/'.$value_config,'Display structure '.$value_config),
 		 					anchor('admin/create_tables_config/'.$value_config,'Create table for '.$value_config),
-		 					anchor('admin/create_stored_procedures/'.$value_config,'Generate stored procedures for '.$value_config)
+		 					anchor('admin/create_stored_procedures/'.$value_config,'Generate stored procedures for '.$value_config),
+		 					
 		 					
 		 			));
 		 		 	
@@ -110,6 +111,44 @@ class Admin extends CI_Controller {
 	
 		
 		 	echo anchor('admin/list_configurations',"<h1>Back</h1>");		
+	}
+	
+	public function describe_config($entity_config){
+		
+		$table_configuration=get_table_configuration($entity_config);
+		$table_to_display[0]=array('id','Title','DB type','Field type','Mandatory');
+		//$table_to_display[0]=array('id','Title');
+		$i=1;
+		foreach ($table_configuration['fields'] as $key => $value) {
+			$type_db= !empty($value['field_type'])?$value['field_type']: "";
+			$type_db.= !empty($value['field_size'])?" (".$value['field_size'].") ": "";
+			
+			$field_type= !empty($value['input_type'])?$value['input_type']: "";
+			$field_type.= !empty($value['input_select_source'])?" - ".$value['input_select_source']." ": "";
+			$field_type.= !empty($value['input_select_values'])?" - ".json_encode($value['input_select_values'])." ": "";
+			
+			$madatory= !empty($value['mandatory'])?"Yes": "No";
+			
+			$table_to_display[$i] =array($key , $value['field_title'],$type_db,$field_type,$madatory);
+			$i++;
+		}
+		
+		$data['nombre']=1;
+		$data['list']=$table_to_display;
+		$data['page']='general/list';
+		$data['page_title']="DESC ".$entity_config;
+		$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'admin/list_configurations' );
+	
+		$this->load->view('body',$data);
+			$tmpl = array (
+				'table_open'  => '<table style="width:80%; margin:auto; ">',
+				'table_close'  => '</table>'
+		);
+		
+		//$this->table->set_template($tmpl);
+			
+		//echo $this->table->generate($table_to_display);
+			//echo anchor('admin/list_configurations',"<h1>Back</h1>");
 	}
 	
 	public function create_stored_procedures($entity_config,$operation=""){

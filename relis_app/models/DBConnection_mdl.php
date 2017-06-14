@@ -356,13 +356,20 @@ class DBConnection_mdl extends CI_Model
 		/*
 		 * Fonction pour récupérer le détail d'un élément de la table de référence
 		 */
-		function get_row_details($config,$ref_id,$stored_procedure_provided=False) {
-			if(!admin_config($config)){
-			$this->db2 = $this->load->database(project_db(), TRUE);
+		function get_row_details($config,$ref_id,$stored_procedure_provided=False,$tab_config="") {
+			if(empty($tab_config)){
+				$tab_config=$config;
 			}
+			//print_test($tab_config);
+			if(!admin_config($tab_config)){
+				$this->db2 = $this->load->database(project_db(), TRUE);
+			
+			}
+			
+			
 			$stored_procedure=$stored_procedure_provided?$config:"get_detail_".$config;
 			
-			if(admin_config($config)){
+			if(admin_config($tab_config)){
 				$data=$this->db->query ( "CALL ".$stored_procedure."('".$ref_id."') " );				
 				mysqli_next_result( $this->db->conn_id );
 				

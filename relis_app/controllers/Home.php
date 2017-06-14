@@ -15,10 +15,14 @@ class Home extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->session->set_userdata('working_perspective','class');
+		//$this->session->set_userdata('working_perspective','class');
 		if(!($this->session->userdata ( 'project_db' ))){
 		
 			redirect('manager/projects_list');
+		}
+		//print_test($this->session->userdata('working_perspective'));exit;
+		if($this->session->userdata('working_perspective')=='screen'){
+			redirect('home/screening');
 		}
 		
 		$left_menu = $this->manager_lib->get_left_menu();
@@ -65,12 +69,23 @@ class Home extends CI_Controller {
 	public function screening()
 	{
 		//update_paper_status_all();
-		$this->session->set_userdata('working_perspective','screen');
+		//$this->session->set_userdata('working_perspective','screen');
+		
+		
+		
 		if(!($this->session->userdata ( 'project_db' ))){
 	
 			redirect('manager/projects_list');
 		}
-	
+		
+		if($this->session->userdata('working_perspective')=='class'){
+				redirect('home');
+			}
+			
+		if(! active_screening_phase()){
+				redirect('home/screening_select');
+		}
+			
 		$left_menu = $this->manager_lib->get_left_menu();
 	
 	
@@ -92,13 +107,13 @@ class Home extends CI_Controller {
 			$papers_screened=0;
 			foreach ($my_assignations as $key => $value) {
 					
-				if($value['screening_done']==1){
+				if($value['screening_status']=='Done'){
 					$papers_screened++;
 				}else{
-					if(empty($paper_to_screen)){
+					/*if(empty($paper_to_screen)){
 						$paper_to_screen=$value['paper_id'];
-						$assignment_id=$value['assignment_id'];
-					}
+						//$assignment_id=$value['assignment_id'];
+					}*/
 				}
 			}
 			
@@ -128,6 +143,104 @@ class Home extends CI_Controller {
 	
 		}
 	}
+	
+	public function screening_select()
+	{
+		
+		
+		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
+												->get_where('screen_phase', array('screen_phase_active'=>1))
+												->result_array();
+		
+		$phases_list=array();
+		$yes_no=array('0'=>'','1'=>'X');
+		$i=1;
+		foreach ($screening_phases as $k => $phase) {
+		//	print_test($phase);
+			$select_but="";
+			$open_but="";
+			$close_but="";
+			
+			
+			
+			
+			if($phase['phase_state']=='Open'){
+				$select_but=get_top_button ( 'all', 'Select', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Select','fa-play','',' btn-info ' ,False);
+				$close_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Close','fa-cog','',' btn-danger ' ,False);
+			}else{
+				$open_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Open','fa-cog','',' btn-success ' ,False);					
+			}	
+			
+			
+			$temp=array(
+					'num'=>$i,
+					'Type'=>$phase['phase_type'],
+					'Title'=>$phase['phase_title'],
+					'State'=>$phase['phase_state'],
+					'Final phase'=>$yes_no[$phase['screen_phase_final']],
+					'action'=>$open_but.$close_but.$select_but,
+			);
+			array_push($phases_list, $temp);
+			
+			$i++;
+		}
+		
+		if(!empty($phases_list)){
+			array_unshift($phases_list, array('#','Category','Title','State','Final phase',''));
+		}
+		
+	//	print_test($phases_list);
+		$data['phases_list']=$phases_list;
+		
+			$data['configuration']=get_project_config($this->session->userdata ( 'project_db' ));
+			/*
+			 * Récuperation des participants dans l'application
+			 */
+			$data['users']=$this->DBConnection_mdl->get_users_all();
+			foreach ($data['users'] as $key => $value) {
+				if(! (user_project($this->session->userdata('project_id'),$value['user_id'])) OR $value['user_usergroup'] == 1 ){
+					unset($data['users'][$key]);
+				}
+			}
+	
+			/*
+			 * Chargement de la vue qui va s'afficher
+			 *
+			 */
+			$this->session->set_userdata('current_screen_phase','');
+			
+			$data['page']='relis/h_screening_select';
+			$this->load->view('body',$data);
+	
+		
+	}
+	
+	public function select_screen_phase($screen_phase_id){
+		
+		if(!empty($screen_phase_id)){
+			$this->session->set_userdata('current_screen_phase',$screen_phase_id);
+			redirect('home/screening');
+		}else{
+		
+			redirect('home/screening_select');
+		}
+	}
+	
+	public function screening_phase_manage($screen_phase_id,$op=1){
+		if($op==1)//open the phase
+		{
+			$State='Open';
+		}else{
+			$State='Closed';
+			}
+			
+			$res = $this->db_current->update ( 'screen_phase', array('phase_state'=>$State), array (
+					'screen_phase_id' =>$screen_phase_id
+			) );
+			
+			redirect('home/screening_select');
+	}
+	
 	
 	public function choose_project(){
 		

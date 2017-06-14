@@ -55,7 +55,15 @@
                     }
                     
                     foreach ($table_config['operations'][$current_operation]['fields'] as $key => $v_field) {
+                    	$operation_field_value="_";
+                    	
                     	$value=$table_config['fields'][$key];
+                    	
+                    	if(!empty($v_field['field_value'])){// a default value for the specific operation
+                    		$value['field_value']=$v_field['field_value'];
+                    		$operation_field_value=$v_field['field_value'];
+                    	}
+                    	 
                     		
 						$value['field_title']=lng($value['field_title']);
 						
@@ -91,8 +99,14 @@
                     			$content_item[$key]=$user_id;
                     		
                     		}
-                    		
-                    		
+                    
+                    		//Setting difault value for current operation 
+                    		if(isset($operation_field_value) AND $operation_field_value!="_"){
+                    			
+                    			//if(isset($content_item[$key]) AND trim($content_item[$key])==""){
+                    				$content_item[$key]=$operation_field_value;
+                    			//}
+                    		}
                     		
                     		if($v_field['field_state']=='hidden'){	
                     			

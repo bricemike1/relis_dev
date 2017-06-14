@@ -318,6 +318,9 @@ function get_papers() {
 			'redirect_after_save'=>'op/entity_list/list_papers',
 			'data_source'=>'get_detail_paper',
 			'db_save_model'=>'update_paper',
+			
+			//'display_reset_button'=>true,
+			//'submit_button_title'=>'Save',
 		  
 			'generate_stored_procedure'=>True,
 		  
@@ -355,14 +358,19 @@ function get_papers() {
 	  if(!(get_appconfig_element('search_strategy_on'))){
 		 $operations['edit_paper']['fields']['search_strategy']['field_state']='hidden';
 	 }
+	 
+	 
+	 $operations['edit_paper_det']=$operations['edit_paper'];
+	 $operations['edit_paper_det']['redirect_after_save']='op/display_element/detail_paper/~current_element~';
+	 
 	$operations['list_papers']=array(
 			'operation_type'=>'List',
 			'operation_title'=>'List papers',
 			'operation_description'=>'List papers',
 			'page_title'=>'List papers',
 		  
-			//'page_template'=>'list',
-		  
+			'table_display_style'=>'dynamic_table',
+			
 			'data_source'=>'get_list_papers',
 			'generate_stored_procedure'=>True,
 		  
@@ -394,6 +402,7 @@ function get_papers() {
 							'title'=>'Disaly element',
 							'icon'=>'folder',
 							'url'=>'op/display_element/detail_paper/',
+							'url'=>'relis/manager/display_paper_screen/',
 					),
 					'edit'=>array(
 							'label'=>'Edit',
@@ -459,7 +468,7 @@ function get_papers() {
 							'label'=>'',
 							'title'=>'Edit',
 							'icon'=>'edit',
-							'url'=>'op/edit_element/edit_paper/~current_element~',
+							'url'=>'op/edit_element/edit_paper_det/~current_element~',
 					),
 					'back'=>array(
 							'label'=>'',

@@ -92,57 +92,33 @@
          <div class="row">
          
          
-         	<div class="col-md-6 col-sm-6 col-xs-12">
+         	<div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel tile  overflow_hidden">
                 <div class="x_title">
-                  <h2><?php echo lng('My screening completion')?></h2>
+                  <h2><?php echo lng('Screening phases')?></h2>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                 
                 
                 
-                <!-- top tiles -->
-          <div class="row tile_count centre">
-            <div class="col-md-4 col-sm-4 col-xs-12 tile_stats_count">
-              <span class="count_top"><i class="fa fa-list"></i> <?php echo lng('All papers')?></span>
-            
-               <?php echo '<div class="count ">'.nombre($all_papers).'</div>';?>
-             
-            </div>
-            <div class="col-md-4 col-sm-4 col-xs-12 tile_stats_count green">
-              <span class="count_top"><i class="fa fa-check-circle-o"></i> <?php echo lng(' Screened papers')?></span>
-              
-              <?php echo ' <div class="count green">'.nombre($processed_papers).'</div>'?>
-             
-             
-              
-            </div>
-            <div class="col-md-4 col-sm-4 col-xs-12 tile_stats_count">
-              <span class="count_top"><i class="fa fa-clock-o"></i> <?php echo lng('Pending papers')?></span>
-              <?php echo ' <div class="count ">'.nombre($pending_papers).'</div>';?>
-             
-              
-            </div>
-            <div class="col-md-12 col-sm-12 col-xs-12">
-           
-			<div class="sidebar-widget">
-                       <?php
-			            if($processed_papers > 0){
-			            ?>
-                      <canvas  id="foo" class="" ></canvas>
-                      <div class="goal-wrapper">
-                        <span class="gauge-value pull-left"></span>
-                        <span id="gauge-text" class="gauge-value pull-left"><?php //echo $processed_papers?></span>
-                        <span id="goal-text" class="goal-value pull-right"><?php //echo nombre($processed_papers + $pending_papers)?></span>
-                      </div>
-                      <?php }?>
-             </div>
-             </div>
-           
-          </div>
+                <!-- screening phases-->
+          
+        <?php 
+        if(!empty($phases_list)){
+        	
+        	$tmpl = array (
+        			'table_open'  => '<table class="table table-striped">',
+        			'table_close'  => '</table>'
+        	);
+        	 
+        	$this->table->set_template($tmpl);
+        	 
+        	echo $this->table->generate($phases_list);
+        }
         
-          <!-- /top tiles -->
+        ?>
+         		 <!-- /top tiles -->
                 
                 
                 
@@ -154,7 +130,7 @@
             
             
             
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel tile  overflow_hidden">
                 <div class="x_title">
                   <h2><?php echo lng('Participants')?></h2>
@@ -179,7 +155,7 @@
                   
                   
                   
-                   <div class="col-md-12 col-sm-12 col-xs-12 profile_details">
+                   <div class="col-md-6 col-sm-6 col-xs-12 profile_details">
                         <div class=" col-sm-12 well profile_view">
                           <div class="col-sm-12">
                             <h4 class="briefs"><i><?php echo $value['usergroup_name']." ".lng('user')?></i></h4>
@@ -225,33 +201,5 @@
         
         </div>
         </script>
-       <!-- gauge.js -->
-    <script src="<?php echo site_url();?>cside/vendors/bernii/gauge.js/dist/gauge.min.js"></script>
-    
-    <!-- gauge.js -->
-    <script>
-      var opts = {
-          lines: 12,
-          angle: 0,
-          lineWidth: 0.4,
-          pointer: {
-              length: 0.75,
-              strokeWidth: 0.042,
-              color: '#1D212A'
-          },
-          limitMax: 'false',
-          colorStart: '#1ABC9C',
-          colorStop: '#1ABC9C',
-          strokeColor: '#F0F3F3',
-          generateGradient: true
-      };
-      var target = document.getElementById('foo'),
-          gauge = new Gauge(target).setOptions(opts);
-
-    //  gauge.maxValue = <?php echo $processed_papers + $pending_papers?>;
-    //  gauge.animationSpeed = 32;
-     // gauge.set(<?php// echo $processed_papers?>);
-     // gauge.setTextField(document.getElementById("gauge-text"));
-    </script>
-    <!-- /gauge.js -->
+      
         <!-- /page content -->

@@ -19,7 +19,11 @@ function get_operations_paper() {
 			'tab_ref'=>'papers',
 			'operation_id'=>'edit_paper'
 	);
-	
+	$operations['edit_paper_det']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'papers',
+			'operation_id'=>'edit_paper_det'
+	);
 	$operations['detail_paper']=array(
 			'type'=>'Detail',
 			'tab_ref'=>'papers',

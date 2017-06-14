@@ -91,16 +91,8 @@ function get_config_user() {
 	   			'field_title'=>'Password',
 	   			'field_type'=>'text',
 				'field_size'=>35,
-	   			//'field_value'=>'normal',
-	   			
 				'input_type'=>'password',
 	   			
-				
-				
-				'on_list'=>'hidden',
-	   			'on_view'=>'hidden',				
-				'on_add'=>'enabled',
-	   			'on_edit'=>'enabled',
 	   	);
 		$fields['user_picture']=array(
 				'field_title'=>'Picture',
@@ -109,10 +101,6 @@ function get_config_user() {
 				//'field_value'=>'normal',			
 				'input_type'=>'image',
 				
-				
-				'on_list'=>'hidden',
-				'on_add'=>'enabled',
-				'on_edit'=>'enabled',
 		);
 		
 		
@@ -150,10 +138,6 @@ function get_config_user() {
 	   			'input_select_values'=>'users;user_name',//the reference table and the field to be displayed
 				'mandatory'=>' mandatory ',
 				
-				
-				'on_add'=>'hidden',
-				'on_edit'=>'not_set',
-				'on_list'=>'show'
 	   	);
 		
 		$fields['creation_time']=array(
@@ -165,11 +149,6 @@ function get_config_user() {
 	   			'field_size'=>20,
 	   			'mandatory'=>' mandatory ',
 				
-				'on_add'=>'not_set',
-				'on_edit'=>'not_set',
-				'on_add'=>'not_set',
-	   			'on_edit'=>'not_set',
-	   			'on_list'=>'show',
 	   	);
 		
 		 $fields['user_state']=array(
@@ -180,6 +159,7 @@ function get_config_user() {
 				'default_value'=>'0',
 				'input_type'=>'select',
 				'input_select_source'=>'yes_no',
+				'input_select_values'=>'1',
 				
 	   	);
 		

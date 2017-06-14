@@ -214,7 +214,7 @@ function input_textarea_bm($label, $name, $id, $value = "", $max = 100, $classe 
 	$bm = '
 						<div class="form-group ">' . form_label ( $label.$mandatory, $name, array (
 								'class' => 'control-label col-md-3 col-sm-3 col-xs-12'
-						) ) . ': <div class="col-md-6 col-sm-6 col-xs-12">
+						) ) . ' <div class="col-md-6 col-sm-6 col-xs-12">
 									<textarea id="'.$id.'"  name="'.$name.'"   maxlength="'.$max.'"  class="form-control col-md-7 col-xs-12 '.$classe.'" '.$readonly.' placeholder="'.$place_holder.'">'.$value.'</textarea>'.'
 					
 									</div></div>';
@@ -637,7 +637,7 @@ function get_appconfig($element="all",$source="db"){
 
 function get_appconfig_element($element="all",$source="db"){
 	$ci = get_instance ();
-
+	
 	$config=$ci->DBConnection_mdl->get_row_details('config','1');
 	
 	if(!empty($config[$element])){
@@ -692,7 +692,7 @@ function admin_config($config,$config_name=True,$type='config'){
 
 	
 }	 
-function user_project($project_id , $user=0){
+function user_project($project_id , $user=0,$user_role=""){
 		$ci = get_instance ();
 		
 		if($user==0){
@@ -703,7 +703,13 @@ function user_project($project_id , $user=0){
 		$user_projects = $ci->db->query($sql)->num_rows();
 		
 		if($user_projects>0){
-			$sql="select project_id from userproject where userproject_active=1 AND user_id=$user AND project_id=$project_id ";
+			if(!empty($user_role)){
+				$sql="select project_id from userproject where userproject_active=1 AND user_id=$user  AND user_role LIKE '$user_role'";
+					
+			}else{
+				$sql="select project_id from userproject where userproject_active=1 AND user_id=$user AND project_id=$project_id ";
+			
+			}
 			
 			$user_projects = $ci->db->query($sql)->num_rows();
 			if($user_projects>0){
@@ -714,9 +720,9 @@ function user_project($project_id , $user=0){
 		}else{
 			return TRUE;
 		}
-		$config=$ci->DBConnection_mdl->get_row_details('config','1');
+		//$config=$ci->DBConnection_mdl->get_row_details('config','1');
 	
-		return $config;
+		//return $config;
 	}
 	
 	function file_upload_error($code){
@@ -878,9 +884,9 @@ function user_project($project_id , $user=0){
 	}else{
 		echo '<div class="" role="tabpanel" data-example-id="togglable-tabs">
                       <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
-                       <li role="presentation" class="'.$g_active.'"><a href="'.base_url().'home/" id="home-tabb" >Classification</a>
+                       <li role="presentation" class="'.$g_active.'"><a href="'.base_url().'manager/set_perspective/class" id="home-tabb" >Classification</a>
                         </li>
-                        <li role="presentation" class="'.$s_active.'"><a href="'.base_url().'home/screening"  id="profile-tabb" >Screening</a>
+                        <li role="presentation" class="'.$s_active.'"><a href="'.base_url().'manager/set_perspective"  id="profile-tabb" >Screening</a>
                         </li>
             
             
@@ -896,7 +902,7 @@ function user_project($project_id , $user=0){
 	function get_paper_screen_result($paper_id){
 		$ci = get_instance();
 		$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
-		$criteria=$ci->manager_lib->get_reference_select_values('ref_exclusioncrieria;ref_value');
+		$criteria=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
 		
 		
 		$ci->db2 = $ci->load->database(project_db(), TRUE);
@@ -995,8 +1001,6 @@ function user_project($project_id , $user=0){
 		return $data;
 	}
 	
-	
-	
 	function get_paper_screen_status($paper_id){
 		$ci = get_instance();
 		$ci->db2 = $ci->load->database(project_db(), TRUE);
@@ -1014,7 +1018,7 @@ function user_project($project_id , $user=0){
 		$started=False;
 		$exclude_crit=array();
 		foreach ($res_assignment as $key => $value) {
-			
+				
 			if (empty($value['screening_id'])){
 				$pending++;
 			}else{
@@ -1024,6 +1028,226 @@ function user_project($project_id , $user=0){
 	
 					$excluded++;
 					$exclude_crit[$value['exclusion_criteria']]=isset($exclude_crit[$value['exclusion_criteria']])?($exclude_crit[$value['exclusion_criteria']]+1):1;
+	
+				}
+			}
+				
+			$started=TRUE;
+		}
+	
+	
+		$paper_decision='Pending';
+		if(!$started){
+			$paper_decision="Pending";
+		}
+	
+		elseif($pending>0){
+			if($pending == count($res_assignment)){
+				$paper_decision="Pending";
+			}else{
+				$paper_decision="In review";
+			}
+				
+		}else
+		{
+				
+			if(get_appconfig_element('screening_conflict_resolution')=='Majority'){
+	
+				if($accepted > $excluded){
+						
+					$paper_decision="Included";
+						
+				}elseif($accepted < $excluded){
+						
+					$paper_decision="Excluded";
+						
+				}else{
+					$paper_decision="In conflict";
+				}
+	
+			}else{
+				if($accepted==0){
+					$paper_decision="Excluded";
+					if(get_appconfig_element('screening_conflict_type')=='ExclusionCriteria' AND count($exclude_crit) > 1){ //Conflict when different exclusion criteria
+	
+						$paper_decision="In conflict";
+	
+					}
+	
+				}elseif($excluded==0){
+						
+					$paper_decision="Included";
+				}else{
+						
+					$paper_decision="In conflict";
+				}
+			}
+		}
+	
+	
+		//print_test($data);
+		return $paper_decision;
+	}
+	
+	
+	function get_paper_current_decision($paper_id,$screening_phase=1){
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+		$sql= "select * from  screen_decison   where paper_id = $paper_id AND screening_phase = $screening_phase AND 	decision_active=1  ";
+		$res_desision=$ci->db2->query($sql)->row_array();
+		if(empty($res_desision)){
+			return 0;
+			
+		}else{
+			return $res_desision['screening_decision'];
+		}
+		
+	}
+	
+	function get_paper_screen_history($paper_id,$screening_phase=1){
+		$ci = get_instance();
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+		$query_screen_decision = $ci->db2->get_where('screen_decison', array('paper_id' => $paper_id,'screening_phase' => $screening_phase,'decision_active'=>1), 1)->row_array();
+		$array_result=array();
+		if(!empty($query_screen_decision['decision_history'])){
+			$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
+			$criteria=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
+			$decision_source_array=array(
+					'new_screen'=>'Screening',
+					'edit_screen'=>'Screening edition',
+					'conflict_resolution'=>'Conflict resolution',
+			);
+			$T_json_decisons=explode("~~__", $query_screen_decision['decision_history']);
+			
+			foreach ($T_json_decisons as $key => $value_json_hist) {
+				
+				$T_decisons=json_decode($value_json_hist,True);
+				
+				$decision_source=!empty($decision_source_array[$T_decisons['decision_source']])?$decision_source_array[$T_decisons['decision_source']]:"";
+				
+				if(!empty($T_decisons['criteria']))
+					$criteria=!empty($users[$T_decisons['user']])?$users[$T_decisons['user']]:"";
+				else{
+					$criteria="";
+				}
+				
+				
+				$user=!empty($users[$T_decisons['user']])?$users[$T_decisons['user']]:"";
+				
+				array_push($array_result, array(
+						'time'=>$T_decisons['screening_time'],
+						'user'=>$user,
+						'decision'=>$T_decisons['decision'],
+						'criteria'=>$criteria,
+						'result'=>$T_decisons['paper_status'],
+						'operation_source'=>$decision_source
+				));
+				
+					
+			
+			}
+			// adding title
+			if(!empty($array_result)){
+			array_unshift($array_result,  array(
+						'time'=>'Time',
+						'user'=>'User',
+						'decision'=>'Decision',
+						'criteria'=>'Criteria',
+						'result'=>'Paper status',
+						'operation_source'=>'Operation'
+				));
+			
+			}
+			
+			
+			
+			
+		//	print_test($query_screen_decision);
+		}
+		
+		return $array_result;
+		
+	}
+	
+	
+	function get_paper_screen_status_new($paper_id,$screening_phase=1,$return = 'paper_status'){
+		$ci = get_instance();
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+	
+		///---------
+		
+		$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
+		$criteria=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
+		
+		
+		
+		///-------
+		
+		
+		//$sql= "select A.*,S.screening_id,S.decision,S.exclusion_criteria,S.note,S.screening_time from assignment_screen A 	LEFT JOIN screening S ON (A.assignment_id = S.assignment_id AND S.	screening_active=1)  where A.paper_id = $paper_id AND 	A.assignment_active  ";
+		$sql= "select * from  screening_paper   where paper_id = $paper_id AND screening_phase = $screening_phase AND 	screening_active=1  ";
+	
+		$res_assignment=$ci->db2->query($sql)->result_array();
+	
+		print_test($res_assignment);
+	
+		$pending=0;
+		$accepted=0;
+		$excluded=0;
+		$started=False;
+		$exclude_crit=array();
+		$reviewers="";
+		
+		$Veto=array(
+				'number'=>0,
+				'accepted'=>0,
+				'excluded'=>0,
+				'pending'=>0,
+				'exclude_crit'=>array()
+				
+		);
+		
+		$Normal=array(
+				'number'=>0,
+				'accepted'=>0,
+				'excluded'=>0,
+				'pending'=>0,
+				'exclude_crit'=>array()
+		);
+		
+		$Info=array(
+				'number'=>0,
+				'accepted'=>0,
+				'excluded'=>0,
+				'pending'=>0,
+				'exclude_crit'=>array()
+		);
+		
+		
+		foreach ($res_assignment as $key => $value) {
+			//print_test($value);
+			//---------
+			$res_assignment[$key]['user_name']=$users[$value['user_id']];
+			$reviewers .=$users[$value['user_id']]." | ";
+				
+			$res_assignment[$key]['exclusion_criteria']=empty($value['exclusion_criteria'])?"":$criteria[$value['exclusion_criteria']];
+			//----------
+			//$ass_type=$value['assignment_type'];
+			${$value['assignment_type']}['number']++;
+			
+			if (($value['screening_status'] !='Done')){
+				$pending++;
+				
+				${$value['assignment_type']}['pending']++;
+				
+			}else{
+				if($value['screening_decision']=='Included'){
+					$accepted++;
+					${$value['assignment_type']}['accepted']++;
+				}else{
+					${$value['assignment_type']}['excluded']++;
+					$excluded++;
+					${$value['assignment_type']}['exclude_crit'][$value['exclusion_criteria']]=isset(${$value['assignment_type']}['exclude_crit'][$value['exclusion_criteria']])?(${$value['assignment_type']}['exclude_crit'][$value['exclusion_criteria']]+1):1;
+					$exclude_crit[$value['exclusion_criteria']]=isset($exclude_crit[$value['exclusion_criteria']])?($exclude_crit[$value['exclusion_criteria']]+1):1;
 						
 				}
 			}
@@ -1031,7 +1255,26 @@ function user_project($project_id , $user=0){
 			$started=TRUE;
 		}
 	
+	//	print_test($Veto);
+	//	print_test($Normal);
+	//	print_test($Info);
 	
+		//if there is a veto the veto value will be used else the normal values
+		if(!empty($Veto['number'])){
+			$pending=$Veto['pending'];
+			$accepted=$Veto['accepted'];
+			$excluded=$Veto['excluded'];
+			$exclude_crit=$Veto['exclude_crit'];
+			
+		}else{
+			$pending=$Normal['pending'];
+			$accepted=$Normal['accepted'];
+			$excluded=$Normal['excluded'];
+			$exclude_crit=$Normal['exclude_crit'];
+		}
+		
+		
+		
 		$paper_decision='Pending';
 		if(!$started){
 			$paper_decision="Pending";
@@ -1079,10 +1322,18 @@ function user_project($project_id , $user=0){
 			}
 			}
 		}
-	
-	
-		//print_test($data);
-		return $paper_decision;
+			
+		if($return=='all'){
+			$data['screenings']=$res_assignment;
+			$data['screening_result']=$paper_decision;
+			$data['reviewers']=$reviewers;
+			//print_test($data);
+			return $data;
+		}else{
+			
+			return $paper_decision;
+		}
+		
 	}
 	
 	
@@ -1128,13 +1379,22 @@ function user_project($project_id , $user=0){
 	
 	
 	// Récupération de la configuration d'une entité
-	function get_table_configuration($_table,$target_db='current')
+	function get_table_configuration($_table,$target_db='current',$field="")
 	{
 	
 		$ci = get_instance ();
+		if(empty($field)){
+			return $ci->entity_configuration_lib->get_table_configuration($_table,$target_db);
+			}else{
+				$tab_config=$ci->entity_configuration_lib->get_table_configuration($_table,$target_db);
+				if(!empty($tab_config[$field])){
+					return $tab_config[$field];
+				}else{
+					return NULL;
+				}
+			}
+		}
 	
-		return $ci->entity_configuration_lib->get_table_configuration($_table,$target_db);
-	}
 	
 	
 	function create_table_configuration($config,$target_db='current')
@@ -1189,3 +1449,17 @@ function user_project($project_id , $user=0){
 	function get_active_phase(){
 		return "Screening";
 	}
+
+	function get_active_screening_phase(){
+		return "Screening";
+	}
+	function active_screening_phase(){
+		$ci = get_instance() ;	
+		
+		if($ci->session->userdata ( 'current_screen_phase' ))
+			return $ci->session->userdata ( 'current_screen_phase' );
+			else
+			return '';
+	}
+	
+	

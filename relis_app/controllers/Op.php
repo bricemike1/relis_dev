@@ -57,8 +57,11 @@ class Op extends CI_Controller {
 		$table_id=$ref_table_config['table_id'];
 	
 		
-	
-	
+		if(!empty($ref_table_config['operations'][$ref_table_operation]['table_display_style']) 
+					AND ($ref_table_config['operations'][$ref_table_operation]['table_display_style']=='dynamic_table') ){
+						$dynamic_table=1;
+		}
+			
 		/*
 		 * Appel du model pour récupérer la liste à aficher dans la Base de donnés
 		 */
@@ -91,7 +94,7 @@ class Op extends CI_Controller {
 						//print_test($v);
 							$dropoboxes[$k_field]= $this->manager_lib->get_reference_select_values($field_det['input_select_values']);
 							
-						}elseif($v['input_select_source']=='yes_no'){
+						}elseif($field_det['input_select_source']=='yes_no'){
 							$dropoboxes[$k_field]=array('0'=>"No",
 												'1'=>"Yes"
 							);
@@ -391,14 +394,15 @@ class Op extends CI_Controller {
 			$data ['nav_page_position'] = 5;
 			
 			$data['page']='general/list';
+			if(!empty($ref_table_config['operations'][$ref_table_operation]['page_template'] )){
+					
+				$data['page']=$ref_table_config['operations'][$ref_table_operation]['page_template'];
+			}
 		}else{
 			$data['page']='general/list_dt';
 		}
 		
-	if(!empty($ref_table_config['operations'][$ref_table_operation]['page_template'] )){
-			
-		$data['page']=$ref_table_config['operations'][$ref_table_operation]['page_template'];
-		}
+	
 	
 		if(admin_config($ref_table))
 			$data['left_menu_admin']=True;
@@ -627,8 +631,13 @@ class Op extends CI_Controller {
 			}
 
 			*/
+			
+			
 			if(!empty($table_config['operations'][$ref_table_operation]['redirect_after_save'])){
 				$after_save_redirect=$table_config['operations'][$ref_table_operation]['redirect_after_save'];
+				if(!empty($data['current_element'])){
+					$after_save_redirect=str_replace('~current_element~', $data['current_element'], $after_save_redirect);
+				}
 			}else{
 				$after_save_redirect="home";
 			}
@@ -716,11 +725,11 @@ class Op extends CI_Controller {
 		
 		
 		
-			
+		
 		
 		
 		foreach ($table_config_child['operations'][$ref_table_operation]['fields'] as $k => $v_field) {
-			if(!empty($table_config_child['fields'][$k])){
+			if( $v_field['field_state']!='hidden' AND !empty($table_config_child['fields'][$k])){
 				$v=$table_config_child['fields'][$k];
 				if(!empty($v['input_type']) AND $v['input_type']=='select'){
 					if($v['input_select_source']=='table'){
@@ -740,7 +749,21 @@ class Op extends CI_Controller {
 			}
 		}
 		
-	
+		
+		
+		//To remove users not in current project
+		if($operation_name=='add_reviewer'){
+			if(!empty($table_config_child['fields']['user_id']['input_select_values']) AND is_array($table_config_child['fields']['user_id']['input_select_values'])){
+				foreach ($table_config_child['fields']['user_id']['input_select_values'] as $key_user => $value_user) {
+					if(!empty($key_user)){
+						if(! (user_project($this->session->userdata('project_id'),$key_user)) ){
+							unset($table_config_child['fields']['user_id']['input_select_values'][$key_user]);
+						}
+					}
+				}
+			}
+		}
+			
 		/*
 		 * Prépartions des valeurs qui vont apparaitres dans le formulaire
 		 */
@@ -758,12 +781,28 @@ class Op extends CI_Controller {
 		
 		 */
 		
+		$current_parent_name="";
+		
+		
+		if(!empty($table_config_child['operations'][$ref_table_operation]['parent_detail_source'] ) AND !empty($table_config_child['operations'][$ref_table_operation]['parent_detail_source_field'])){
+		
+			$parent_detail =$this->DBConnection_mdl->get_row_details( $table_config_child['operations'][$ref_table_operation]['parent_detail_source'],$parent_id ,true,$ref_table_parent);
+		//print_test($parent_detail);
+			if(!empty($parent_detail[$table_config_child['operations'][$ref_table_operation]['parent_detail_source_field']])){
+				
+				$current_parent_name=$parent_detail[$table_config_child['operations'][$ref_table_operation]['parent_detail_source_field']];
+			}
+			
+		}
+			
+		
 		if(isset($table_config_child['operations'][$ref_table_operation]['page_title'] )){
 			$data['page_title']=lng($table_config_child['operations'][$ref_table_operation]['page_title']);
 		}else{
 			$data ['page_title'] = lng("Add ".$table_config_child['entity_label']);
 		}
-	
+		
+		$data ['page_title']=str_replace('~current_parent_name~', $current_parent_name, $data ['page_title']);
 	
 		/*
 		 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
@@ -1086,8 +1125,8 @@ class Op extends CI_Controller {
 		 * Appel de la fonction du model pour récupérer la ligne à modifier
 		 */
 		//$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
-		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true);
-	
+		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true,$ref_table);
+	//	print_test($data);
 		
 		/*
 		 * Récuperation des valeurs pour les champs multi-select
@@ -1121,6 +1160,7 @@ class Op extends CI_Controller {
 	
 	
 		}
+		$data['current_element']=$ref_id;
 	//print_test($data); exit;
 		/*
 		 * Appel de la fonction d'affichage du formulaire
@@ -1198,12 +1238,123 @@ class Op extends CI_Controller {
 		
 		
 		}
+		$data['current_element']=$ref_id;
 	
 		/*
 		 * Appel de la fonction d'affichage du formulaire
 		 */
 		$this->add_element_drilldown($operation_name,$parent_id,$data,'edit',$display_type,'EditChild');
 	}
+	public function save_phase_screen() {
+	
+		/*
+		 * Récuperation des valeurs soumis dans le formulaire
+		 */
+		$post_arr = $this->input->post ();
+	//	print_test($post_arr);
+		
+		$table_config= get_table_configuration($post_arr['table_config']);
+		$current_operation=$post_arr['current_operation'];
+
+		$this->load->library ( 'form_validation' );
+		$other_check = true;
+		$this->form_validation->set_rules ( 'phase_title','"'. $table_config['fields']['phase_title']['field_title'].'"', 'trim|required' );
+		$this->form_validation->set_rules ( 'source_paper','"'. $table_config['fields']['source_paper']['field_title'].'"', 'trim|required' );
+		$this->form_validation->set_rules ( 'source_paper_status','"'. $table_config['fields']['source_paper_status']['field_title'].'"', 'trim|required' );
+		
+		$other_check = true;
+		$data ['err_msg']="";
+		if(empty($post_arr ['displayed_fields_vals'])){
+			$other_check = false;
+			$data ['err_msg'] .= lng('You have to select at least one field to be displayed').' <br/>';
+		}
+		
+		$this->db2 = $this->load->database(project_db(), TRUE);
+		$phases = $this->db2->order_by('screen_phase_order', 'ASC')->get_where('screen_phase', array('screen_phase_active'=>1))->result_array();
+		
+		//print_test($phases);
+		
+		$last_order=0;
+		$final_phase_exist=False;
+		foreach ($phases as $key => $value) {
+			
+			$last_order=$value['screen_phase_order'];
+			
+			if(!empty($value['screen_phase_final'])) {
+			
+				if(! (!empty($post_arr['screen_phase_id']) 	AND $post_arr['screen_phase_id'] == $value['screen_phase_id'])){
+						$final_phase_exist=true;
+				
+				}
+			}
+		}
+		
+		
+		
+		if($final_phase_exist AND !empty($post_arr ['screen_phase_final'])){
+			$other_check = false;
+			$data ['err_msg'] .= lng('There is already a final phase ! ').' <br/>';
+		}
+		//print_test($data);
+		//exit;
+		if ($this->form_validation->run () == FALSE OR  !$other_check) {
+		
+			/*
+			 * Si la validation du formulaire n'est pas concluante , retour au formulaire de saisie
+			 */
+		
+			$data ['content_item'] = $post_arr;
+				
+			if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
+				$submit_mode='modal';
+				
+			}else{
+				
+				$submit_mode='';
+			}
+				
+			if(($table_config['operations'][$current_operation]['operation_type'])=='Add'){
+					
+				$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode );
+					
+					
+			}elseif($table_config['operations'][$current_operation]['operation_type']=='Edit'){
+				$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode ,'Edit');
+			}
+		}else{
+			//Correct go for save
+			$fields=implode("|",$post_arr ['displayed_fields_vals']);
+			$order=!empty($post_arr['screen_phase_order'])?$post_arr ['screen_phase_order']:$last_order+10;
+		
+			$to_save=array( 
+					'phase_title'=>$post_arr ['phase_title'],
+					'description'=>$post_arr ['description'],
+					'source_paper'=>$post_arr ['source_paper'],
+					'source_paper_status'=>$post_arr ['source_paper_status'],
+					'displayed_fields'=>$fields,
+					'screen_phase_order'=>$order,
+					'phase_type'=>$post_arr ['phase_type'],
+					'screen_phase_final'=>$post_arr ['screen_phase_final'],
+					'added_by'=>$post_arr ['added_by'],
+					
+			);
+		//	print_test($to_save); exit;
+			if($post_arr['operation_type']=='new'){
+				$res= $this->db2->insert('screen_phase',$to_save);
+			}else{
+				$res = $this->db2->update ( 'screen_phase', $to_save, array (
+						'screen_phase_id' =>$post_arr['screen_phase_id']
+				) );
+			}
+			
+		//	print_test($to_save);
+			
+			redirect($post_arr['redirect_after_save']);
+		}
+		
+	}
+	
+	
 	
 	public function save_element() {
 	
@@ -1213,12 +1364,17 @@ class Op extends CI_Controller {
 		$post_arr = $this->input->post ();
 		
 		
-		
+		//print_test($post_arr); exit;
 		/*
 		 * Récupération de la configuration (structure ) de la table qui est concerné
 		 */
 		$table_config= get_table_configuration($post_arr['table_config']);
 		$current_operation=$post_arr['current_operation'];
+		
+		if(!empty($post_arr[$table_config['table_id']])){
+			$data['current_element']=$post_arr[$table_config['table_id']];
+			//print_test($data);
+		}
 		
 		
 		if($post_arr['operation_type']=='new'){

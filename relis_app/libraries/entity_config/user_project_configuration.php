@@ -146,7 +146,7 @@ function get_user_project() {
 	   			'operation_type'=>'AddChild',
 	   			'operation_title'=>'Add a project to a user',
 	   			'operation_description'=>'Add a project to a user',
-	   			'page_title'=>'Add a project to the user',
+	   			'page_title'=>'Add a project to the user : ~current_parent_name~',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   			'redirect_after_save'=>'op/display_element/detail_user/~current_element~',
@@ -154,7 +154,9 @@ function get_user_project() {
 				
 				'master_field'=>'user_id',
 				'parent_config'=>'users',
-	   	
+				'parent_detail_source'=>'get_user_detail',//To get the name of the user to be displayed in the title
+				'parent_detail_source_field'=>'user_name',
+				
 	   			'generate_stored_procedure'=>False,
 	   				
 	   			'fields'=>array(

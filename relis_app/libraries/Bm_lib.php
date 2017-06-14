@@ -20,6 +20,8 @@ class Bm_lib
 				'queries' => FALSE
 		);
 		
+		$this->CI->db_current= $this->CI->load->database(project_db(), TRUE);
+		
 	//	$this->CI->output->set_profiler_sections($sections);
 	//$this->CI->output->enable_profiler(true);
 	//$time=time();

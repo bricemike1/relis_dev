@@ -33,11 +33,10 @@
                   <div class="x_content" style="min-height:400px ">
                   
                  <div class="tab-pane active" id="home">
-                          <p class="lead">Assign papers - Automatic</p>
-                          <p>Select users: <br/><b> Number of papers :<u><?php echo $number_papers ?></u></b><br/></p>
+                         
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
-                         echo form_open_multipart('relis/manager/save_assignment_screen',$attributes);
+                         echo form_open_multipart('relis/manager/assignment_screen',$attributes);
                          
                          
                          if(validation_errors() OR !empty($err_msg))
@@ -52,48 +51,27 @@
                          	echo "</div>";
                          }
                          
-                         echo form_hidden(array( 'number_of_users' => count($users)));
-                         echo form_hidden(array( 'screening_phase' => $screening_phase));
-                         echo form_hidden(array( 'papers_sources' => $papers_sources));
-                         
                          
                          $i=1;
-                        foreach ($users as $user_id => $user_name) {
-                        	echo checkbox_form_bm($user_name,'user_'.$i,'user_'.$user_id,$user_id);
-                        	$i++;
-                        }
-                       
-                  
-                        echo input_form_bm(lng('Reviews per paper'),'reviews_per_paper','reviews_per_paper',$reviews_per_paper);
+                     
+                         echo dropdown_form_bm('Paper source * ','papers_sources','papers_sources',$source_papers);
                          
+                         echo dropdown_form_bm('Screening phase * ','screening_phase','screening_phase',$screening_phases);
+                         
+                         echo "<hr/>";
+                        
                         
                     ?>
                       <div class="ln_solid"></div>
                       <div class="form-group">
                         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
                           
-                          <button  class="btn btn-success">Assign</button>
+                          <button  class="btn btn-success">Next</button>
                         </div>
-                        
-                        
                       </div>
                     
                     <?php 
                     echo form_close();
-                    
-                    echo "<hr/>";
-                    echo "<h2>Preview of papers to be assigned</h2>";
-                    
-                    if(!empty($paper_list)){
-                    	$tmpl = array (
-                    			'table_open'  => '<table class="table table-striped table-hover">',
-                    			'table_close'  => '</table>'
-                    	);
-                    	
-                    	$this->table->set_template($tmpl);
-                    
-                    		echo $this->table->generate($paper_list);
-                    }
                     ?>
                    
                         </div>

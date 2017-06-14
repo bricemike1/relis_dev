@@ -96,16 +96,17 @@
 
                     echo '<div class="exclusion_crit" >'.dropdown_form_bm('Excluded criteria','criteria_ex','criteria_ex',$exclusion_criteria,!empty($content_item['exclusion_criteria'])?$content_item['exclusion_criteria']:0)."</div>";
                      
-                    echo input_textarea_bm('Note ','note','note',!empty($content_item['note'])?$content_item['note']:''); 
+                    echo input_textarea_bm('Note ','note','note',!empty($content_item['screening_note'])?$content_item['screening_note']:''); 
                     
                   //  echo  form_hidden(array( 'decision' => 'exclude'));
                   
                   //  echo checkbox_form_bm('Not sure ','idccx','idccx'); 
                    $save_caption=(!empty($operation_type) AND $operation_type=='edit')?lng('Save'):lng('Save and Next');
                     ?>
-                    <input type="hidden" name="screening_id"  id="screening_id"  value="<?php echo !empty($content_item['screening_id'])?$content_item['screening_id']:''?>" />
+                    <input type="hidden" name="screening_id"  id="screening_id"  value="<?php echo $screening_id ?>" />
                     <input type="hidden" name="decision"  id="decision"  value="<?php echo !empty($content_item['decision'])?$content_item['decision']:'excluded'?>" />
                     <input type="hidden" name="operation_type"  id="operation_type"  value="<?php echo !empty($operation_type)?$operation_type:'new'?>" />
+                    <input type="hidden" name="screening_phase"  id="screening_phase"  value="<?php echo !empty($screening_phase)?$screening_phase:'1'?>" />
                     <input type="hidden" name="operation_source"  id="operation_source"  value="<?php echo !empty($operation_source)?$operation_source:'list_screen/mine_screen'?>" />
                      <input type="hidden" name="paper_id"  id="paper_id"  value="<?php echo $the_paper ?>" />
                      <input type="hidden" name="assignment_id"  id="assignment_id"  value="<?php echo $assignment_id ?>" />
@@ -189,7 +190,7 @@
 		}
 
 
-	<?php if(!empty($content_item) AND $content_item['decision']=='accepted') {?>
+	<?php if(!empty($content_item) AND $content_item['screening_decision']=='Included') {?>
 	   $(document).ready(function() {
 		   include_paper();
 	     });

@@ -1740,12 +1740,31 @@ class Manager extends CI_Controller {
 			$this->session->set_userdata('project_db',$item_data['project_label']);
 			$this->session->set_userdata('project_id',$project_id);
 			$this->session->set_userdata('project_title',$item_data['project_title']);
+			$this->session->set_userdata('working_perspective','screen');
 			}	
 		}
 	
 		redirect('home/screening');
 	}
 	
+	public function set_perspective($perspective='screen'){
+	
+			
+			if(!empty($perspective) AND $perspective=='class'){
+				$this->session->set_userdata('working_perspective',$perspective);
+			}else{
+				$this->session->set_userdata('working_perspective','screen');
+			}
+		
+		if($perspective=='screen'){
+			redirect('home/screening');
+		}else{
+			redirect('home');
+		}
+		
+		
+		
+	}
 	
 	///----------------------------- to be updated
 	

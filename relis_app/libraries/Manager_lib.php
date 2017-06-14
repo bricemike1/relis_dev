@@ -917,6 +917,7 @@ class Manager_lib
 		
 		
 		$menu['general']['menu']['home']=array('label'=>'Home','url'=>'home/screening','icon'=>'home');
+		$menu['general']['menu']['home_screen']=array('label'=>'Screening','url'=>'home/screening_select','icon'=>'home');
 	
 		if(get_appconfig_element('screening_on'))
 		$menu['general']['menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'toggle-right');
@@ -929,33 +930,35 @@ class Manager_lib
 			$menu['general']['menu']['papers']['sub_menu']['import_papers']=array( 'label'=>'Import papers', 'url'=>'relis/manager/import_papers', '');
 			
 			$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All papers', 'url'=>'op/entity_list/list_papers', '');
-			$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Papers pending', 'url'=>'relis/manager/list_screen/screen_paper_pending', '');
-			$menu['general']['menu']['papers']['sub_menu']['screen_paper_review']=array( 'label'=>'Papers in review', 'url'=>'relis/manager/list_screen/screen_paper_review', '');
-			$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'relis/manager/list_screen/screen_paper_included', '');
-			$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'relis/manager/list_screen/screen_paper_excluded', '');
-			$menu['general']['menu']['papers']['sub_menu']['screen_paper_conflict']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_screen/screen_paper_conflict', '');
+		//	$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Papers pending', 'url'=>'relis/manager/list_screen/screen_paper_pending', '');
+			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_review']=array( 'label'=>'Papers in review', 'url'=>'relis/manager/list_screen/screen_paper_review', '');
+			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'relis/manager/list_screen/screen_paper_included', '');
+			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'relis/manager/list_screen/screen_paper_excluded', '');
+			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_conflict']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_screen/screen_paper_conflict', '');
 		}
 		
 		
 		$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'newspaper-o');
+		$menu['general']['menu']['papers_screen']['sub_menu']['all_assignments']=array( 'label'=>'All assignments', 'url'=>'op/entity_list/list_assignments', '');
 		
 		if(get_appconfig_element('assign_papers_on'))
-		$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', '');
+		$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/pre_assignment_screen', '');
+		//$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', '');
 		
-		$menu['general']['menu']['papers_screen']['sub_menu']['my_assignment']=array( 'label'=>'My assignments', 'url'=>'relis/manager/list_screen/mine_assign', '');
-		$menu['general']['menu']['papers_screen']['sub_menu']['my_screen']=array( 'label'=>'My screenings', 'url'=>'relis/manager/list_screen/mine_screen', '');
+		$menu['general']['menu']['papers_screen']['sub_menu']['my_assignment']=array( 'label'=>'--My assignments', 'url'=>'relis/manager/list_screen/mine_assign', '');
+		$menu['general']['menu']['papers_screen']['sub_menu']['my_screen']=array( 'label'=>'--My screenings', 'url'=>'relis/manager/list_screen/mine_screen', '');
 		
 		if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
-			$menu['general']['menu']['papers_screen']['sub_menu']['all_assignment']=array( 'label'=>'All assignments', 'url'=>'relis/manager/list_screen/all_assign', '');	
-			$menu['general']['menu']['papers_screen']['sub_menu']['all_screen']=array( 'label'=>'All screenings', 'url'=>'relis/manager/list_screen/all_screen', '');
-			$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'Completion', 'url'=>'relis/manager/screen_completion', '');
+			$menu['general']['menu']['papers_screen']['sub_menu']['all_assignment']=array( 'label'=>'--All assignments', 'url'=>'relis/manager/list_screen/all_assign', '');	
+			$menu['general']['menu']['papers_screen']['sub_menu']['all_screen']=array( 'label'=>'All screenings', 'url'=>'op/entity_list/list_screenings', '');
+			$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'--Completion', 'url'=>'relis/manager/screen_completion', '');
 	
 			$menu['general']['menu']['papers_screen']['sub_menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'');
 		}
 		
 		if(get_appconfig_element('screening_validation_on')){
 			
-		$menu['general']['menu']['papers_screen_validate']=array('label'=>'Screening validation','url'=>'','icon'=>'newspaper-o');
+		$menu['general']['menu']['papers_screen_validate']=array('label'=>'--Screening validation','url'=>'','icon'=>'newspaper-o');
 		$menu['general']['menu']['papers_screen_validate']['sub_menu']['validate_screen']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', '');
 		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
 		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_assignments']=array( 'label'=>'Assignments', 'url'=>'relis/manager/list_screen/assign_validation', 'icon'=>'');
@@ -1005,6 +1008,7 @@ class Manager_lib
 		$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/configurations/1','icon'=>'gears');
 		$menu['settings']['menu']['configuration']['sub_menu']['general']=array('label'=>'General configuration','url'=>'op/display_element/configurations/1','icon'=>'');
 		$menu['settings']['menu']['configuration']['sub_menu']['users']=array('label'=>'Papers configuration','url'=>'op/display_element/config_papers/1','icon'=>'');
+		$menu['settings']['menu']['configuration']['sub_menu']['screen_phases']=array('label'=>'Screening phases','url'=>'op/entity_list/list_screen_phases','icon'=>'');
 			
 		$menu['settings']['menu']['install_form_editor']=array('label'=>'Update Installation','url'=>'install/install_form_editor','icon'=>'refresh');
 		$menu['settings']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');

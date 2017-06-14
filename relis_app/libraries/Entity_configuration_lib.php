@@ -69,6 +69,22 @@ public function get_table_configuration($_table,$target_db='current')
 					$table_configurations['venue']=get_venue();
 					break;
 			
+			case 'screen_phase':
+					require_once("entity_config/relis/screen_phase_configuration.php");
+					$table_configurations['screen_phase']=get_config_screen_phase();
+					break;
+			
+			case 'screening':
+					require_once("entity_config/relis/screening_configuration.php");
+					$table_configurations['screening']=get_screening();
+					break;
+					
+			case 'screen_decison':
+					require_once("entity_config/relis/screening_decision_configuration.php");
+					$table_configurations['screen_decison']=get_screening_decision();
+					break;
+			
+			
 			/*	
 			
 
@@ -127,10 +143,7 @@ public function get_table_configuration($_table,$target_db='current')
 					$table_configurations['assignment_screen_validate']=get_assignment_screening('assignment_screen_validate','Paper assignment for screening validation');
 					break;	
 					
-				case 'screening':
-					require_once("entity_config/relis/screening_config.php");
-					$table_configurations['screening']=get_screening();
-					break;	
+				
 					
 				case 'screening_validate':
 					require_once("entity_config/relis/screening_config.php");
