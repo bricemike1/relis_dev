@@ -606,7 +606,7 @@ function lng($str,$category="default",$lang='en',$edit_allowed=True){
 		$lang=$ci->session->userdata('active_language');
 	}
 	
-	$ci = get_instance ();
+	
 	$res_str=$ci->DBConnection_mdl->get_str($str,$category,$lang);
 	//print_test($res_str);
 	if(!empty($res_str)){
@@ -825,7 +825,8 @@ function user_project($project_id , $user=0,$user_role=""){
 	function get_table_config($_table,$target_db='current')
 	{
 		$ci = get_instance ();
-		return $ci->entity_config_lib->get_table_config($_table,$target_db);
+		//return $ci->entity_config_lib->get_table_config($_table,$target_db);
+		return $ci->entity_configuration_lib->get_table_configuration($_table,$target_db);
 		
 		
 	}
@@ -1110,7 +1111,7 @@ function user_project($project_id , $user=0,$user_role=""){
 		$array_result=array();
 		if(!empty($query_screen_decision['decision_history'])){
 			$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
-			$criteria=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
+			$criterias=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
 			$decision_source_array=array(
 					'new_screen'=>'Screening',
 					'edit_screen'=>'Screening edition',
@@ -1125,7 +1126,7 @@ function user_project($project_id , $user=0,$user_role=""){
 				$decision_source=!empty($decision_source_array[$T_decisons['decision_source']])?$decision_source_array[$T_decisons['decision_source']]:"";
 				
 				if(!empty($T_decisons['criteria']))
-					$criteria=!empty($users[$T_decisons['user']])?$users[$T_decisons['user']]:"";
+					$criteria=!empty($criterias[$T_decisons['user']])?$criterias[$T_decisons['user']]:"";
 				else{
 					$criteria="";
 				}
@@ -1134,12 +1135,13 @@ function user_project($project_id , $user=0,$user_role=""){
 				$user=!empty($users[$T_decisons['user']])?$users[$T_decisons['user']]:"";
 				
 				array_push($array_result, array(
-						'time'=>$T_decisons['screening_time'],
+						
 						'user'=>$user,
 						'decision'=>$T_decisons['decision'],
 						'criteria'=>$criteria,
 						'result'=>$T_decisons['paper_status'],
-						'operation_source'=>$decision_source
+						'operation_source'=>$decision_source,
+						'time'=>$T_decisons['screening_time'],
 				));
 				
 					
@@ -1148,12 +1150,13 @@ function user_project($project_id , $user=0,$user_role=""){
 			// adding title
 			if(!empty($array_result)){
 			array_unshift($array_result,  array(
-						'time'=>'Time',
+						
 						'user'=>'User',
 						'decision'=>'Decision',
 						'criteria'=>'Criteria',
 						'result'=>'Paper status',
-						'operation_source'=>'Operation'
+						'operation_source'=>'Operation',
+						'time'=>'Time',
 				));
 			
 			}
@@ -1169,7 +1172,10 @@ function user_project($project_id , $user=0,$user_role=""){
 	}
 	
 	
-	function get_paper_screen_status_new($paper_id,$screening_phase=1,$return = 'paper_status'){
+	function get_paper_screen_status_new($paper_id,$screening_phase="",$return = 'paper_status'){
+		if(empty($screening_phase))
+			$screening_phase= active_screening_phase();
+			
 		$ci = get_instance();
 		$ci->db2 = $ci->load->database(project_db(), TRUE);
 	
@@ -1185,11 +1191,10 @@ function user_project($project_id , $user=0,$user_role=""){
 		
 		//$sql= "select A.*,S.screening_id,S.decision,S.exclusion_criteria,S.note,S.screening_time from assignment_screen A 	LEFT JOIN screening S ON (A.assignment_id = S.assignment_id AND S.	screening_active=1)  where A.paper_id = $paper_id AND 	A.assignment_active  ";
 		$sql= "select * from  screening_paper   where paper_id = $paper_id AND screening_phase = $screening_phase AND 	screening_active=1  ";
-	
+		
 		$res_assignment=$ci->db2->query($sql)->result_array();
 	
-		print_test($res_assignment);
-	
+		
 		$pending=0;
 		$accepted=0;
 		$excluded=0;
@@ -1405,6 +1410,14 @@ function user_project($project_id , $user=0,$user_role=""){
 		return $ci->manage_stored_procedure_lib->create_table_configuration($config,$target_db);
 	}
 	
+	function create_view($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	{
+	
+		$ci = get_instance ();
+	
+		return $ci->manage_stored_procedure_lib->create_view($config,$target_db,$run_query,$verbose);
+	}
+	
 	function generate_stored_procedure_list($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
 	{
 	
@@ -1462,4 +1475,12 @@ function user_project($project_id , $user=0,$user_role=""){
 			return '';
 	}
 	
+	function active_screening_phase_info(){
+		$ci = get_instance() ;
+		
+		$res=$ci->db_current->get_where('screen_phase',
+						array('screen_phase_id' => active_screening_phase()), 1)->row_array();
+						
+		return $res;
 	
+	}

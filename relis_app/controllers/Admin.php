@@ -69,7 +69,7 @@ class Admin extends CI_Controller {
 			exit;
 		$list_config=array();	
 		
-		array_push($list_config, array('#','Config',''));
+		array_push($list_config, array('#','Config','Display structure ','Create table','Generate stored procedures','Create views',));
 		
 		if(project_db()=='admin' || project_db()=='default' ){
 			$configurations=array('users','usergroup','project','user_project');
@@ -87,6 +87,7 @@ class Admin extends CI_Controller {
 		 					anchor('admin/describe_config/'.$value_config,'Display structure '.$value_config),
 		 					anchor('admin/create_tables_config/'.$value_config,'Create table for '.$value_config),
 		 					anchor('admin/create_stored_procedures/'.$value_config,'Generate stored procedures for '.$value_config),
+		 					anchor('admin/create_views/'.$value_config,'Create views for '.$value_config),
 		 					
 		 					
 		 			));
@@ -150,6 +151,20 @@ class Admin extends CI_Controller {
 		//echo $this->table->generate($table_to_display);
 			//echo anchor('admin/list_configurations',"<h1>Back</h1>");
 	}
+	public function create_views($entity_config,$operation=""){
+		 
+		$table_configuration=get_table_configuration($entity_config);
+		if(!empty($table_configuration['table_views'])){
+			foreach ($table_configuration['table_views'] as $key=> $view_value) {
+			
+				create_view($view_value);
+			}
+		}else{
+			echo "No view available for this element";
+		}
+		echo anchor('admin/list_configurations',"<h1>Back</h1>");
+	}
+	
 	
 	public function create_stored_procedures($entity_config,$operation=""){
 		 

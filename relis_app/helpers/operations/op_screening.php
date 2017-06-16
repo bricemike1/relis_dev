@@ -46,6 +46,18 @@ function get_operations_screening() {
 			'operation_id'=>'list_assignments'
 	);
 	
+	$operations['list_my_screenings']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_screenings'
+	);
+	
+	$operations['list_my_assignments']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_assignments'
+	);
+	
 	$operations['new_assignment']=array(
 			'type'=>'Add',
 			'tab_ref'=>'screening',

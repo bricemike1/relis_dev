@@ -1,19 +1,19 @@
 	<!-- page content -->
-        <div class="right_col" role="main">
+        <div class="right_col" role="main" >
         
         <?php top_msg();  ?> 
         
-        <div class="row">
+        <div class="row" >
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="dashboard_graph">
 
                 <div class="row x_title">
-                 <?php  header_perspective('screen');?>
+                 <?php  //header_perspective('screen');?>
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                   <div class="x_title">
-                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ?></h3>
+                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ." - Screening : ".$screening_phase_info['phase_title'] ?> </h3>
                     <div class="clearfix"></div>
                   </div>
 
@@ -68,7 +68,7 @@
 	                            </div>
 	                            <div class="col-xs-12 col-sm-6 emphasis">
 	                              
-	                              <a href="../manager/display_element/users/<?php echo $creator['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
+	                              <a href="../op/display_element/detail_user_min/<?php echo $creator['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
 	                                <i class="fa fa-user"> </i> View Profile
 	                              </button></a>
 	                            </div>
@@ -202,7 +202,7 @@
                             <?php if (has_usergroup(1)){?>
                             <div class="col-xs-12 col-sm-6 emphasis">
                               
-                              <a href="../manager/display_element/users/<?php echo $value['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
+                              <a href="../op/display_element/detail_user_min/<?php echo $value['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
                                 <i class="fa fa-user"> </i> View Profile
                               </button></a>
                             </div>
@@ -224,7 +224,7 @@
          </div>
         
         </div>
-        </script>
+        
        <!-- gauge.js -->
     <script src="<?php echo site_url();?>cside/vendors/bernii/gauge.js/dist/gauge.min.js"></script>
     
@@ -248,10 +248,10 @@
       var target = document.getElementById('foo'),
           gauge = new Gauge(target).setOptions(opts);
 
-    //  gauge.maxValue = <?php echo $processed_papers + $pending_papers?>;
-    //  gauge.animationSpeed = 32;
-     // gauge.set(<?php// echo $processed_papers?>);
-     // gauge.setTextField(document.getElementById("gauge-text"));
+      gauge.maxValue = <?php echo $processed_papers + $pending_papers?>;
+      gauge.animationSpeed = 32;
+      gauge.set(<?php echo $processed_papers?>);
+      gauge.setTextField(document.getElementById("gauge-text"));
     </script>
     <!-- /gauge.js -->
         <!-- /page content -->

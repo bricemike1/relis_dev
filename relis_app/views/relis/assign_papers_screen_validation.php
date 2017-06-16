@@ -33,8 +33,9 @@
                   <div class="x_content" style="min-height:400px ">
                   
                  <div class="tab-pane active" id="home">
-                        
-                          <p>Select users: <br/></p>
+                         <p class="lead">Assign papers </p>
+                          <p>Select users: <br/><b> Number of papers to assign :<u><?php echo $number_papers ?></u></b>
+                           <br/><i> Number of papers already assigned :<u><?php echo $number_papers_assigned ?></u></i><br/></p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
                          echo form_open_multipart('relis/manager/save_assign_screen_validation',$attributes);
@@ -53,7 +54,9 @@
                          }
                          
                          echo form_hidden(array( 'number_of_users' => count($users)));
-                         
+                         echo form_hidden(array( 'screening_phase' => $screening_phase));
+                         echo form_hidden(array( 'papers_sources' => $papers_sources));
+                         echo form_hidden(array( 'paper_source_status' => $paper_source_status));
                          
                          $i=1;
                         foreach ($users as $user_id => $user_name) {
@@ -64,7 +67,7 @@
                   
                          echo "<hr/>";
                          
-                         echo dropdown_form_bm("Paper to validate",'paper_to_validate','paper_to_validate',$papers_categories,'Excluded',' 1 mandatory');
+                    //     echo dropdown_form_bm("Paper to validate",'paper_to_validate','paper_to_validate',$papers_categories,'Excluded',' 1 mandatory');
                           
                         echo input_form_bm(lng('Percentage of papers(%)'),'percentage','percentage',$percentage_of_papers);
                          
@@ -80,6 +83,21 @@
                     
                     <?php 
                     echo form_close();
+                    
+                    echo "<hr/>";
+                    echo "<h2>Preview of papers concerned</h2>";
+                    
+                    if(!empty($paper_list)){
+                    	$tmpl = array (
+                    			'table_open'  => '<table class="table table-striped table-hover">',
+                    			'table_close'  => '</table>'
+                    	);
+                    	 
+                    	$this->table->set_template($tmpl);
+                    
+                    	echo $this->table->generate($paper_list);
+                    }
+                    
                     ?>
                    
                         </div>

@@ -33,8 +33,9 @@
                   <div class="x_content" style="min-height:400px ">
                   
                  <div class="tab-pane active" id="home">
-                          <p class="lead">Assign papers - Automatic</p>
-                          <p>Select users: <br/><b> Number of papers :<u><?php echo $number_papers ?></u></b><br/></p>
+                          <p class="lead">Assign papers </p>
+                          <p>Select users: <br/><b> Number of papers to assign :<u><?php echo $number_papers ?></u></b>
+                           <br/><i> Number of papers already assigned :<u><?php echo $number_papers_assigned ?></u></i><br/></p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
                          echo form_open_multipart('relis/manager/save_assignment_screen',$attributes);
@@ -55,6 +56,7 @@
                          echo form_hidden(array( 'number_of_users' => count($users)));
                          echo form_hidden(array( 'screening_phase' => $screening_phase));
                          echo form_hidden(array( 'papers_sources' => $papers_sources));
+                         echo form_hidden(array( 'paper_source_status' => $paper_source_status));
                          
                          
                          $i=1;

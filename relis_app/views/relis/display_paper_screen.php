@@ -82,13 +82,13 @@
 							
 							
 							if(empty($screenings)){
-								 
+								if(isset($screenings))
 								echo lng("No screening data");
 							}else{
 								
 								echo "<table class='table table-striped'>";
 								echo "<tr>";
-								echo "<th style='width:20%'>".lng('User')."</th>";
+								echo "<th style='width:20%'>".lng(' User')."</th>";
 								echo "<th style='width:20%'>".lng('Assignment type')."</th>";
 								echo "<th style='width:20%'>".lng('Decision')."</th>";
 								echo "<th style='width:20%'>".lng('Criteria')."</th>";
@@ -155,7 +155,9 @@
 							
 							if(empty($screen_history)){
 								 
-								echo lng("No history available for this paper");
+								
+										echo lng("No history available for this paper");
+								
 							}else{
 								
 								$tmpl = array (

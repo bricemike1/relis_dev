@@ -69,6 +69,7 @@ class Op extends CI_Controller {
 		
 		
 		$ref_table_config['current_operation']=$ref_table_operation;
+		
 		$data=$this->DBConnection_mdl->get_list_mdl($ref_table_config,$val,$page,$rec_per_page);
 		
 	
@@ -217,7 +218,10 @@ class Op extends CI_Controller {
 			
 		
 				array_push($field_list, $k);
-				array_push($field_list_header, $ref_table_config['fields'][$k]['field_title']);
+				
+				$field_header=!empty($v['field_title'])?$v['field_title']:$ref_table_config['fields'][$k]['field_title'];
+				
+				array_push($field_list_header, $field_header);
 		
 			
 			}
@@ -430,7 +434,7 @@ class Op extends CI_Controller {
 		$ref_table_operation=$op['operation_id'];
 		// todo correction gestion des utilisateurs
 		if(admin_config($ref_table))
-			$data['left_menu_admin']=True;
+			//$data['left_menu_admin']=True;
 			
 			
 			/*

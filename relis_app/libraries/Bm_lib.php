@@ -19,9 +19,30 @@ class Bm_lib
 				'session_data' => FALSE,
 				'queries' => FALSE
 		);
+//	echo 	print_test($this->CI->load->database('default',true));
+		$f = APPPATH.'config/database.php';
+		include($f);
+		$db_settings = $db;
+		//print_test($db_settings);
+	//	print_test(empty($db_settings[project_db()]));
+		//exit;
+		if(!empty($db_settings[project_db()])){
+			
+			$this->CI->db_current= $this->CI->load->database(project_db(), TRUE);
+		}else{
+		//	set_top_msg("There is a problem with the selected project!",'error');
 		
-		$this->CI->db_current= $this->CI->load->database(project_db(), TRUE);
+			$this->CI->db_current= $this->CI->load->database('default', TRUE);
+			$this->CI->session->set_userdata ( 'project_db','' );
+			$this->CI->session->set_userdata ( 'project_id','' );
+			$this->CI->session->set_userdata ( 'project_title','' );
+			echo "<script>alert('There is a problem with the selected project!');window.location.href='".base_url()."home';</script>";
+			//redirect('home');
+			exit;
+		}
 		
+		
+		//exit;
 	//	$this->CI->output->set_profiler_sections($sections);
 	//$this->CI->output->enable_profiler(true);
 	//$time=time();

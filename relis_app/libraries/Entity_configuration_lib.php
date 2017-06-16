@@ -85,7 +85,7 @@ public function get_table_configuration($_table,$target_db='current')
 					break;
 			
 			
-			/*	
+			
 			
 
 			case 'logs':
@@ -163,7 +163,7 @@ public function get_table_configuration($_table,$target_db='current')
 	
 			
 	
-			*/
+			
 	
 			
 			default:

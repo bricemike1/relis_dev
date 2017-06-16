@@ -19,8 +19,15 @@
               	$images=display_picture_from_db($user_picture);'data:image/png;base64,'.base64_encode( $user_picture);
               	}
                             }
-							
-				$left_menu = $this->manager_lib->get_left_menu_screen();
+                            
+                
+                            if(! active_screening_phase()){
+                            	$left_menu = $this->manager_lib->get_left_menu_screen_select();
+                            }else{
+                            	$left_menu = $this->manager_lib->get_left_menu_screen();
+                            }
+                            
+				
              
               ?>
                 <img src="<?php echo $images;?>" alt="..." class="img-circle profile_img">

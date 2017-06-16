@@ -1113,6 +1113,45 @@ END";
 		/*
 		 * Création de la procedure stocké pour afficher la liste
 		 */
+		public function create_view($config,$target_db='current',$run_query=TRUE,$verbose=TRUE){
+			$target_db=($target_db=='current')?project_db():$target_db;
+			
+			$this->CI->db2 = $this->CI->load->database($target_db, TRUE);
+			if($verbose)
+			print_test($config);
+			
+			$procedure="
+				DROP VIEW IF EXISTS ".$config['name'].";
+				";
+			if($verbose)
+				echo "<p>$procedure</p>";
+					
+				if($run_query)
+				{
+					$res = $this->CI->db2->query ( $procedure );
+			
+					if($verbose)
+						print_test($res);
+				}
+			
+			
+			$procedure="
+				CREATE ALGORITHM=UNDEFINED  SQL SECURITY DEFINER VIEW  ".$config['name']." AS ".$config['script'];
+				
+			if($verbose)
+				echo "<p>$procedure</p>";
+					
+				if($run_query)
+				{
+					$res = $this->CI->db2->query ( $procedure );
+			
+					if($verbose)
+						print_test($res);
+				}
+			}
+		/*
+		 * Création de la procedure stocké pour afficher la liste
+		 */
 		public function generate_stored_procedure_list($config,$target_db='current',$run_query=TRUE,$verbose=TRUE){
 		
 			//$run_query=false;

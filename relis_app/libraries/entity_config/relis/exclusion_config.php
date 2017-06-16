@@ -66,7 +66,7 @@ function get_exclusion() {
 	   			'mandatory'=>' mandatory ',
 	   			'input_type'=>'select',
 	   			'input_select_source'=>'table',
-	   			'input_select_values'=>'ref_exclusioncrieria;ref_value',//the reference table and the field to be displayed
+	   			'input_select_values'=>'exclusioncrieria;ref_value',//the reference table and the field to be displayed
 
 				'on_add'=>'enabled',
 				'on_edit'=>'enabled',
@@ -83,7 +83,7 @@ function get_exclusion() {
 				
 	   			'on_add'=>'enabled',
 	   			'on_edit'=>'enabled',
-	   			'on_list'=>'hidden'
+	   			'on_list'=>'hidden',
 	   	);
 		
 		$fields['exclusion_by']=array(

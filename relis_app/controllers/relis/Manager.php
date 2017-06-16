@@ -414,15 +414,15 @@ class Manager extends CI_Controller {
 		/*
 		 * Récupération de la configuration(structure) de la table des papiers
 		 */
-		$table_config=get_table_config($ref_table);
+		$table_config=get_table_configuration($ref_table);
 	
-	print_test(get_table_config('classification'));
+	//print_test(get_table_config('classification'));
 		/*
 		 * Appel de la fonction  récupérer les informations sur le papier afficher
 		 */
 		$paper_data=$this->manager_lib->get_element_detail('papers',$ref_id);
 		
-		
+		//print_test($paper_data);
 		
 	
 		/*
@@ -495,9 +495,9 @@ class Manager extends CI_Controller {
 	
 		array_push($item_data, $array);
 	
-		$array['title']="<b>".lng('Abstract')." :</b> <br/><br/>".$content_item['preview'];
+		$array['title']="<b>".lng('Abstract')." :</b> <br/><br/>".$content_item['abstract'];
 		array_push($item_data, $array);
-		$array['title']="<b>".lng('Preview')." :</b> <br/><br/>".$content_item['bibtex'];
+		$array['title']="<b>".lng('Preview')." :</b> <br/><br/>".$content_item['preview'];
 		array_push($item_data, $array);
 	
 		$array['title']="<b>".lng('Venue')." </b> ".$venue;
@@ -594,7 +594,7 @@ class Manager extends CI_Controller {
 	
 		$classification = $this->DBConnection_mdl->get_classifications ($ref_id );
 	
-	
+	//print_test($classification);
 		if(!empty($classification)){
 				
 			$classification_data=$this->manager_lib->get_element_detail('classification', $classification[0]['class_id'],False,True);
@@ -609,11 +609,11 @@ class Manager extends CI_Controller {
 				
 			$data['classification_button']=$edit_button." ".$delete_button;
 		}else{
-			if(!empty(	$table_config['links']['add_child']['url']) AND !empty($table_config['links']['add_child']['on_view'])  AND ($table_config['links']['add_child']['on_view']== True) ){
+			//if(!empty(	$table_config['links']['add_child']['url']) AND !empty($table_config['links']['add_child']['on_view'])  AND ($table_config['links']['add_child']['on_view']== True) ){
 					
 				$data ['classification_button'] =get_top_button ( 'add', 'Add classification', 'relis/manager/new_classification/'.$ref_id, 'Add classification')." ";;
 					
-			}
+			//}
 		}
 	
 	
@@ -725,7 +725,8 @@ class Manager extends CI_Controller {
 		/*
 		 * Titre de la page
 		 */
-		$data ['page_title'] = lng($table_config['reference_title_min']);
+	//	$data ['page_title'] = lng($table_config['reference_title_min']);
+		$data ['page_title'] = lng('Paper');
 	
 		if($paper_excluded){
 			$data ['page_title'] = lng("Paper excluded");
@@ -942,9 +943,9 @@ class Manager extends CI_Controller {
 		 * Titre de la page
 		 */
 		if($operation=='edit'){
-			$data ['page_title'] = lng('Edit the assignation to the '.$table_config_parent['reference_title_min']." : ".$parrent_names[$paper_id]);
+			$data ['page_title'] = lng('Edit the assignation to the paper : '.$parrent_names[$paper_id]);
 		}else{
-			$data ['page_title'] = 'Assign a user to the '.$table_config_parent['reference_title_min']." : ".$parrent_names[$paper_id];
+			$data ['page_title'] = 'Assign a user to the paper :'.$parrent_names[$paper_id];
 	
 		}
 	
@@ -1110,9 +1111,10 @@ class Manager extends CI_Controller {
 		$parrent_names=$this->manager_lib->get_reference_select_values($table_config_child['fields'][$child_field]['input_select_values']);
 	
 		if($operation=='edit'){
-			$data ['page_title'] = lng('Edit  '.$table_config_child['reference_title_min']." for the ".$table_config_parent['reference_title_min'])." : ".$parrent_names[$parent_id];
+			$data ['page_title'] = lng("Edit  classification for the paper : ").$parrent_names[$parent_id];
 		}else{
-			$data ['page_title'] = lng('Add a '.$table_config_child['reference_title_min']." to the ".$table_config_parent['reference_title_min'])." : ".$parrent_names[$parent_id];
+		//	$data ['page_title'] = lng('Add a '.$table_config_child['reference_title_min']." to the ".$table_config_parent['reference_title_min'])." : ".$parrent_names[$parent_id];
+			$data ['page_title'] = lng("Add a classification  to the paper : ") . $parrent_names[$parent_id];
 				
 		}
 	
@@ -2185,7 +2187,7 @@ class Manager extends CI_Controller {
 	
 	
 	public function pre_assignment_screen($data=""){
-		$data['screening_phases']= $this->manager_lib->get_reference_select_values('screen_phase;screen_phase_title',True,False);
+		$data['screening_phases']= $this->manager_lib->get_reference_select_values('screen_phase;phase_title',True,False);
 		
 		$source_papers= $data['screening_phases'];
 		$source_papers['']="All papers";
@@ -2205,7 +2207,12 @@ class Manager extends CI_Controller {
 	}
 	
 	public function assignment_screen($data=""){
-		$error=FALSE;
+		if(! active_screening_phase())
+		{	redirect('home');
+			exit;
+		}
+			
+		/*$error=FALSE;
 		if(empty($data))
 		{
 			if($this->input->post ()){
@@ -2240,21 +2247,68 @@ class Manager extends CI_Controller {
 			}
 			
 		}
+		//
 		
-		//print_test($data);
-		if($error ){
+		*/
+
+
+		$screening_phase_info=active_screening_phase_info();
+		$creening_phase_id=active_screening_phase();
+		
+		$data['screening_phase']=$creening_phase_id;
+		//$screening phases
+		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
+		->get_where('screen_phase', array('screen_phase_active'=>1))
+		->result_array();
+		//$creening_phase_id=8;
+		
+		$previous_phase=0;
+		$previous_phase_title="";
+		
+		foreach ($screening_phases as $k => $phase) {
 			
+				if($phase['screen_phase_id']==$creening_phase_id)	{
+					break;
+				}elseif($phase['phase_type']!='Validation'){
+					$previous_phase=$phase['screen_phase_id'];
+					$previous_phase_title=$phase['phase_title'];
+				}
+			
+		}
+		
+		
+		if($previous_phase == 0){
+			$paper_source='all';
+			$paper_source_status='all';
+			$previous_phase_title=" ";
 		}else{
-			
-			
+			$paper_source=$previous_phase;
+			$paper_source_status=$screening_phase_info['source_paper_status'];
+			$previous_phase_title = " from $previous_phase_title";
+		}
 		
-			$papers=$this->get_papers_to_screen($data['papers_sources']);
-			//print_test($papers); exit;
+		$append_title="( $paper_source_status papers  $previous_phase_title )";
+		
+		//print_test($previous_phase);
+		//print_test($screening_phase_info);
+		//print_test($screening_phases);
+		
+		
+		
+		$data['papers_sources']=$paper_source;
+		$data['paper_source_status']=$paper_source_status;
+		$data['screening_phase']=$creening_phase_id;
+		
+			$papers=$this->get_papers_to_screen($paper_source,$paper_source_status);
+	
+			$data['paper_source']=$paper_source;
+			
 			$paper_list[0]=array('Key','Title');
 			
-			foreach ($papers['list'] as $key => $value) {
+			foreach ($papers['to_assign'] as $key => $value) {
 				$paper_list[$key+1]=array($value['bibtexKey'],$value['title']);
 			}
+			
 			$data['paper_list']=$paper_list;
 			$user_table_config=get_table_configuration('users');
 			
@@ -2269,12 +2323,13 @@ class Manager extends CI_Controller {
 			}
 		
 			$data['users']=$_assign_user;
-			$data['number_papers']=$papers['nombre'];
+			$data['number_papers']=count($papers['to_assign']);
+			$data['number_papers_assigned']=count($papers['assigned']);
 			$data['reviews_per_paper']=2;
 			
 			
 			
-			$data ['page_title'] = lng('Assign papers for screening (Step 2)');
+			$data ['page_title'] = lng('Assign papers for screening '.$append_title);
 			$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 			//$data['left_menu_perspective']='z_left_menu_screening';
 			//$data['project_perspective']='screening';
@@ -2286,21 +2341,91 @@ class Manager extends CI_Controller {
 			 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 			 */
 			$this->load->view ( 'body', $data );
-		}
+		
 	}
 	
-	function get_papers_to_screen($source='all'){
-		$papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
+	function get_papers_to_screen($source='all',$source_status='all',$current_phase=""){
+		//$source_status="Included";
+		//$source='1';
+		if(empty($current_phase)){
+			$current_phase=active_screening_phase();
+		}
+		if($source=='all'){
+			//rechercher dans papers
+			//$papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
+			$condition ="";
+			if($source_status != 'all'){
+				
+				$condition=" AND screening_status = '$source_status'";
+			}
+			$sql="SELECT *,screening_status as paper_status from paper P where paper_active = 1 $condition ";
+		}else{
+			
+		
+			$condition ="";
+			
+			if($source_status != 'all'){
+			
+				$condition=" AND S.screening_decision = '$source_status'";
+			}
+			
+			$sql="SELECT decison_id,screening_decision as paper_status,P.* from screen_decison S			
+			LEFT JOIN paper P ON(S.paper_id=P.id AND P.paper_active=1 )
+			WHERE screening_phase='$source'	AND  decision_active=1 $condition
+					";
+				
+			//rechercher dans screen et la decision dans screen decision
+		}
+		
+		$all_papers=$this->db_current->query($sql)->result_array();
+		$result['all_papers']=$all_papers;
+	//	echo $sql;
+		//print_test($all_papers);
+	
+		// get papers already assigned in current phase
+		
+		$sql="Select DISTINCT (paper_id) from screening_paper WHERE screening_active =1 AND screening_phase = $current_phase GROUP BY paper_id";
+		$paper_assigned=$this->db_current->query($sql)->result_array();
 		
 		
-		return $papers;
+	//	$result['paper_assigned']=$paper_assigned;
+		$det_paper_to_assign=array();
+		$det_paper_assigned=array();
+		if(empty($paper_assigned))//no paper already assigned'
+		{
+			$det_paper_to_assign=$all_papers;
+		}else{
+			foreach ($all_papers as $key_all => $paper_all) {
+				$found=False;
+				foreach ($paper_assigned as $key_assigned => $value_assigned) {
+					if($paper_all['id']==$value_assigned['paper_id']){
+						$found=True;
+						array_push($det_paper_assigned, $paper_all);
+						break;
+					}
+					
+				}
+				if(!$found){
+					array_push($det_paper_to_assign, $paper_all);
+				}
+			}
+			
+		}
+		
+		$result['assigned']=$det_paper_assigned;
+		
+		$result['to_assign']=$det_paper_to_assign;
+		//print_test($result);
+		//print_test($det_paper_assigned);
+		//print_test($det_paper_to_assign);
+		return $result;
 	}
 	
 	
 	function save_assignment_screen(){
 		
 		$post_arr = $this->input->post ();
-		//print_test($post_arr); exit;
+	//	print_test($post_arr); exit;
 		$users=array();
 		$i=1;
 		if(empty( $post_arr['reviews_per_paper'] )){
@@ -2330,18 +2455,22 @@ class Manager extends CI_Controller {
 				$this->assignment_screen($data);
 				
 			}else{
-				$currect_screening_phase=$post_arr['screening_phase']; //TODO to be provided;
+				$currect_screening_phase=$post_arr['screening_phase'];
+				$papers_sources=$post_arr['papers_sources']; 
+				$paper_source_status=$post_arr['paper_source_status'];
 				
 				$reviews_per_paper=$post_arr['reviews_per_paper'];
 				
 				//Get all papers
-			//	$papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
-				$papers=$this->get_papers_to_screen($post_arr['papers_sources']);
+		
+			//	$papers=$this->get_papers_to_screen($papers_sources);
+				$papers=$this->get_papers_to_screen($papers_sources,$paper_source_status);
 				
+			//	print_test($papers); exit;
 				$assign_papers= array();
 				$this->db2 = $this->load->database(project_db(), TRUE);
 				$operation_code=active_user_id()."_".time();
-				foreach ($papers['list'] as $key => $value) {
+				foreach ($papers['to_assign'] as $key => $value) {
 					
 					$assign_papers[$key]['paper']=$value['id'];
 					
@@ -2446,7 +2575,7 @@ class Manager extends CI_Controller {
 		}else{
 		
 			
-			$my_assignations=$this->Relis_mdl->get_user_assigned_papers(active_user_id(),$screen_type);
+			$my_assignations=$this->Relis_mdl->get_user_assigned_papers(active_user_id(),$screen_type,active_screening_phase());
 			//print_test($my_assignations);
 			$paper_to_screen=0;
 			$screening_id=0;
@@ -2478,7 +2607,7 @@ class Manager extends CI_Controller {
 					//	$page_title="All papers have been screened";
 						
 					}else{
-						$page_title=($screen_type=='screen_validation')?"Screening validation":"Screening";
+						//$page_title=($screen_type=='screen_validation')?"Screening validation":"Screening";
 							
 						
 						$screening_detail= $this->DBConnection_mdl->get_row_details ( 'get_detail_screen',$screening_id ,TRUE);
@@ -2506,23 +2635,40 @@ class Manager extends CI_Controller {
 		
 		}
 		
+		$screening_phase_info=active_screening_phase_info();
+		$displayed_fieds=explode('|', $screening_phase_info['displayed_fields']);
+		//print_test($screening_phase_info);
+		//print_test($fieds);
 		
 		if(!empty($data['the_paper'])){
 			
 			$paper_detail= $this->DBConnection_mdl->get_row_details ( 'papers',$data['the_paper'] );
-			$data['paper_title']=$paper_detail['bibtexKey']." - ".$paper_detail['title'];
+			$data['paper_title']=$paper_detail['bibtexKey']." - ".$paper_detail['title'];	
 			
-			$data['paper_abstract']=$paper_detail['abstract'];
-			$data['paper_link']=$paper_detail['doi'];
-		
+			if(in_array('Abstract', $displayed_fieds))
+				$data['paper_abstract']=$paper_detail['abstract'];
+			
+			if(in_array('Bibtex', $displayed_fieds))
+				$data['paper_bibtex']=$paper_detail['bibtex'];
+			
+			if(in_array('Link', $displayed_fieds))
+				$data['paper_link']=$paper_detail['doi'];
+			
+			if(in_array('Preview', $displayed_fieds))
+					$data['paper_preview']=$paper_detail['preview'];
 		}
 
 			
 			
 			if(isset($table_config['operations'][$ref_table_operation]['page_title'] )){
-				$data['page_title']=lng($table_config['operations'][$ref_table_operation]['page_title']);
-			}else{
-				$data ['page_title'] = lng($page_title);
+				if(!empty($page_title)){
+					$data['page_title']=$page_title ." - ".$screening_phase_info['phase_title'];
+				}else{
+					$data['page_title']=lng($table_config['operations'][$ref_table_operation]['page_title'])." - ".$screening_phase_info['phase_title'];
+				}
+				
+				}else{
+				$data ['page_title'] = lng('Screening');
 			}
 			
 			
@@ -2659,13 +2805,13 @@ class Manager extends CI_Controller {
 		}
 		
 		
-		if($screening_phase_last_status){
-		
+		if($screening_phase_last_status OR $paper_status=='Excluded'){
+			
 			if($paper_status=='Included'){
-				//$this->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'To classify'),array('id'=>$post_arr['paper_id']));
+				$this->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'To classify'),array('id'=>$post_arr['paper_id']));
 			}else{
-					
-				//$this->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'Waiting'),array('id'=>$post_arr['paper_id']));
+				$paper_status=(($paper_status!='Included' AND $paper_status!='Excluded') ?'Pending':$paper_status);
+				$this->db2->update('paper',array('screening_status'=>$paper_status,'classification_status'=>'Waiting'),array('id'=>$post_arr['paper_id']));
 			}
 			
 		}
@@ -3223,14 +3369,15 @@ class Manager extends CI_Controller {
 	public function screen_completion($type='screening'){
 	
 		if($type=='validate'){
-			$assignments=$this->Relis_mdl->get_user_assigned_papers(0,'screen_validation');
+			$assignments=$this->Relis_mdl->get_user_assigned_papers(0,'simple_screen',active_screening_phase());
 		}else{
-			$assignments=$this->Relis_mdl->get_user_assigned_papers(0);
+			$assignments=$this->Relis_mdl->get_user_assigned_papers(0,'simple_screen',active_screening_phase());
 		}
 		
 		
 		//print_test($assignments);
-		
+		//print_test($assignments);
+		//exit;
 		$assignment_id=0;
 		$total_papers=count($assignments);
 		$papers_screened=0;
@@ -3242,7 +3389,7 @@ class Manager extends CI_Controller {
 			if (! isset($assign_per_user[$value['user_id']])){
 				$assign_per_user[$value['user_id']]['total_papers'] = 1;
 				
-				if($value['screening_done']==1){
+				if($value['screening_status']=='Done'){
 					$assign_per_user[$value['user_id']]['papers_screened']=1;
 					$papers_screened ++;
 				}else{
@@ -3252,7 +3399,7 @@ class Manager extends CI_Controller {
 			}else{
 				$assign_per_user[$value['user_id']]['total_papers']++;
 				
-				if($value['screening_done']==1){
+				if($value['screening_status']=='Done'){
 					$assign_per_user[$value['user_id']]['papers_screened']++;
 					$papers_screened ++;
 				}
@@ -3266,7 +3413,7 @@ class Manager extends CI_Controller {
 		$users=$this->manager_lib->get_reference_select_values('users;user_name');
 			
 		//	print_test($users);
-		//	print_test($assign_per_user);
+			//print_test($assign_per_user);
 		foreach ($assign_per_user as $key_a => $value_a) {
 				$assign_per_user[$key_a]['completion']=(int)($value_a['papers_screened'] *100 / $value_a['total_papers'] );
 				$assign_per_user[$key_a]['user']=$users[$key_a];
@@ -3420,10 +3567,12 @@ class Manager extends CI_Controller {
 	
 	
 		//print_test($data);
-		$screening_phase=1;
+		$screening_phase=active_screening_phase();
+		if(active_screening_phase()){
+		//$screening_phase=1;
 		//$res_screen=get_paper_screen_result($ref_id);
 		$res_screen=get_paper_screen_status_new($ref_id,$screening_phase,'all');
-		
+		//print_test($res_screen);
 		
 		if(trim($res_screen['screening_result'])=='In conflict'){
 			$my_paper=FALSE;
@@ -3445,12 +3594,14 @@ class Manager extends CI_Controller {
 	
 		$data['screenings']=$res_screen['screenings'];
 		$data['screening_result']=$res_screen['screening_result'];
-		
+		}else{
+			$data['screening_result']=$content_item['screening_status'];
+		}
 
 		
 		if($display_type=='det'){
 		
-		
+			if(active_screening_phase())
 			$data['screen_history']=get_paper_screen_history($ref_id,$screening_phase);
 			//print_test($data['screen_history']);
 		
@@ -3521,11 +3672,15 @@ class Manager extends CI_Controller {
 	
 	public function screen_result($type=1){
 		$users=$this->manager_lib->get_reference_select_values('users;user_name');
-		$exclusion_crit=$this->manager_lib->get_reference_select_values('ref_exclusioncrieria;ref_value');
+		$exclusion_crit=$this->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
+		//print_test($users);
+		$ref_table_config=get_table_configuration('papers');
+	
+		$ref_table_config['current_operation']='list_papers_screen';
 		
-		$papers=$this->DBConnection_mdl->get_papers('screen',get_table_config('papers'),"_",0,-1);
+		$papers=$this->DBConnection_mdl->get_list_mdl($ref_table_config,'_',0,-1);
 		
-		//print_test($users); exit;
+		
 		$result=array();
 		$result['total']=0;
 		foreach ($papers['list'] as $key => $value) {
@@ -3580,7 +3735,13 @@ class Manager extends CI_Controller {
 		);
 		
 		//print_test($data['screening_result']);
-		$screenings=$this->DBConnection_mdl->get_list(get_table_config('screening'),'_',0,-1);
+		$ref_table_config_s=get_table_configuration('screening');
+		
+		$ref_table_config_s['current_operation']='list_screenings';
+		
+		$screenings=$this->DBConnection_mdl->get_list_mdl($ref_table_config_s,'_',0,-1);
+		//print_test($screenings);exit;
+		//$screenings=$this->DBConnection_mdl->get_list(get_table_config('screening'),'_',0,-1);
 		
 		$res_screening['total']=0;
 		$res_screening['users']=array();
@@ -3591,17 +3752,17 @@ class Manager extends CI_Controller {
 		foreach ($screenings['list'] as $key => $value) {
 			
 			$res_screening['total']++;
-			if(empty($res_screening['users'][$value['user_id']][$value['decision']])){
+			if(empty($res_screening['users'][$value['user_id']][$value['screening_decision']])){
 			//	echo "<p>bbb</p>";
-				$res_screening['users'][$value['user_id']][$value['decision']]=1;
+				$res_screening['users'][$value['user_id']][$value['screening_decision']]=1;
 			}else{
 			//	echo "<p>cccc</p>";
-				$res_screening['users'][$value['user_id']][$value['decision']] = $res_screening['users'][$value['user_id']][$value['decision']]+1;
+				$res_screening['users'][$value['user_id']][$value['screening_decision']] = $res_screening['users'][$value['user_id']][$value['screening_decision']]+1;
 			}
 			
 			
 			// exclusion critéria
-			if($value['decision']=='excluded' AND !empty($value['exclusion_criteria'])){
+			if($value['screening_decision']=='Excluded' AND !empty($value['exclusion_criteria'])){
 				if(empty($res_screening['criteria'][$value['exclusion_criteria']])){
 					//	echo "<p>bbb</p>";
 					$res_screening['criteria'][$value['exclusion_criteria']]=1;
@@ -3631,15 +3792,15 @@ class Manager extends CI_Controller {
  		{
  			$result_per_user[0]=array(
  					'user'=>'User ',
- 					'accepted'=>'Accepted',
+ 					'accepted'=>'Included',
  					'excluded'=>'Excluded'
  			);
  			$i=1;
 		foreach ($res_screening['users'] as $key => $value) {
 			$result_per_user[$i]=array(
 						'user'=>!empty($users[$key])?$users[$key]:'User '.$key,
-						'accepted'=>!empty($value['accepted'])?$value['accepted']:0,
-						'excluded'=>!empty($value['excluded'])?$value['excluded']:0,
+						'accepted'=>!empty($value['Included'])?$value['Included']:0,
+						'excluded'=>!empty($value['Excluded'])?$value['Excluded']:0,
 						);
 			$i++;
 		}
@@ -3689,17 +3850,90 @@ class Manager extends CI_Controller {
 	}
 	
 	public function validate_screen_set($data=""){
+		if(! active_screening_phase())
+		{	redirect('home');
+		exit;
+		}
+	
+		$screening_phase_info=active_screening_phase_info();
+		$creening_phase_id=active_screening_phase();
+		
+		$data['screening_phase']=$creening_phase_id;
+	
+		//print_test($screening_phase_info);
+		//$screening phases
+		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
+		->get_where('screen_phase', array('screen_phase_active'=>1))
+		->result_array();
+		
+		
+		$previous_phase=0;
+		$previous_phase_title="";
+		
+		if($screening_phase_info['source_paper']=='Previous phase'){
+			foreach ($screening_phases as $k => $phase) {
 			
-	
-	
-	
-		$papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
+				if($phase['screen_phase_id']==$creening_phase_id)	{
+					break;
+				}elseif($phase['phase_type']!='Validation'){
+					$previous_phase=$phase['screen_phase_id'];
+					$previous_phase_title=$phase['phase_title'];
+				}
+			
+			}
+		}
+		
+		
+		
+		if($previous_phase == 0){
+			$paper_source='all';
+			$paper_source_status=$screening_phase_info['source_paper_status'];
+			$previous_phase_title=" ";
+		}else{
+			$paper_source=$previous_phase;
+			$paper_source_status=$screening_phase_info['source_paper_status'];
+			$previous_phase_title = " from $previous_phase_title";
+		}
+		
+		$append_title="( $paper_source_status papers  $previous_phase_title )";
+		//echo $append_title;
+		$data['papers_sources']=$paper_source;
+		$data['paper_source_status']=$paper_source_status;
+		$data['screening_phase']=$creening_phase_id;
+		
+		
+		
+		$papers=$this->get_papers_to_screen($paper_source,$paper_source_status);
+		
+		//print_test($papers);
+		$data['paper_source']=$paper_source;
+			
+		$paper_list[0]=array('Key','Title');
+			
+		foreach ($papers['to_assign'] as $key => $value) {
+			$paper_list[$key+1]=array($value['bibtexKey'],$value['title']);
+		}
+		
+		$data['paper_list']=$paper_list;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	//	$papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
 		//print_test($papers);
 	
 	
 	
-		$user_table_config=get_table_config('users');
-	
+		$user_table_config=get_table_configuration('users');
+			
 		$users=$this->DBConnection_mdl->get_list($user_table_config,'_',0,-1);
 		$_assign_user=array();
 		foreach ($users['list'] as $key => $value) {
@@ -3710,16 +3944,17 @@ class Manager extends CI_Controller {
 		}
 		//	print_test($users);
 		$data['users']=$_assign_user;
-		
+		$data['number_papers']=count($papers['to_assign']);
+		$data['number_papers_assigned']=count($papers['assigned']);
 		$data['percentage_of_papers']=20;
 		$data['papers_categories']=array('Excluded'=>'Excluded','Included'=>'Included','all'=>'All');
 		
 	
 	
-		$data ['page_title'] = lng('Set screening validation');
+		$data ['page_title'] = lng('Set screening validation '.$append_title);
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'home' );
-		$data['left_menu_perspective']='z_left_menu_screening';
-		$data['project_perspective']='screening';
+		//$data['left_menu_perspective']='z_left_menu_screening';
+		//$data['project_perspective']='screening';
 		$data ['page'] = 'relis/assign_papers_screen_validation';
 	
 		//print_test($data);
@@ -3764,13 +3999,13 @@ class Manager extends CI_Controller {
 	
 			}else{
 	
-				//print_test($users);
-				
-				//$percentage=$post_arr['percentage'];
-	
-				//Get all papers
-			//	$result_papers=$this->DBConnection_mdl->get_papers('screen','papers','_',0,-1);
+				$currect_screening_phase=$post_arr['screening_phase'];
+				$papers_sources=$post_arr['papers_sources'];
+				$paper_source_status=$post_arr['paper_source_status'];
+				$screening_phase_info=active_screening_phase_info();
+				$phase_title=$screening_phase_info['phase_title'];
 				$reviews_per_paper=1;
+				/*
 				if($post_arr['paper_to_validate']=='all'){
 					$extra_condition =" ";
 						
@@ -3783,10 +4018,13 @@ class Manager extends CI_Controller {
 					
 				
 				$papers=$result_papers['list'];
+				*/
+				$papers_all=$this->get_papers_to_screen($papers_sources,$paper_source_status);
 				
+				$papers=$papers_all['to_assign'];
 				$papers_to_validate_nbr= round( count($papers) * $percentage/100);
 				
-				$operation_description="Assign $percentage % ($papers_to_validate_nbr) of ".$post_arr['paper_to_validate']." papers for validation";
+				$operation_description="Assign $percentage % ($papers_to_validate_nbr) of ".$paper_source_status." papers for $phase_title";
 			//	print_test($papers);
 				shuffle($papers); // randomize the list
 			
@@ -3799,19 +4037,25 @@ class Manager extends CI_Controller {
 						
 					$assign_papers[$key]['users']=array();
 					
+					
 					$assignment_save=array(
 							'paper_id'=>$value['id'],
 							'user_id'=>'',
-							'note'=>'',
+							'assignment_note'=>'',
 							'assignment_type'=>'Normal',
 							'operation_code'=>$operation_code,
 							'assignment_mode'=>'auto',
+							'assignment_role'=>'Validation',
+							'screening_phase'=>$currect_screening_phase,
 							'assigned_by'=>$this->session->userdata ( 'user_id' )
 								
 					);
 					$j=1;
 						
+					//the table to save assignments
 						
+					$table_name=get_table_configuration('screening','current','table_name');
+					
 						
 					while($j<=$reviews_per_paper){
 	
@@ -3825,8 +4069,8 @@ class Manager extends CI_Controller {
 							array_push($assign_papers[$key]['users'], $users[$temp_user]);
 	
 							$assignment_save['user_id']=$users[$temp_user];
-					
-							$this->db2->insert('assignment_screen_validate',$assignment_save);
+							//print_test($assignment_save);
+							$this->db2->insert($table_name,$assignment_save);
 								
 								
 							$j++;
@@ -3843,6 +4087,8 @@ class Manager extends CI_Controller {
 						'operation_desc'=>$operation_description
 		
 				);
+				
+				print_test($operation_arr);
 				$res2 = $this->manage_mdl->add_operation($operation_arr);
 	
 	
@@ -3856,10 +4102,64 @@ class Manager extends CI_Controller {
 	
 	
 	public function screen_validation_result(){
-	
-		$res_screenings=$this->DBConnection_mdl->get_list(get_table_config('screening_validate'),'_',0,-1);
 		
-		$res_papers=$this->DBConnection_mdl->get_papers('screen',get_table_config('papers'),"_",0,-1);
+		
+		$screening_phase_info=active_screening_phase_info();
+		$creening_phase_id=active_screening_phase();
+		
+		
+		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
+		->get_where('screen_phase', array('screen_phase_active'=>1))
+		->result_array();
+		
+		
+		$previous_phase=0;
+		$previous_phase_title="";
+		
+		if($screening_phase_info['source_paper']=='Previous phase'){
+			foreach ($screening_phases as $k => $phase) {
+					
+				if($phase['screen_phase_id']==$creening_phase_id)	{
+					break;
+				}elseif($phase['phase_type']!='Validation'){
+					$previous_phase=$phase['screen_phase_id'];
+					$previous_phase_title=$phase['phase_title'];
+				}
+					
+			}
+		}
+		
+		
+		if($previous_phase == 0){
+			$paper_source='all';
+			$paper_source_status='all';
+			$previous_phase_title=" ";
+		}else{
+			$paper_source=$previous_phase;
+			$paper_source_status=$screening_phase_info['source_paper_status'];
+			$previous_phase_title = " from $previous_phase_title";
+		}
+		
+		$append_title="( $paper_source_status papers  $previous_phase_title )";
+		
+		
+		
+		$temp_papers=$this->get_papers_to_screen($paper_source,$paper_source_status);
+		
+		$res_papers['list']=$temp_papers['all_papers'];
+		//print_test($res_papers);
+		$ref_table_config=get_table_configuration('papers');
+		
+		$ref_table_config['current_operation']='list_papers_screen';
+		
+		$res_screenings=$this->DBConnection_mdl->get_list_mdl($ref_table_config,'_',0,-1);
+		
+		//print_test($res_papers);
+		//exit;
+	
+		//$res_screenings=$this->DBConnection_mdl->get_list(get_table_config('screening_validate'),'_',0,-1);
+		
+		//$res_papers=$this->DBConnection_mdl->get_papers('screen',get_table_config('papers'),"_",0,-1);
 		
 		$papers=array();
 		
@@ -3867,16 +4167,16 @@ class Manager extends CI_Controller {
 			$papers[$value['id']]=array(
 					'bibtexKey'=>$value['bibtexKey'],
 					'title'=>$value['title'],
-					'screening_status'=>$value['screening_status'],
+					'screening_status'=>$value['paper_status'],
 					'classification_status'=>$value['classification_status']
 			);
 		}
 		
 	
 		$decision_map=array(
-				'accepted'=>'Included',
-				'excluded'=>'Excluded',
-				''=>'unknown'
+				'Included'=>'Included',
+				'Excluded'=>'Excluded',
+				'Pending'=>'unknown'
 		);
 		
 		$screenings=array();
@@ -3884,13 +4184,13 @@ class Manager extends CI_Controller {
 		$nbr_matched=0;
 		$i=1;
 		foreach ($res_screenings['list'] as $key => $value) {
-			if(!empty($papers[$value['paper_id']])){
+			if(!empty($papers[$value['id']])  ){
 				$screenings[$key]=array(
 							'num'=>$i,
-							'paper'=>$papers[$value['paper_id']]['bibtexKey']." - ".$papers[$value['paper_id']]['title'],
+							'paper'=>$papers[$value['id']]['bibtexKey']." - ".$papers[$value['id']]['title'],
 							//'paper_title'=>$papers[$value['paper_id']]['title'],
-							'screening_decision'=>$papers[$value['paper_id']]['screening_status'],
-							'validation_descision'=>$decision_map[$value['decision']]
+							'screening_decision'=>$papers[$value['id']]['screening_status'],
+							'validation_descision'=>$value['screening_status']
 							
 				);
 				if($screenings[$key]['validation_descision']==$screenings[$key]['screening_decision'])	
@@ -3901,7 +4201,7 @@ class Manager extends CI_Controller {
 					$screenings[$key]['matched']='No';
 				}
 				$but[0]=array(
-						'url'=> 'relis/manager/display_paper_screen/'.$value ['paper_id'],
+						'url'=> 'relis/manager/display_paper_screen/'.$value ['id'],
 						'label'=>icon('folder').' '.'View',
 						'title'=>'Display'
 							
@@ -3912,9 +4212,9 @@ class Manager extends CI_Controller {
 				$i++;
 			}
 		}
-		
-		
-		$match_percentage=round($nbr_matched * 100 / $nbr_all,2);
+		$match_percentage=0;
+		if(!empty($nbr_all))
+			$match_percentage=round($nbr_matched * 100 / $nbr_all,2);
 		
 	
 		$data ['list']=$screenings;

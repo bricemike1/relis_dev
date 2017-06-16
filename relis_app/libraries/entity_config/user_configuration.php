@@ -130,6 +130,7 @@ function get_config_user() {
 	   			'field_title'=>'Created by',
 	   			'field_type'=>'number',
 				'field_size'=>11,
+				'default_value'=>1,
 				
 	   			'field_value'=>active_user_id(),// the default values (may be put it in operation)
 	   			
@@ -382,7 +383,50 @@ function get_config_user() {
 				),
 		);
 		
-		
+		$operations['detail_user_min']=array(
+				'operation_type'=>'Detail',
+				'operation_title'=>'Characteristics of a user',
+				'operation_description'=>'Characteristics of a user',
+				'page_title'=>'User ',
+				
+				//'page_template'=>'general/display_element',
+				
+				'data_source'=>'get_user_detail',
+				'generate_stored_procedure'=>FALSE,
+					
+				'fields'=>array(
+					//	'user_id'=>array(),
+						'user_name'=>array(),
+						'user_username'=>array(),
+						'user_mail'=>array(),
+						'user_usergroup'=>array(),
+						'user_projects'=>array(
+									//'drilldown_add_link'=>'op/add_element_child/project_to_user/',
+									//'drilldown_edit_link'=>'op/edit_drilldown/edit_project_to_user/',
+									//'drilldown_remove_link'=>'op/delete_element/remove_userproject_c/',
+									//'drilldown_display_link'=>'op/display_element/detail_userproject/',
+									
+									),
+						'user_picture'=>array(),
+						'creation_time'=>array(),
+						'created_by'=>array()
+							
+				),
+				
+				
+				'top_links'=>array(
+						
+						'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									),
+								
+						
+				
+				),
+		);
 		$operations['remove_user']=array(
 				'operation_type'=>'Remove',
 				'operation_title'=>'Remove a user',

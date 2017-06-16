@@ -13,7 +13,7 @@
 
                 <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                   <div class="x_title">
-                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ?></h3>
+                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ." - Screening "?> </h3>
                     <div class="clearfix"></div>
                   </div>
 
@@ -68,7 +68,7 @@
 	                            </div>
 	                            <div class="col-xs-12 col-sm-6 emphasis">
 	                              
-	                              <a href="../manager/display_element/users/<?php echo $creator['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
+	                              <a href="../op/display_element/detail_user_min/<?php echo $creator['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
 	                                <i class="fa fa-user"> </i> View Profile
 	                              </button></a>
 	                            </div>
@@ -178,7 +178,7 @@
                             <?php if (has_usergroup(1)){?>
                             <div class="col-xs-12 col-sm-6 emphasis">
                               
-                              <a href="../manager/display_element/users/<?php echo $value['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
+                              <a href="../op/display_element/detail_user_min/<?php echo $value['user_id']?>"><button type="button" class="btn btn-primary btn-xs">
                                 <i class="fa fa-user"> </i> View Profile
                               </button></a>
                             </div>

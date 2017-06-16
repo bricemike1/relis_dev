@@ -10,6 +10,7 @@ class Relis_mdl extends CI_Model
 		
 		function get_user_assigned_papers($user_id=0,$screen_type="simple_screen",$screening_phase=0){
 			
+			
 			$screen_table=get_table_configuration('screening','current','table_name');
 			$active_field=get_table_configuration('screening','current','table_active_field');
 			//print_test($screen_table);
@@ -21,7 +22,7 @@ class Relis_mdl extends CI_Model
 			
 			if(!empty($screening_phase))
 			{
-				$condition=" AND screening_phase = $screening_phase  ";
+				$condition.=" AND screening_phase = $screening_phase  ";
 			}
 			
 			

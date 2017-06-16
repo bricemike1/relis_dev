@@ -86,22 +86,16 @@ class Home extends CI_Controller {
 				redirect('home/screening_select');
 		}
 			
-		$left_menu = $this->manager_lib->get_left_menu();
-	
-	
-	
-		$app_config=get_appconfig();
-		if(!empty($app_config['run_setup']))
-		{
-				
-				
-			//redirect('install');
-		}else{
+		
+		$data['screening_phase_info']=active_screening_phase_info();
+		
+		//print_test($screening_phase_info);
+		
 			/*
 			 * Recuperation du nombre de papiers par catégorie
 			 */
 			
-			$my_assignations=$this->Relis_mdl->get_user_assigned_papers(active_user_id());
+			$my_assignations=$this->Relis_mdl->get_user_assigned_papers(active_user_id(),'simple_screen',active_screening_phase());
 			
 			$total_papers=count($my_assignations);
 			$papers_screened=0;
@@ -141,7 +135,7 @@ class Home extends CI_Controller {
 			$data['page']='relis/h_screening';
 			$this->load->view('body',$data);
 	
-		}
+		
 	}
 	
 	public function screening_select()
@@ -168,10 +162,14 @@ class Home extends CI_Controller {
 				$select_but=get_top_button ( 'all', 'Select', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Select','fa-play','',' btn-info ' ,False);
 				$close_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Close','fa-cog','',' btn-danger ' ,False);
 			}else{
+				
 				$open_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Open','fa-cog','',' btn-success ' ,False);					
 			}	
 			
-			
+			if(!is_project_creator(project_db()) OR !has_usergroup(1)){
+				$close_but="";
+				$open_but="";
+			}
 			$temp=array(
 					'num'=>$i,
 					'Type'=>$phase['phase_type'],

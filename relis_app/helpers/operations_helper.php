@@ -13,12 +13,16 @@ function check_operation($operation,$type="List") {
 			'operation_id'=>'list_usergroups'
 	);
 	
-	
-
 	$operations['detail_user']=array(
 			'type'=>'Detail',
 			'tab_ref'=>'users',
 			'operation_id'=>'detail_user'
+	);
+
+	$operations['detail_user_min']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'users',
+			'operation_id'=>'detail_user_min'
 	);
 	
 	$operations['remove_user']=array(

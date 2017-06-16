@@ -233,7 +233,14 @@ function get_screening() {
 	   			
 	   			'order_by'=>'screening_id ASC ',
 	   			//'search_by'=>'project_title',
-	   	
+				'conditions'=>array(
+					'screening_phase'=>array('field'=>'screening_phase',
+												'value'=>active_screening_phase(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
+	   			),
 	   	
 	   			'list_links'=>array(
 	   					'view'=>array(
@@ -257,12 +264,7 @@ function get_screening() {
 	   			),
 	   	
 	   			'top_links'=>array(
-	   					'add'=>array(
-	   							'label'=>'',
-	   							'title'=>'Add a new project',
-	   							'icon'=>'add',
-	   							'url'=>'op/add_element/new_assignment',
-	   					),
+	   					
 	   					'close'=>array(
 	   							'label'=>'',
 	   							'title'=>'Close',
@@ -272,6 +274,82 @@ function get_screening() {
 	   	
 	   			),
 	   	);
+		$operations['list_my_assignments']=array(
+	   			'operation_type'=>'List',
+	   			'operation_title'=>'List of assignments',
+	   			'operation_description'=>'List assignments',
+	   			'page_title'=>'List of my assignments',
+				
+	   			'page_template'=>'general/list',
+				'table_display_style'=>'dynamic_table',
+	   			'data_source'=>'get_list_my_assignments',
+	   			'generate_stored_procedure'=>True,
+	   		  
+	   			'fields'=>array(
+	   					'screening_id'=>array(),
+	   					'paper_id'=>array(),
+	   					'user_id'=>array(),
+	   					//'assignment_note'=>array(),
+	   					//'assignment_type'=>array(),
+	   					//'assignment_role'=>array(),	   	
+	   					//'screening_phase'=>array(),
+	   					'assigned_by'=>array(),
+	   					'assignment_time'=>array(),
+	   					'assignment_mode'=>array(),
+	   	
+	   					 
+	   			),
+	   			
+	   			'order_by'=>'screening_id ASC ',
+	   			//'search_by'=>'project_title',
+				'conditions'=>array(
+					'screening_phase'=>array('field'=>'screening_phase',
+												'value'=>active_screening_phase(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
+					'user'=>array('field'=>'user_id',
+												'value'=>active_user_id(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
+	   			),
+	   	
+	   			'list_links'=>array(
+	   					'view'=>array(
+	   							'label'=>'View',
+	   							'title'=>'Disaly element',
+	   							'icon'=>'folder',
+	   							'url'=>'op/display_element/display_assignment/',
+	   					),
+	   					'edit'=>array(
+	   							'label'=>'Edit',
+	   							'title'=>'Edit',
+	   							'icon'=>'edit',
+	   							'url'=>'op/edit_element/edit_assignment/',
+	   					),
+	   					'delete'=>array(
+	   							'label'=>'Delete',
+	   							'title'=>'Delete assignment',
+	   							'url'=>'op/delete_element/remove_assignment/'
+	   					)
+	   	
+	   			),
+	   	
+	   			'top_links'=>array(
+	   					
+	   					'close'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'add',
+	   							'url'=>'home',
+	   					)
+	   	
+	   			),
+	   	);
+		
 	   	$operations['list_screenings']=array(
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List of screenings',
@@ -297,12 +375,90 @@ function get_screening() {
 	   			'order_by'=>'screening_id ASC ',
 	   			'order_by'=>'screening_time DESC ',
 	   			//'search_by'=>'project_title',
-		   			'conditions'=>array('activated_user'=>array(
+		   			'conditions'=>array('screening_status'=>array(
 		   					'field'=>'screening_status',
 		   					'value'=>'Done',
 		   					'evaluation'=>'',
 		   					'add_on_generation'=>True
-		   			)
+		   			),
+					'screening_phase'=>array('field'=>'screening_phase',
+												'value'=>active_screening_phase(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
+	   			),
+	   		  
+	   			'list_links'=>array(
+	   					'view'=>array(
+	   							'label'=>'View',
+	   							'title'=>'Disaly element',
+	   							'icon'=>'folder',
+	   							'url'=>'op/display_element/display_screening/',
+	   					),
+	   					'edit'=>array(
+	   							'label'=>'Edit',
+	   							'title'=>'Edit',
+	   							'icon'=>'edit',
+	   							'url'=>'relis/manager/edit_screen/',
+	   					)
+	   					 
+	   			),
+	   		  
+	   			'top_links'=>array(
+	   					'close'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'add',
+	   							'url'=>'home/screening',
+	   					)
+	   					 
+	   			),
+	   	);
+		
+			$operations['list_my_screenings']=array(
+	   			'operation_type'=>'List',
+	   			'operation_title'=>'List of screenings',
+	   			'operation_description'=>'List screenings',
+	   			'page_title'=>'List of my screenings',
+	   	
+	   			'page_template'=>'general/list',
+	   			'table_display_style'=>'dynamic_table',
+	   			'data_source'=>'get_list_my_screenings',
+	   			'generate_stored_procedure'=>True,
+	   	
+	   			'fields'=>array(
+	   					'screening_id'=>array(),
+	   					'paper_id'=>array(),
+	   					'user_id'=>array(),
+	   					'screening_decision'=>array(),
+	   					'exclusion_criteria'=>array(),
+	   					'screening_time'=>array(),
+	   					 
+	   	
+	   			),
+	   			 
+	   			'order_by'=>'screening_id ASC ',
+	   			'order_by'=>'screening_time DESC ',
+	   			//'search_by'=>'project_title',
+		   			'conditions'=>array('screening_status'=>array(
+		   					'field'=>'screening_status',
+		   					'value'=>'Done',
+		   					'evaluation'=>'',
+		   					'add_on_generation'=>True
+		   			),
+					'screening_phase'=>array('field'=>'screening_phase',
+												'value'=>active_screening_phase(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
+					'user'=>array('field'=>'user_id',
+												'value'=>active_user_id(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
 	   			),
 	   		  
 	   			'list_links'=>array(
@@ -397,7 +553,7 @@ function get_screening() {
 	   					
 	   					'assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'assignment_role'=>array('mandatory'=>'mandatory','field_state'=>'hidden','field_value'=>'Screening'),
-	   					'screening_phase'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'screening_phase'=>array('mandatory'=>'mandatory','field_state'=>'hidden','field_value'=>active_screening_phase()),
 						'assignment_note'=>array('mandatory'=>'','field_state'=>'enabled'),
 	   	
 	   			),

@@ -51,31 +51,43 @@
         ?>
         <div>
              <p class='lead '>Paper : <?php echo $paper_title?></p>
-                  <p><b>Abstract :</b> <br/>
+                 
                   
-                  <?php echo $paper_abstract?>
-                   </p>
-                   <br/><br/>
-                   
-                   <?php if(!empty($paper_preview)){?>
-                   <p><b>Preview :</b> <br/>
+                  <?php 
+                  if(!empty($paper_abstract)){
+                 		echo " <p><b>Abstract :</b> <br/>";                  
+                 	 	echo $paper_abstract;                  
+                 		echo " </p><br/><br/>"; 
+                  }
                   
-                  <?php echo $paper_preview?>
-                   </p>
-                  <?php }
+                  if(!empty($paper_preview)){
+                  	echo " <p><b>Preview :</b> <br/>";
+                  	echo $paper_preview;
+                  	echo " </p><br/><br/>";
+                  }
                   
-                   if(!empty($assignment_note)){?>
-                                     <p><b>Assignment note :</b> <br/>
+                  if(!empty($paper_bibtex)){
+                  	echo " <p><b>Bibtex :</b> <br/>";
+                  	echo $paper_bibtex;
+                  	echo " </p><br/><br/>";
+                  }
+                  
+                  
+                   if(!empty($assignment_note)){
+                   	 echo"<p><b>Assignment note :</b> <br/>"  ;   
+                   	 echo $assignment_note . " </p>";
                                     
-                                    <?php echo $assignment_note?>
-                                     </p>
-                                    <?php }
+                                    }
                   
-                  
+                  if(!empty($paper_link)){
                   ?>
-                  <p style="text-align: right; padding:20px;">
-                  <a href="<?php echo $paper_link?>" target="black" style="color:#aa7777;"><img src='<?php echo base_url() ?>cside/images/pdf.jpg'/></a>
-                 </p>
+		                  <p style="text-align: right; padding:20px;">
+		                  <a href="<?php echo $paper_link?>" target="black" style="color:#aa7777;"><img src='<?php echo base_url() ?>cside/images/pdf.jpg'/></a>
+		                 </p>
+		                 
+                 <?php }?>
+                 
+                 
                   <div class="ln_solid"></div>
                    <p class="lead">Decision</p>
                    <?php 

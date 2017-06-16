@@ -271,7 +271,7 @@ class Manager_lib
 	 */
 	 function get_element_detail($ref_table,$ref_id,$editable=False,$modal_link=False) {
 	
-		old_version();
+		//old_version();
 		//récuperation de la configuration de l'entité
 		$table_config=get_table_config($ref_table);
 	
@@ -589,7 +589,7 @@ class Manager_lib
 		
 		//exit;
 		// récuperation de la base de donnée la ligne correspondant à l'enregistrement
-		$detail_result = $this->CI->DBConnection_mdl->get_row_details ( $table_config['operations'][$current_operation]['data_source'],$ref_id ,true);
+		$detail_result = $this->CI->DBConnection_mdl->get_row_details ( $table_config['operations'][$current_operation]['data_source'],$ref_id ,true,$table_config['config_id']);
 	
 		$content_item=$detail_result;
 		
@@ -878,7 +878,7 @@ class Manager_lib
 		
 		$menu['general']['menu']['result']['sub_menu']['result_graph']=array( 'label'=>'Graphs', 'url'=>'relis/manager/result_graph', '');
 		
-		$menu['general']['menu']['result']['sub_menu']['result_export']=array( 'label'=>'Export', 'url'=>'relis/manager/list_paper/result_export', '');
+		$menu['general']['menu']['result']['sub_menu']['result_export']=array( 'label'=>'Export', 'url'=>'relis/manager/result_export', '');
 		
 	
 		$menu['general']['menu']['reference']=array('label'=>'Reference Tables','url'=>'','icon'=>'table');
@@ -889,12 +889,16 @@ class Manager_lib
 			$menu['general']['menu']['reference']['sub_menu'][$value['reftab_label']]=array('label'=>$value['reftab_desc'],'url'=>'manager/entity_list/'.$value['reftab_label'],'icon'=>'');
 		}
 		
+		$menu['go_to']=array('label'=>'Go To');
+		
+		$menu['go_to']['menu']['admin']=array('label'=>'Admin view','url'=>'manager/projects_list','icon'=>'paper-plane');
+		$menu['go_to']['menu']['screen']=array('label'=>'Screening view','url'=>'manager/set_perspective','icon'=>'paper-plane');
 		
 		
 		
 		$menu['settings']=array('label'=>'Settings');
 		
-		$menu['settings']['menu']['admin']=array('label'=>'Admin','url'=>'manager/projects_list','icon'=>'cog');
+		//$menu['settings']['menu']['admin']=array('label'=>'Admin','url'=>'manager/projects_list','icon'=>'cog');
 		$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
 		$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
 		
@@ -917,58 +921,60 @@ class Manager_lib
 		
 		
 		$menu['general']['menu']['home']=array('label'=>'Home','url'=>'home/screening','icon'=>'home');
-		$menu['general']['menu']['home_screen']=array('label'=>'Screening','url'=>'home/screening_select','icon'=>'home');
 	
 		if(get_appconfig_element('screening_on'))
 		$menu['general']['menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'toggle-right');
 		
+		if(get_appconfig_element('assign_papers_on'))
+			
 		
 		if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
 			$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');				
 			//$menu['general']['menu']['papers']['sub_menu']['processed']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_paper/processed', '');
-			if(get_appconfig_element('import_papers_on'))
-			$menu['general']['menu']['papers']['sub_menu']['import_papers']=array( 'label'=>'Import papers', 'url'=>'relis/manager/import_papers', '');
 			
-			$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All papers', 'url'=>'op/entity_list/list_papers', '');
-		//	$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Papers pending', 'url'=>'relis/manager/list_screen/screen_paper_pending', '');
-			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_review']=array( 'label'=>'Papers in review', 'url'=>'relis/manager/list_screen/screen_paper_review', '');
-			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'relis/manager/list_screen/screen_paper_included', '');
-			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'relis/manager/list_screen/screen_paper_excluded', '');
-			//$menu['general']['menu']['papers']['sub_menu']['screen_paper_conflict']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_screen/screen_paper_conflict', '');
+			$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All papers', 'url'=>'op/entity_list/list_papers_screen', '');
+			$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Papers pending', 'url'=>'op/entity_list/list_papers_screen_pending', '');
+			$menu['general']['menu']['papers']['sub_menu']['screen_paper_review']=array( 'label'=>'Papers in review', 'url'=>'op/entity_list/list_papers_screen_review', '');
+			$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'op/entity_list/list_papers_screen_included', '');
+			$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'op/entity_list/list_papers_screen_excluded', '');
+			$menu['general']['menu']['papers']['sub_menu']['screen_paper_conflict']=array( 'label'=>'Papers in conflict', 'url'=>'op/entity_list/list_papers_screen_conflict', '');
 		}
 		
-		
-		$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'newspaper-o');
-		$menu['general']['menu']['papers_screen']['sub_menu']['all_assignments']=array( 'label'=>'All assignments', 'url'=>'op/entity_list/list_assignments', '');
-		
-		if(get_appconfig_element('assign_papers_on'))
-		$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/pre_assignment_screen', '');
-		//$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', '');
-		
-		$menu['general']['menu']['papers_screen']['sub_menu']['my_assignment']=array( 'label'=>'--My assignments', 'url'=>'relis/manager/list_screen/mine_assign', '');
-		$menu['general']['menu']['papers_screen']['sub_menu']['my_screen']=array( 'label'=>'--My screenings', 'url'=>'relis/manager/list_screen/mine_screen', '');
-		
-		if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
-			$menu['general']['menu']['papers_screen']['sub_menu']['all_assignment']=array( 'label'=>'--All assignments', 'url'=>'relis/manager/list_screen/all_assign', '');	
-			$menu['general']['menu']['papers_screen']['sub_menu']['all_screen']=array( 'label'=>'All screenings', 'url'=>'op/entity_list/list_screenings', '');
-			$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'--Completion', 'url'=>'relis/manager/screen_completion', '');
-	
-			$menu['general']['menu']['papers_screen']['sub_menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'');
-		}
-		
-		if(get_appconfig_element('screening_validation_on')){
+		if(active_screening_phase()){
+			$phase_info=active_screening_phase_info();
+			if($phase_info['phase_type']!='Validation')
+			{
+					$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'newspaper-o');
+					
+					$menu['general']['menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', 'icon'=>'share');
+					
+					
+					$menu['general']['menu']['papers_screen']['sub_menu']['my_assignment']=array( 'label'=>'My assignments', 'url'=>'op/entity_list/list_my_assignments', '');
+					$menu['general']['menu']['papers_screen']['sub_menu']['my_screen']=array( 'label'=>'My screenings', 'url'=>'op/entity_list/list_my_screenings', '');
+					
+					if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+						$menu['general']['menu']['papers_screen']['sub_menu']['all_assignments']=array( 'label'=>'All assignments', 'url'=>'op/entity_list/list_assignments', '');
+						$menu['general']['menu']['papers_screen']['sub_menu']['all_screen']=array( 'label'=>'All screenings', 'url'=>'op/entity_list/list_screenings', '');
+						$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'Completion', 'url'=>'relis/manager/screen_completion', '');
+				
+						$menu['general']['menu']['papers_screen']['sub_menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'');
+					}
 			
-		$menu['general']['menu']['papers_screen_validate']=array('label'=>'--Screening validation','url'=>'','icon'=>'newspaper-o');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['validate_screen']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', '');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_assignments']=array( 'label'=>'Assignments', 'url'=>'relis/manager/list_screen/assign_validation', 'icon'=>'');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_screenings']=array( 'label'=>'Screenings', 'url'=>'relis/manager/list_screen/screen_validation', 'icon'=>'');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_result']=array( 'label'=>'Validation result', 'url'=>'relis/manager/screen_validation_result', 'icon'=>'');
-		$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_completion']=array( 'label'=>'Completion ', 'url'=>'relis/manager/screen_completion/validate', 'icon'=>'');
-		}
+			}else {
+			
+				if(get_appconfig_element('screening_validation_on')){
+					
+				$menu['general']['menu']['papers_screen_validate']=array('label'=>'Screening validation','url'=>'','icon'=>'newspaper-o');
+				$menu['general']['menu']['validate_screen']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', 'icon'=>'share');
+			//	$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
+				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_assignments']=array( 'label'=>'Assignments', 'url'=>'op/entity_list/list_assignments', 'icon'=>'');
+				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_screenings']=array( 'label'=>'Screenings', 'url'=>'op/entity_list/list_screenings', 'icon'=>'');
+				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_completion']=array( 'label'=>'Completion ', 'url'=>'relis/manager/screen_completion/validate', 'icon'=>'');
+				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_result']=array( 'label'=>'Validation result', 'url'=>'relis/manager/screen_validation_result', 'icon'=>'');
+				}
 		//$menu['general']['menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'bar-chart');
-		
-		
+			}
+		}
 		
 	
 		
@@ -984,38 +990,86 @@ class Manager_lib
 		//*/
 		
 		
-		$menu['settings']=array('label'=>'Settings');
+		$menu['settings']=array('label'=>'Go To');
 		
-		$menu['settings']['menu']['admin']=array('label'=>'Admin','url'=>'manager/projects_list','icon'=>'cog');
+		$menu['settings']['menu']['admin']=array('label'=>'General view','url'=>'home/screening_select','icon'=>'paper-plane');
 		
-		//$menu['settings']['menu']['reference']=array('label'=>'Exclusion criteria','url'=>'manager/entity_list/ref_exclusioncrieria','icon'=>'table');
-		$menu['settings']['menu']['reference']=array('label'=>'Reference','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'table');
-		$menu['settings']['menu']['reference']['sub_menu']['exclusioncrieria']=array('label'=>'Exclusion criteria','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'');
-		$menu['settings']['menu']['reference']['sub_menu']['papers_sources']=array('label'=>'Papers sources','url'=>'op/entity_list/list_papers_sources','icon'=>'');
-		$menu['settings']['menu']['reference']['sub_menu']['search_strategy']=array('label'=>'Search strategy','url'=>'op/entity_list/list_search_strategy','icon'=>'');
-		//['settings']['menu']['reference_papers_sources']=array('label'=>'Papers sources','url'=>'op/entity_list/list_papers_sources','icon'=>'table');
-		//$menu['settings']['menu']['reference_search_strategy']=array('label'=>'Search strategy','url'=>'op/entity_list/list_search_strategy','icon'=>'table');
 		
-		$menu['settings']['menu']['authors']=array('label'=>'Authors','url'=>'op/entity_list/list_authors','icon'=>'users');
-		$menu['settings']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'list');
-		//$menu['settings']['menu']['papers']=array('label'=>'Papers test','url'=>'op/entity_list/list_papers','icon'=>'list');
-		$menu['settings']['menu']['operations']=array('label'=>'Operations','url'=>'manager/entity_list/operations','icon'=>'reorder');
-		$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
-		$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
-		
-		if (is_project_creator(project_db()) OR has_usergroup(1)){
-		//$menu['settings']['menu']['configuration_old']=array('label'=>'Configuration','url'=>'manager/display_element/config/1','icon'=>'gears');
-		$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/configurations/1','icon'=>'gears');
-		$menu['settings']['menu']['configuration']['sub_menu']['general']=array('label'=>'General configuration','url'=>'op/display_element/configurations/1','icon'=>'');
-		$menu['settings']['menu']['configuration']['sub_menu']['users']=array('label'=>'Papers configuration','url'=>'op/display_element/config_papers/1','icon'=>'');
-		$menu['settings']['menu']['configuration']['sub_menu']['screen_phases']=array('label'=>'Screening phases','url'=>'op/entity_list/list_screen_phases','icon'=>'');
-			
-		$menu['settings']['menu']['install_form_editor']=array('label'=>'Update Installation','url'=>'install/install_form_editor','icon'=>'refresh');
-		$menu['settings']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
-		}
 		return $menu;
 	}
 	
+	
+	function get_left_menu_screen_select(){
+	
+		$menu = array();
+	
+		$menu['general']=array(
+				'label'=>'General'
+		);
+	
+	
+		$menu['general']['menu']['home']=array('label'=>'Home','url'=>'home/screening_select','icon'=>'home');
+	
+		
+			if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+				$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
+				//$menu['general']['menu']['papers']['sub_menu']['processed']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_paper/processed', '');
+				if(get_appconfig_element('import_papers_on'))
+					$menu['general']['menu']['papers']['sub_menu']['import_papers']=array( 'label'=>'Import papers', 'url'=>'relis/manager/import_papers', '');
+						
+					$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All papers', 'url'=>'op/entity_list/list_all_papers', '');
+					$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Papers pending', 'url'=>'op/entity_list/list_pending_papers', '');
+					$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'op/entity_list/list_included_papers', '');
+					$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'op/entity_list/list_excluded_papers', '');
+					}
+	
+	
+			$menu['general']['menu']['papers_screen']=array('label'=>'Screenings','url'=>'','icon'=>'newspaper-o');
+			
+		
+				if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+					$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'Completion', 'url'=>'relis/manager/screen_completion', '');
+	
+					//$menu['general']['menu']['papers_screen']['sub_menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'');
+				}
+	
+			
+				$menu['go_to']=array('label'=>'Go To');
+				
+				$menu['go_to']['menu']['admin']=array('label'=>'Admin view','url'=>'manager/projects_list','icon'=>'paper-plane');
+				$menu['go_to']['menu']['class']=array('label'=>'Classification view','url'=>'manager/set_perspective/class','icon'=>'paper-plane');
+				
+				$menu['settings']=array('label'=>'Settings');
+	
+				//$menu['settings']['menu']['admin']=array('label'=>'Admin','url'=>'manager/projects_list','icon'=>'cog');
+	
+				//$menu['settings']['menu']['reference']=array('label'=>'Exclusion criteria','url'=>'manager/entity_list/ref_exclusioncrieria','icon'=>'table');
+				$menu['settings']['menu']['reference']=array('label'=>'Reference','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'table');
+				$menu['settings']['menu']['reference']['sub_menu']['exclusioncrieria']=array('label'=>'Exclusion criteria','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'');
+				$menu['settings']['menu']['reference']['sub_menu']['papers_sources']=array('label'=>'Papers sources','url'=>'op/entity_list/list_papers_sources','icon'=>'');
+				$menu['settings']['menu']['reference']['sub_menu']['search_strategy']=array('label'=>'Search strategy','url'=>'op/entity_list/list_search_strategy','icon'=>'');
+				//['settings']['menu']['reference_papers_sources']=array('label'=>'Papers sources','url'=>'op/entity_list/list_papers_sources','icon'=>'table');
+				//$menu['settings']['menu']['reference_search_strategy']=array('label'=>'Search strategy','url'=>'op/entity_list/list_search_strategy','icon'=>'table');
+	
+				$menu['settings']['menu']['authors']=array('label'=>'Authors','url'=>'op/entity_list/list_authors','icon'=>'users');
+				$menu['settings']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'list');
+				//$menu['settings']['menu']['papers']=array('label'=>'Papers test','url'=>'op/entity_list/list_papers','icon'=>'list');
+				$menu['settings']['menu']['operations']=array('label'=>'Operations','url'=>'manager/entity_list/operations','icon'=>'reorder');
+				$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
+				$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
+	
+				if (is_project_creator(project_db()) OR has_usergroup(1)){
+					//$menu['settings']['menu']['configuration_old']=array('label'=>'Configuration','url'=>'manager/display_element/config/1','icon'=>'gears');
+					$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/configurations/1','icon'=>'gears');
+					$menu['settings']['menu']['configuration']['sub_menu']['general']=array('label'=>'General configuration','url'=>'op/display_element/configurations/1','icon'=>'');
+					$menu['settings']['menu']['configuration']['sub_menu']['users']=array('label'=>'Papers configuration','url'=>'op/display_element/config_papers/1','icon'=>'');
+					$menu['settings']['menu']['configuration']['sub_menu']['screen_phases']=array('label'=>'Screening phases','url'=>'op/entity_list/list_screen_phases','icon'=>'');
+						
+					$menu['settings']['menu']['install_form_editor']=array('label'=>'Update Installation','url'=>'install/install_form_editor','icon'=>'refresh');
+					$menu['settings']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
+				}
+				return $menu;
+	}
 	function get_left_menu_admin(){
 	
 		$menu = array();
