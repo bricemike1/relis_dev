@@ -1170,7 +1170,42 @@ function user_project($project_id , $user=0,$user_role=""){
 		return $array_result;
 		
 	}
-	
+	function get_paper_screen_status__all($paper_id){
+		$ci = get_instance();
+		$ci->db2 = $ci->load->database(project_db(), TRUE);
+		$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
+		$criteria=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
+		$sql= "select 	decison_id,screening_decision,decision_source,phase_title,phase_type from  screen_decison D,screen_phase P   where paper_id = $paper_id  AND 	screen_phase_id=screening_phase AND	decision_active=1  AND 	screen_phase_active=1 ORDER BY 	screen_phase_order ASC";
+		
+		$res_assignment=$ci->db2->query($sql)->result_array();
+		$array_result=array();
+		foreach ($res_assignment as $key => $value_decision) {
+		
+			
+				array_push($array_result, array(
+		
+						'phase'=>$value_decision['phase_title'],
+						'decision'=>$value_decision['screening_decision'],
+						'type'=>$value_decision['phase_type'],
+						'operation'=>$value_decision['decision_source'],));
+		
+					
+					
+		}
+		// adding title
+		if(!empty($array_result)){
+			array_unshift($array_result,  array(
+		
+					'phase'=>'Phase',
+					'decision'=>'Decision',
+					'type'=>'Type',
+					'operation'=>'Operation',
+					
+			));
+				
+		}
+		return $array_result;
+	}
 	
 	function get_paper_screen_status_new($paper_id,$screening_phase="",$return = 'paper_status'){
 		if(empty($screening_phase))

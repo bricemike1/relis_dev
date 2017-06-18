@@ -147,8 +147,10 @@ public function get_table_configuration($_table,$target_db='current')
 					
 				case 'screening_validate':
 					require_once("entity_config/relis/screening_config.php");
-					$table_configurations['screening_validate']=get_screening('screening_validate','Screening validation');
+					$table_configurations['screening_validate']=get_screening_set('screening_validate','Screening validation');
 					break;	
+					
+				
 				case 'operations':
 					require_once("entity_config/relis/operations_config.php");
 					$table_configurations['operations']=get_operation();

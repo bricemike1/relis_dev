@@ -3596,13 +3596,17 @@ class Manager extends CI_Controller {
 		$data['screening_result']=$res_screen['screening_result'];
 		}else{
 			$data['screening_result']=$content_item['screening_status'];
+			
 		}
 
 		
 		if($display_type=='det'){
 		
-			if(active_screening_phase())
+			if(active_screening_phase()){
 			$data['screen_history']=get_paper_screen_history($ref_id,$screening_phase);
+			}else{
+			$data['screen_history']=get_paper_screen_status__all($ref_id);
+			}
 			//print_test($data['screen_history']);
 		
 		}

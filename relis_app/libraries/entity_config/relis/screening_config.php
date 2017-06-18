@@ -1,5 +1,5 @@
 <?php 
-function get_screening($table='screening',$title='Screening') {
+function get_screening_set($table='screening',$title='Screening') {
 	
 		$config['table_name']=$table;
 	   	$config['table_id']='screening_id';

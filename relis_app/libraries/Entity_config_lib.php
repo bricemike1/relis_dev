@@ -11,6 +11,8 @@ class Entity_config_lib
 
 public function get_table_config($_table,$target_db='current')
 	{
+		return $this->CI->entity_configuration_lib->get_table_configuration($_table,$target_db);
+		exit;
 		$table_configurations=array();
 		switch($_table)
 		{
