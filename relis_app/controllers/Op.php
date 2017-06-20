@@ -22,6 +22,10 @@ class Op extends CI_Controller {
 
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
+		
+		if(admin_config($ref_table))
+			$data['left_menu_admin']=True;
+				
 		/*
 		 * Vérification si il y a une condition de recherche
 		 */
@@ -432,7 +436,7 @@ class Op extends CI_Controller {
 		$ref_table_operation=$op['operation_id'];
 		// todo correction gestion des utilisateurs
 		if(admin_config($ref_table))
-			//$data['left_menu_admin']=True;
+			$data['left_menu_admin']=True;
 			
 			
 			/*

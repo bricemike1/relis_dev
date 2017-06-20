@@ -1056,7 +1056,7 @@ class Manager_lib
 				//$menu['settings']['menu']['papers']=array('label'=>'Papers test','url'=>'op/entity_list/list_papers','icon'=>'list');
 				$menu['settings']['menu']['operations']=array('label'=>'Operations','url'=>'manager/entity_list/operations','icon'=>'reorder');
 				$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
-				$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
+				$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
 	
 				if (is_project_creator(project_db()) OR has_usergroup(1)){
 					//$menu['settings']['menu']['configuration_old']=array('label'=>'Configuration','url'=>'manager/display_element/config/1','icon'=>'gears');
@@ -1090,6 +1090,7 @@ class Manager_lib
 		$menu['general']['menu']['logs']=array('label'=>'Logs','url'=>'op/entity_list/list_logs','icon'=>'sliders');
 		$menu['general']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
 		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
+		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
 		}
 		
 		return $menu;

@@ -56,6 +56,7 @@ function get_logs() {
 	   			'field_title'=>'Time',
 	   			'field_title'=>'Creation time',
 	   			'field_type'=>'time',
+	   			//'input_type'=>'text',
 				'default_value'=>'CURRENT_TIMESTAMP',
 	   			'field_value'=>bm_current_time('Y-m-d H:i:s'),	   			
 	   			'field_size'=>20,
@@ -96,7 +97,6 @@ function get_logs() {
 					'log_type'=>array('mandatory'=>'','field_state'=>'hidden'),
 					'log_user_id'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'log_event'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-					'log_time'=>array('mandatory'=>'','field_state'=>'hidden'),
 					'log_ip_address'=>array('mandatory'=>'','field_state'=>'enabled')
 									
 					),

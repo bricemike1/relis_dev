@@ -628,6 +628,11 @@ function lng($str,$category="default",$lang='en',$edit_allowed=True){
 	
 }
 
+function active_language(){
+	$ci = get_instance ();
+	return $ci->session->userdata('active_language');
+}
+
 function get_appconfig($element="all",$source="db"){
 	$ci = get_instance ();
 	
@@ -676,20 +681,26 @@ function admin_config($config,$config_name=True,$type='config'){
 		$admin_configs=array('users','usergroup','logs','project','user_project');
 	}
 	
+	
+	
 	if($config_name){
 		$cfg=$config;
 	}else{
 		$cfg=$config['config_label'];
 		
 	}
-	
-	if(in_array($cfg,$admin_configs))
-	{
+	if($config=='str_mng' AND project_db() =='default'  ){
+		
 		return TRUE;
 	}else{
-		return FALSE;
+		
+			if(in_array($cfg,$admin_configs))
+			{
+				return TRUE;
+			}else{
+				return FALSE;
+			}
 	}
-	
 
 	
 }	 

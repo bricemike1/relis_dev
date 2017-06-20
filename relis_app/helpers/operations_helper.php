@@ -73,6 +73,10 @@ function check_operation($operation,$type="List") {
 	include_once('operations/op_logs.php');
 	$operations=array_merge($operations,get_operations_logs());
 	
+	
+	include_once('operations/op_str_mng.php');
+	$operations=array_merge($operations,get_operations_str_mng());
+	
 	if(isset($operations[$operation]) AND $operations[$operation]['type']==$type ){
 			return $operations[$operation];
 	}else{

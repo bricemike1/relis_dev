@@ -10,7 +10,7 @@ function get_operations_logs() {
 	
 	$operations['add_logs']=array(
 			'type'=>'Add',
-			'tab_ref'=>'author',
+			'tab_ref'=>'logs',
 			'operation_id'=>'add_logs'
 	);
 	
