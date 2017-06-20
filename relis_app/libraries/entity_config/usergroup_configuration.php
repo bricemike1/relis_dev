@@ -90,7 +90,7 @@ function get_config_usergroup() {
 	   	
 	   			//'page_template'=>'list',
 	   	
-	   			'data_source'=>'get_list_usergroups',
+	   			'data_source'=>'get_list_usergroup',
 	   			'generate_stored_procedure'=>True,
 	   				
 	   			'fields'=>array(

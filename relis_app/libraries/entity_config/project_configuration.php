@@ -158,7 +158,7 @@ function get_project() {
 	   			'redirect_after_save'=>'op/entity_list/list_projects',
 	   			'redirect_after_save'=>'manager/projects_list',
 	   			'data_source'=>'get_project_detail',
-	   			'db_save_model'=>'update_projects',
+	   			'db_save_model'=>'update_project',
 	   	
 	   			'generate_stored_procedure'=>True,
 	   				
@@ -227,7 +227,7 @@ function get_project() {
 	   		  
 	   			'page_template'=>'general/list',
 	   		  
-	   			'data_source'=>'get_list_projects',
+	   			'data_source'=>'get_list_project',
 	   			'generate_stored_procedure'=>True,
 	   	
 	   			'fields'=>array(
@@ -291,7 +291,7 @@ function get_project() {
 				
 				//'page_template'=>'general/display_element',
 				
-				'data_source'=>'get_project_detail',
+				'data_source'=>'get_detail_project',
 				'generate_stored_procedure'=>True,
 					
 				'fields'=>array(

@@ -305,6 +305,10 @@ $config['project_db_prefix'] = "relis_dev_new_";
 
 // Added configuration
 
+
 $config['project_db_host'] = "localhost";
-$config['project_db_user'] = "root";
-$config['project_db_pass'] = "";
+ 	$config['project_db_user'] = "root";
+ 	$config['project_db_pass'] = "";
+ 
+
+$config['base_url'] = "http://localhost/relis/relis_dev";

@@ -62,6 +62,17 @@ function get_logs() {
 	   			'field_size'=>20,
 	   			'mandatory'=>' mandatory ',
 	   	);	
+		$fields['log_publish']=array(
+	   			'field_title'=>'Publish',
+	   			'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'1',
+				'default_value'=>'1',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'1',
+				
+	   	);
 		$fields['log_ip_address']=array(
 	   			'field_title'=>'IP',
 	   			'field_type'=>'text',				

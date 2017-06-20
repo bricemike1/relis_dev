@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `project_title` varchar(250) NOT NULL,
   `project_description` varchar(1000) DEFAULT NULL,
   `project_creator` int(11) NOT NULL DEFAULT '1',
-  `project_icon` blob,
+  `project_icon` longblob,
+  `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `project_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 $$
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `userproject` (
   `userproject_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL ,
   `project_id` int(11) NOT NULL,
-  `user_role` varchar(50) NOT NULL DEFAULT 'Reviewer',
+  `user_role` enum('Reviewer','Project admin','Guest') NOT NULL DEFAULT 'Reviewer',
   `added_by` int(11) NOT NULL DEFAULT '1',
   `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `userproject_active` int(1) NOT NULL DEFAULT '1',
@@ -105,16 +106,16 @@ CREATE TABLE IF NOT EXISTS `userproject` (
 
 DROP TABLE IF EXISTS `users`$$
 CREATE TABLE IF NOT EXISTS `users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+ `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(50) NOT NULL,
   `user_username` varchar(20) NOT NULL,
-  `user_password` varchar(50) DEFAULT NULL,
   `user_mail` varchar(100) DEFAULT NULL,
-  `user_usergroup` int(11) DEFAULT NULL,
-  `user_picture` varchar(300) DEFAULT NULL,
-  `created_by` int(11) DEFAULT 0,
+  `user_usergroup` int(11) NOT NULL,
+  `user_password` varchar(35) DEFAULT NULL,
+  `user_picture` longblob,
+  `created_by` int(11) NOT NULL DEFAULT '1',
   `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user_status` int(1) NOT NULL DEFAULT '1',
+  `user_state` int(2) NOT NULL DEFAULT '0',
   `user_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `user_username` (`user_username`)
@@ -127,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- stored procedures
 
 DROP PROCEDURE IF EXISTS `add_config`$$
-CREATE   PROCEDURE `add_config`(_config_id INT , _project_title  VARCHAR(405) , _project_description  VARCHAR(1005) , _default_lang  VARCHAR(16) , _creator INT , _run_setup  VARCHAR(6))
+CREATE  PROCEDURE `add_config`(_config_id INT , _project_title  VARCHAR(405) , _project_description  VARCHAR(1005) , _default_lang  VARCHAR(16) , _creator INT , _run_setup  VARCHAR(6))
 BEGIN
 START TRANSACTION;
 INSERT INTO config (project_title , project_description , default_lang , creator , run_setup) VALUES (_project_title , _project_description , _default_lang , _creator , _run_setup);
@@ -136,16 +137,25 @@ COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `add_logs`$$
-CREATE   PROCEDURE `add_logs`(_log_id INT , _log_type  VARCHAR(55) , _log_user_id INT , _log_event  VARCHAR(205) , _log_time  VARCHAR(205) , _log_ip_address  VARCHAR(205))
+CREATE  PROCEDURE `add_logs`(_log_id INT , _log_type  VARCHAR(55) , _log_user_id INT , _log_event  VARCHAR(205) , _log_ip_address  VARCHAR(205))
 BEGIN
 START TRANSACTION;
-INSERT INTO log (log_type , log_user_id , log_event , log_time , log_ip_address) VALUES (_log_type , _log_user_id , _log_event , _log_time , _log_ip_address);
+INSERT INTO log (log_type , log_user_id , log_event , log_ip_address) VALUES (_log_type , _log_user_id , _log_event , _log_ip_address);
 SELECT log_id AS id_value FROM log WHERE log_id = LAST_INSERT_ID();
 COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `add_project`$$
+CREATE  PROCEDURE `add_project`(_project_id INT , _project_creator INT , _project_label  VARCHAR(105) , _project_title  VARCHAR(255) , _project_description  VARCHAR(1005) , _project_icon  LONGBLOB )
+BEGIN
+START TRANSACTION;
+INSERT INTO projects (project_creator , project_label , project_title , project_description , project_icon) VALUES (_project_creator , _project_label , _project_title , _project_description , _project_icon);
+SELECT project_id AS id_value FROM projects WHERE project_id = LAST_INSERT_ID();
+COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `add_str_mng`$$
-CREATE   PROCEDURE `add_str_mng`(_str_id INT , _str_label  VARCHAR(405) , _str_text  VARCHAR(805) , _str_lang  VARCHAR(8) , _str_category  VARCHAR(23))
+CREATE  PROCEDURE `add_str_mng`(_str_id INT , _str_label  VARCHAR(405) , _str_text  VARCHAR(805) , _str_lang  VARCHAR(8) , _str_category  VARCHAR(23))
 BEGIN
 START TRANSACTION;
 INSERT INTO str_management (str_label , str_text , str_lang , str_category) VALUES (_str_label , _str_text , _str_lang , _str_category);
@@ -153,27 +163,23 @@ SELECT str_id AS id_value FROM str_management WHERE str_id = LAST_INSERT_ID();
 COMMIT;
 END$$
 
-DROP PROCEDURE IF EXISTS `add_usergroup`$$
-CREATE   PROCEDURE `add_usergroup`(_usergroup_id INT , _usergroup_name  VARCHAR(25) , _usergroup_description  VARCHAR(55))
-BEGIN
-START TRANSACTION;
-INSERT INTO usergroup (usergroup_name , usergroup_description) VALUES (_usergroup_name , _usergroup_description);
-SELECT usergroup_id AS id_value FROM usergroup WHERE usergroup_id = LAST_INSERT_ID();
-COMMIT;
-END$$
-
 DROP PROCEDURE IF EXISTS `add_users`$$
-CREATE   PROCEDURE `add_users`(_user_id INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205), _created_by  VARCHAR(5))
+CREATE  PROCEDURE `add_users`(_user_id INT , _user_state INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(105) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  LONGBLOB  , _user_projects INT , _created_by INT)
 BEGIN
 START TRANSACTION;
-INSERT INTO users (user_name , user_username , user_mail , user_usergroup , user_password , user_picture,created_by) VALUES (_user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture,_created_by);
+INSERT INTO users (user_state , user_name , user_username , user_mail , user_usergroup , user_password , user_picture , user_projects , created_by) VALUES (_user_state , _user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture , _user_projects , _created_by);
 SELECT user_id AS id_value FROM users WHERE user_id = LAST_INSERT_ID();
 COMMIT;
 END$$
 
-DROP PROCEDURE IF EXISTS `add_user_project`$$
-CREATE   PROCEDURE `add_user_project`(_userproject_id INT , _user_id INT , _project_id INT)
-BEGIN START TRANSACTION; INSERT INTO userproject (user_id , project_id) VALUES (_user_id , _project_id); SELECT userproject_id AS id_value FROM userproject WHERE userproject_id = LAST_INSERT_ID(); COMMIT; END$$
+DROP PROCEDURE IF EXISTS `add_users_project`$$
+CREATE  PROCEDURE `add_users_project`(_userproject_id INT , _user_id INT , _project_id INT , _user_role  VARCHAR(25) , _added_by INT)
+BEGIN
+START TRANSACTION;
+INSERT INTO userproject (user_id , project_id , user_role , added_by) VALUES (_user_id , _project_id , _user_role , _added_by);
+SELECT userproject_id AS id_value FROM userproject WHERE userproject_id = LAST_INSERT_ID();
+COMMIT;
+END$$
 
 DROP PROCEDURE IF EXISTS `check_login`$$
 CREATE   PROCEDURE `check_login`(IN _login VARCHAR(20))
@@ -222,6 +228,15 @@ WHERE log_id= _row_id;
 COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `get_detail_project`$$
+CREATE  PROCEDURE `get_detail_project`(IN _row_id INT)
+BEGIN
+START TRANSACTION;
+SELECT * FROM projects
+WHERE project_id= _row_id;
+COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `get_detail_str_mng`$$
 CREATE   PROCEDURE `get_detail_str_mng`(IN _row_id INT)
 BEGIN
@@ -251,7 +266,12 @@ END$$
 
 DROP PROCEDURE IF EXISTS `get_detail_user_project`$$
 CREATE   PROCEDURE `get_detail_user_project`(IN _row_id INT)
-BEGIN START TRANSACTION; SELECT * FROM userproject WHERE userproject_id= _row_id; COMMIT; END$$
+BEGIN
+START TRANSACTION;
+SELECT * FROM userproject
+WHERE userproject_id= _row_id;
+COMMIT;
+END$$
 
 DROP PROCEDURE IF EXISTS `get_list`$$
 CREATE   PROCEDURE `get_list`(IN _source varchar(100),IN _fields varchar(1000),IN _condition_stat VARCHAR(1000))
@@ -280,30 +300,43 @@ DROP PROCEDURE IF EXISTS `get_list_logs`$$
 CREATE   PROCEDURE `get_list_logs`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500))
 BEGIN
 START TRANSACTION;
-SET @search_log_user_id := CONCAT('%',TRIM(_search),'%') ; 
+SET @search_log_type := CONCAT('%',TRIM(_search),'%') ;  SET @search_log_event := CONCAT('%',TRIM(_search),'%') ;  
 IF _range < 1 THEN
-SELECT  log_id , log_user_id , log_event , log_time FROM log
-WHERE log_active=1   AND (  (log_user_id LIKE  @search_log_user_id)  )  ORDER BY log_id DESC ;
+SELECT  * FROM log
+WHERE log_active=1   AND (  (log_type LIKE  @search_log_type)  OR (log_event LIKE  @search_log_event)   )  ORDER BY log_id DESC ;
 ELSE
-SELECT  log_id , log_user_id , log_event , log_time FROM log
-WHERE log_active=1   AND (  (log_user_id LIKE  @search_log_user_id)  )  ORDER BY log_id DESC  LIMIT _start_by , _range;
+SELECT  * FROM log
+WHERE log_active=1   AND (   (log_type LIKE  @search_log_type)  OR (log_event LIKE  @search_log_event)   )  ORDER BY log_id DESC  LIMIT _start_by , _range;
 END IF;
 COMMIT;
 END$$
 
-
-
-DROP PROCEDURE IF EXISTS `get_list_str_mng`$$
-CREATE   PROCEDURE `get_list_str_mng`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500) ,IN _lang VARCHAR(3))
+DROP PROCEDURE IF EXISTS `get_list_project`$$
+CREATE  PROCEDURE `get_list_project`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500))
 BEGIN
 START TRANSACTION;
-SET @search_str_text := CONCAT('%',TRIM(_search),'%') ; 
+SET @search_project_title := CONCAT('%',TRIM(_search),'%') ;  
+IF _range < 1 THEN
+SELECT  * FROM projects
+WHERE project_active=1   AND (  (project_title LIKE  @search_project_title) )  ORDER BY project_id ASC;
+ELSE
+SELECT  * FROM projects
+WHERE project_active=1   AND (  (project_title LIKE  @search_project_title)  )  ORDER BY project_id ASC  LIMIT _start_by , _range;
+END IF;
+COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_list_str_mng`$$
+CREATE   PROCEDURE `get_list_str_mng`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500) ,IN _str_lang VARCHAR(3))
+BEGIN
+START TRANSACTION;
+SET @search_str_label := CONCAT('%',TRIM(_search),'%') ;  SET @search_str_text := CONCAT('%',TRIM(_search),'%') ;  
 IF _range < 1 THEN
 SELECT  * FROM str_management
-WHERE str_active=1  AND str_lang = _lang   AND (  (str_text LIKE  @search_str_text)  )  ORDER BY str_text ASC ;
+WHERE str_active=1  AND _str_lang = _str_lang   AND ( (str_label LIKE  @search_str_label)  OR (str_text LIKE  @search_str_text)  )  ORDER BY str_text ASC ;
 ELSE
 SELECT  * FROM str_management
-WHERE str_active=1  AND str_lang = _lang   AND (  (str_text LIKE  @search_str_text)  )  ORDER BY str_text ASC  LIMIT _start_by , _range;
+WHERE str_active=1  AND _str_lang = _str_lang   AND (  (str_label LIKE  @search_str_label)  OR (str_text LIKE  @search_str_text)  )  ORDER BY str_text ASC  LIMIT _start_by , _range;
 END IF;
 COMMIT;
 END$$
@@ -353,26 +386,19 @@ CREATE   PROCEDURE `get_list_user_project`(IN _start_by INT,IN _range INT, IN _s
 BEGIN 
 START TRANSACTION;
 IF _range < 1 THEN 
-SELECT * FROM userproject WHERE userproject_active=1 ORDER BY userproject_id ASC; 
+SELECT * FROM userproject WHERE userproject_active=1 ORDER BY user_id ASC; 
 ELSE
-SELECT * FROM userproject WHERE userproject_active=1 ORDER BY userproject_id ASC LIMIT _start_by , _range; 
+SELECT * FROM userproject WHERE userproject_active=1 ORDER BY user_id ASC LIMIT _start_by , _range; 
 END IF; 
 COMMIT; 
 END$$
 
-DROP PROCEDURE IF EXISTS `get_list_project`$$
-CREATE   PROCEDURE `get_list_project`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500))
-BEGIN
-START TRANSACTION;
-SET @search_project_title := CONCAT('%',TRIM(_search),'%') ;  SET @search_project_description := CONCAT('%',TRIM(_search),'%') ; 
-IF _range < 1 THEN
-SELECT  * FROM projects
-WHERE project_active=1   AND (  (project_title LIKE  @search_project_title)  OR (project_description LIKE  @search_project_description)  )  ORDER BY project_id ASC;
-ELSE
-SELECT  * FROM projects
-WHERE project_active=1   AND (  (project_title LIKE  @search_project_title)  OR (project_description LIKE  @search_project_description)  )  ORDER BY project_id ASC  LIMIT _start_by , _range;
-END IF;
-COMMIT;
+DROP PROCEDURE IF EXISTS  get_reference_value $$
+CREATE   PROCEDURE  get_reference_value  (IN  _table  VARCHAR(100), IN  _id  VARCHAR(100), IN  _field  VARCHAR(100), IN  _table_id  VARCHAR(100))  BEGIN
+SET @query = CONCAT('Select ',_field,' from  ',_table ,'   WHERE ', _table_id, ' = ', _id );
+PREPARE stmt FROM @query;
+EXECUTE stmt; -- execute statement
+DEALLOCATE PREPARE stmt; -- release the statement memory.
 END$$
 
 DROP PROCEDURE IF EXISTS `get_row`$$
@@ -394,6 +420,24 @@ WHERE str_active=1 AND str_label = _text AND str_category = _category AND str_la
 COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `get_userproject_detail`$$
+CREATE  PROCEDURE `get_userproject_detail`(IN _row_id INT)
+BEGIN
+START TRANSACTION;
+SELECT * FROM userproject
+WHERE userproject_id= _row_id;
+COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_user_detail`$$
+CREATE  PROCEDURE `get_user_detail`(IN _row_id INT)
+BEGIN
+START TRANSACTION;
+SELECT * FROM users
+WHERE user_id= _row_id;
+COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `remove_config`$$
 CREATE   PROCEDURE `remove_config`(IN _element_id INT)
 BEGIN
@@ -412,21 +456,21 @@ WHERE log_id= _element_id;
 COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `remove_project`$$
+CREATE  PROCEDURE `remove_project`(IN _element_id INT)
+BEGIN
+START TRANSACTION;
+UPDATE projects SET project_active=0
+WHERE project_id= _element_id;
+COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `remove_str_mng`$$
 CREATE   PROCEDURE `remove_str_mng`(IN _element_id INT)
 BEGIN
 START TRANSACTION;
 UPDATE str_management SET str_active=0
 WHERE str_id= _element_id;
-COMMIT;
-END$$
-
-DROP PROCEDURE IF EXISTS `remove_usergroup`$$
-CREATE   PROCEDURE `remove_usergroup`(IN _element_id INT)
-BEGIN
-START TRANSACTION;
-UPDATE usergroup SET usergroup_active=0
-WHERE usergroup_id= _element_id;
 COMMIT;
 END$$
 
@@ -461,6 +505,16 @@ WHERE (log_id = _element_id);
 COMMIT;
 END$$
 
+
+DROP PROCEDURE IF EXISTS `update_project`$$
+CREATE   PROCEDURE `update_project`(_element_id INT , _project_id INT , _project_title  VARCHAR(255) , _project_description  VARCHAR(1005) , _project_icon  LONGBLOB )
+BEGIN
+START TRANSACTION;
+UPDATE  projects SET project_id = _project_id , project_title = _project_title , project_description = _project_description , project_icon = _project_icon
+WHERE (project_id = _element_id);
+COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `update_str_mng`$$
 CREATE   PROCEDURE `update_str_mng`(_element_id INT , _str_id INT , _str_text  VARCHAR(805))
 BEGIN
@@ -470,17 +524,8 @@ WHERE (str_id = _element_id);
 COMMIT;
 END$$
 
-DROP PROCEDURE IF EXISTS `update_usergroup`$$
-CREATE   PROCEDURE `update_usergroup`(_element_id INT , _usergroup_id INT , _usergroup_name  VARCHAR(25) , _usergroup_description  VARCHAR(55))
-BEGIN
-START TRANSACTION;
-UPDATE  usergroup SET usergroup_id = _usergroup_id , usergroup_name = _usergroup_name , usergroup_description = _usergroup_description
-WHERE (usergroup_id = _element_id);
-COMMIT;
-END$$
-
 DROP PROCEDURE IF EXISTS `update_users`$$
-CREATE   PROCEDURE `update_users`(_element_id INT , _user_id INT , _user_name  VARCHAR(55) , _user_mail  VARCHAR(55) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  VARCHAR(205))
+CREATE   PROCEDURE `update_users`(_element_id INT , _user_id INT , _user_name  VARCHAR(55) , _user_mail  VARCHAR(105) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  LONGBLOB )
 BEGIN
 START TRANSACTION;
 UPDATE  users SET user_id = _user_id , user_name = _user_name , user_mail = _user_mail , user_usergroup = _user_usergroup , user_password = _user_password , user_picture = _user_picture
@@ -489,52 +534,10 @@ COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `update_user_project`$$
-CREATE   PROCEDURE `update_user_project`(_element_id INT , _userproject_id INT , _user_id INT , _project_id INT, _user_role VARCHAR(55))
-BEGIN START TRANSACTION; UPDATE userproject SET userproject_id = _userproject_id , user_id = _user_id , project_id = _project_id , user_role=_user_role WHERE (userproject_id = _element_id); COMMIT; END$$
-
-DROP PROCEDURE IF EXISTS`add_project`$$
-CREATE   PROCEDURE `add_project`(_project_id INT , _project_label  VARCHAR(105) , _project_title  VARCHAR(255) , _project_description  VARCHAR(1005) , _project_creator INT , _project_icon  VARCHAR(205))
+CREATE   PROCEDURE `update_user_project`(_element_id INT , _userproject_id INT , _project_id INT , _user_role  VARCHAR(25))
 BEGIN
 START TRANSACTION;
-INSERT INTO projects (project_label , project_title , project_description , project_creator , project_icon) VALUES (_project_label , _project_title , _project_description , _project_creator , _project_icon);
-SELECT project_id AS id_value FROM projects WHERE project_id = LAST_INSERT_ID();
+UPDATE  userproject SET userproject_id = _userproject_id , project_id = _project_id , user_role = _user_role
+WHERE (userproject_id = _element_id);
 COMMIT;
-END$$
-
-DROP PROCEDURE IF EXISTS `get_detail_project`$$
-CREATE   PROCEDURE `get_detail_project`(IN _row_id INT)
-BEGIN
-START TRANSACTION;
-SELECT * FROM projects
-WHERE project_id= _row_id;
-COMMIT;
-END$$
-
-
-
-DROP PROCEDURE IF EXISTS `update_project`$$
-CREATE   PROCEDURE `update_project`(_element_id INT , _project_id INT , _project_label  VARCHAR(105) , _project_title  VARCHAR(255) , _project_description  VARCHAR(1005) , _project_creator INT , _project_icon  VARCHAR(205))
-BEGIN
-START TRANSACTION;
-UPDATE  projects SET project_id = _project_id , project_label = _project_label , project_title = _project_title , project_description = _project_description , project_creator = _project_creator , project_icon = _project_icon
-WHERE (project_id = _element_id);
-COMMIT;
-END$$
-
-DROP PROCEDURE IF EXISTS `remove_project`$$
-CREATE   PROCEDURE `remove_project`(IN _element_id INT)
-BEGIN
-START TRANSACTION;
-UPDATE projects SET project_active=0
-WHERE project_id= _element_id;
-COMMIT;
-END$$
-
-
-DROP PROCEDURE IF EXISTS  get_reference_value $$
-CREATE   PROCEDURE  get_reference_value  (IN  _table  VARCHAR(100), IN  _id  VARCHAR(100), IN  _field  VARCHAR(100), IN  _table_id  VARCHAR(100))  BEGIN
-SET @query = CONCAT('Select ',_field,' from  ',_table ,'   WHERE ', _table_id, ' = ', _id );
-PREPARE stmt FROM @query;
-EXECUTE stmt; -- execute statement
-DEALLOCATE PREPARE stmt; -- release the statement memory.
 END$$

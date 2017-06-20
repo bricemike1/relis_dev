@@ -262,7 +262,7 @@ function get_user_project() {
 	   	
 	   			//'page_template'=>'list',
 	   	
-	   			'data_source'=>'get_list_user_projects',
+	   			'data_source'=>'get_list_user_project',
 	   			'generate_stored_procedure'=>True,
 	   		  
 	   			'fields'=>array(
@@ -345,7 +345,7 @@ function get_user_project() {
 		
 				//'page_template'=>'detail',
 				'redirect_after_delete'=>'op/entity_list/list_userprojects',
-				'db_delete_model'=>'remove_userproject',
+				'db_delete_model'=>'remove_user_project',
 				'generate_stored_procedure'=>True,
 				
 				
