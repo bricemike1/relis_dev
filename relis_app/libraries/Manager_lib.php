@@ -1087,10 +1087,9 @@ class Manager_lib
 		if(has_usergroup(1)){
 		$menu['general']['menu']['usersn']=array('label'=>'Users','url'=>'op/entity_list/list_all_users','icon'=>'user');
 		$menu['general']['menu']['usergroup']=array('label'=>'Usergroups','url'=>'op/entity_list/list_usergroups','icon'=>'users');
-		//$menu['general']['menu']['projects']=array('label'=>'Projects','url'=>'op/entity_list/list_projects','icon'=>'users');
-		//$menu['general']['menu']['list_userprojects']=array('label'=>'Users Projects','url'=>'op/entity_list/list_userprojects','icon'=>'users');
-		$menu['general']['menu']['logs']=array('label'=>'Logs','url'=>'manager/entity_list/logs','icon'=>'sliders');
+		$menu['general']['menu']['logs']=array('label'=>'Logs','url'=>'op/entity_list/list_logs','icon'=>'sliders');
 		$menu['general']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
+		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
 		}
 		
 		return $menu;

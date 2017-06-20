@@ -83,15 +83,15 @@ public function get_table_configuration($_table,$target_db='current')
 					require_once("entity_config/relis/screening_decision_configuration.php");
 					$table_configurations['screen_decison']=get_screening_decision();
 					break;
-			
+			case 'logs':
+					require_once("entity_config/logs_configuration.php");
+					$table_configurations['logs']=get_logs();
+					break;
 			
 			
 			
 
-			case 'logs':
-				require_once("entity_config/logs_config.php");
-				$table_configurations['logs']=get_logs();
-				break;
+			
 			case 'str_mng':
 				require_once("entity_config/str_mng_config.php");
 				$table_configurations['str_mng']=get_str_mng();

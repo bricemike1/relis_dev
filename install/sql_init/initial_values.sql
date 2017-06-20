@@ -291,20 +291,7 @@ END IF;
 COMMIT;
 END$$
 
-DROP PROCEDURE IF EXISTS `get_list_project`$$
-CREATE   PROCEDURE `get_list_project`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500))
-BEGIN
-START TRANSACTION;
-SET @search_project_title := CONCAT('%',TRIM(_search),'%') ;  SET @search_project_description := CONCAT('%',TRIM(_search),'%') ; 
-IF _range < 1 THEN
-SELECT  * FROM projects
-WHERE project_active=1   AND (  (project_title LIKE  @search_project_title)  OR (project_description LIKE  @search_project_description)  )  ORDER BY project_id ASC ;
-ELSE
-SELECT  * FROM projects
-WHERE project_active=1   AND (  (project_title LIKE  @search_project_title)  OR (project_description LIKE  @search_project_description)  )  ORDER BY project_id ASC  LIMIT _start_by , _range;
-END IF;
-COMMIT;
-END$$
+
 
 DROP PROCEDURE IF EXISTS `get_list_str_mng`$$
 CREATE   PROCEDURE `get_list_str_mng`(IN _start_by INT,IN _range INT, IN _search VARCHAR(500) ,IN _lang VARCHAR(3))

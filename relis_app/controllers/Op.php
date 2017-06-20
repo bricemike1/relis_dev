@@ -19,9 +19,7 @@ class Op extends CI_Controller {
 	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=0){
 			
 		$op=check_operation($operation_name,'List');
-		
-		
-		
+
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
 		/*

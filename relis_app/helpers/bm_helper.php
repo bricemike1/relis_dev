@@ -495,8 +495,9 @@ function set_log($log_type,$log_event,$log_publish=1,$log_user_id=0,$log_poste_i
 	}
 	$log['table_config']='logs';
 	$log['operation_type']='new';
+	$log['current_operation']='add_logs';
 	//print_test($log);
-	$ci->DBConnection_mdl->save_reference($log);
+	$ci->DBConnection_mdl->save_reference_mdl($log);
 }
 function project_db() {
 	

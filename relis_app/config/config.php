@@ -290,9 +290,9 @@ $config['editor_url'] = "http://127.0.0.1:8080/relis/texteditor";
 $config['metrics_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/metrics";
 $config['root_path'] = "C:/xampp/htdocs/relis/relis_dev";
 
-$config['screening_conflict_type'] = "IncludeExclude";//can also have ExclusionCriteria
+//$config['screening_conflict_type'] = "IncludeExclude";//can also have ExclusionCriteria
 //$config['screening_conflict_type'] = "ExclusionCriteria";//can also have IncludeExclude
-$config['screening_conflict_resolution'] = "Unanimity";//can also have Majority
+//$config['screening_conflict_resolution'] = "Unanimity";//can also have Majority
 //$config['screening_conflict_resolution'] = "Majority";//can also have Unanimity
 
 // Common configurations in relis
@@ -301,21 +301,10 @@ $config['common_relis_configs'] = array('assignation','author','config','exclusi
 $config['project_specific_config_folder']="relis_app/libraries/table_config/project/";
 
 // The prefix that will have the new databases for projects  installed
-$config['project_db_prefix'] = "relis_dev_";
+$config['project_db_prefix'] = "relis_dev_new_";
 
 // Added configuration
 
-
 $config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost/relis/relis_dev";
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost/relis/relis_dev";
+$config['project_db_user'] = "root";
+$config['project_db_pass'] = "";

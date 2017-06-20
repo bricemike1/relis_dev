@@ -91,7 +91,7 @@ function get_logs() {
 	   			'on_edit'=>'disabled',
 	   			'on_list'=>'hidden',
 	   			'field_size'=>200,
-	   			'mandatory'=>' mandatory '
+	   			'mandatory'=>'  '
 	   	);	
 		
 	   
