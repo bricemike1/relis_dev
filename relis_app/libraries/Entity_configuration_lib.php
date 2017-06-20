@@ -98,26 +98,7 @@ public function get_table_configuration($_table,$target_db='current')
 				
 				
 				// relis project
-			case 'papers':
-				require_once("entity_config/relis/paper_config.php");
-				$table_configurations['papers']=get_papers();
-				break;
-					
-			case 'author':
-				require_once("entity_config/relis/author_config.php");
-				$table_configurations['author']=get_author();
-				break;
-					
-			case 'venue':
-				require_once("entity_config/relis/venue_config.php");
-				$table_configurations['venue']=get_venue();
-				break;
-				
-			case 'paper_author':
-				require_once("entity_config/relis/paper_author_config.php");
-				$table_configurations['paper_author']=get_paper_author();
-				break;
-				
+			
 						
 				case 'exclusion':
 					require_once("entity_config/relis/exclusion_config.php");
@@ -129,7 +110,7 @@ public function get_table_configuration($_table,$target_db='current')
 					$table_configurations['assignation']=get_assignation();
 					break;
 					
-				case 'assignment_screen':
+				/*case 'assignment_screen':
 					require_once("entity_config/relis/assignment_screen_config.php");
 					$table_configurations['assignment_screen']=get_assignment_screening();
 					break;	
@@ -145,7 +126,7 @@ public function get_table_configuration($_table,$target_db='current')
 					require_once("entity_config/relis/screening_config.php");
 					$table_configurations['screening_validate']=get_screening_set('screening_validate','Screening validation');
 					break;	
-					
+				*/	
 				
 				case 'operations':
 					require_once("entity_config/relis/operations_config.php");
@@ -279,16 +260,6 @@ public function get_table_configuration($_table,$target_db='current')
 	
 	}
 	
-	public function get_new_install_config_old($file_name)
-	{
-		require_once("table_config/project/temp/".$file_name.".php");
-		$res=get_classification();
-	
-		//print_test($result);
-		$result=$this->clean_install_config($res);
-		return $result;
-	
-	}
 	
 	private function clean_install_config($install_config){
 		//cleaning reference tables

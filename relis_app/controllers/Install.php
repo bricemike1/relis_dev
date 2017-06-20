@@ -143,7 +143,7 @@ class Install extends CI_Controller {
 		 * @var string $dir : the location of the folder where the installation files are located
 		 */
 		$dir=get_ci_config('editor_generated_path');
-		
+
 		/**
 		 * @var string  $editor_url  the url adress of ReLiS Editor: 
 		 */
@@ -153,13 +153,16 @@ class Install extends CI_Controller {
 		$Tprojects=array();
 		if(is_dir($dir)){
 			$files = array_diff(scandir($dir), array('.', '..',".metadata"));
+			
 			foreach ($files as $key => $file) {
 				if(is_dir($dir.'\\'.$file)){
+					
 					$project_dir=$dir.'\\'.$file;
 					$Tprojects[$file]=array();
 					$Tprojects[$file]['dir']=$project_dir;
 					$Tprojects[$file]['syntax']=array();
 					$Tprojects[$file]['generated']=array();
+					
 					//syntax
 					$project_content = array_diff(scandir($project_dir), array('.', '..',".metadata"));
 					foreach ($project_content as $key => $value_c) {
@@ -260,7 +263,7 @@ class Install extends CI_Controller {
 					//Retrieve the content to verify the validity of the file
 					
 					
-					$temp_table_config= $this->entity_config_lib->get_new_install_config($project_short_name);
+					$temp_table_config= $this->entity_configuration_lib->get_new_install_config($project_short_name);
 					
 					if(! valid_install_configuration_file($temp_table_config))
 					{
@@ -348,7 +351,7 @@ class Install extends CI_Controller {
 					//Retrieve the content to verify the validity of the file
 						
 						
-					$temp_table_config= $this->entity_config_lib->get_new_install_config($project_short_name);
+					$temp_table_config= $this->entity_configuration_lib->get_new_install_config($project_short_name);
 						
 					if(! valid_install_configuration_file($temp_table_config))
 					{
@@ -392,7 +395,7 @@ class Install extends CI_Controller {
 		
 		
 		//Read installation configuration
-		$res_install_config= $this->entity_config_lib->get_install_config();
+		$res_install_config= $this->entity_configuration_lib->get_install_config();
 		//print_test($res_install_config);
 	
 		//cleaning old installation
@@ -599,7 +602,7 @@ class Install extends CI_Controller {
 			array_push($success_array, 'Database initialised');
 				
 			
-			$res_install_config= $this->entity_config_lib->get_install_config($project_short_name);
+			$res_install_config= $this->entity_configuration_lib->get_install_config($project_short_name);
 			
 			//print_test($res_install_config);
 			
@@ -628,9 +631,9 @@ class Install extends CI_Controller {
 					$sql_ref.="<br/><br/>";
 				}
 			}
-			//echo $sql_ref."<br/>";
-		
-			//tables
+			//ecaho $sql_ref."<br/>";
+	
+			//tablesaa
 			//print_test($res_install_config['config']);
 			$sql_table="";
 			if(!empty($res_install_config['config'])){
@@ -694,7 +697,7 @@ class Install extends CI_Controller {
 			$creator=1;
 			$creator=$this->session->userdata('user_id');
 			
-			$sql_add_config="INSERT INTO config  (project_title,project_description,creator ) VALUES ('".$project_title."','Project description goes here',".$creator.")";
+		//	$sql_add_config="INSERT INTO config  (project_title,project_description,creator ) VALUES ('".$project_title."','Project description goes here',".$creator.")";
 			//echo $sql_add_config;
 			
 		///	$res_sql = $this->manage_mdl->run_query($sql_add_config,false,$project_short_name);
@@ -915,6 +918,8 @@ class Install extends CI_Controller {
 	}
 	
 	private function clean_previous_installation(){
+		
+	
 		//echo "<h3>Cleaning old installation</h3>";
 		$sql="select * from installation_info where install_active=1 ";
 		$this->db2 = $this->load->database(project_db(), TRUE);
@@ -1142,19 +1147,31 @@ class Install extends CI_Controller {
 	
 		$target_db=($target_db=='current')?project_db():$target_db;
 	
+		$old_configs=array();
+		$new_configs=array();
 		
 	
 		if($config=='init'){
+			$old_configs=array('assignation','exclusion','operations');
+			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config');
+			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
-			$configs=get_relis_common_configs();
+			//$configs=get_relis_common_configs();
 		}else{
-			$configs=array($config);
+			$old_configs=array($config);
 				
 		}
-	
+		foreach ($new_configs as $k => $config) {
+			if($config=='papers')
+				$this->manage_stored_procedure_lib->create_stored_procedure_count($config,TRUE,$verbose,$target_db);
+			
+				create_stored_procedures($config,$target_db ,False);
+			
+			
+		}
 		
 		
-		foreach ($configs as $k => $config) {
+		foreach ($old_configs as $k => $config) {
 		
 			/*
 			 * Stored procedure to get list of element
@@ -1207,7 +1224,7 @@ class Install extends CI_Controller {
 		$data['array_success']=array();
 
 		//$detail_project=$this->DBConnection_mdl->get_row_details ( 'project',$project_id);
-		$detail_project=$this->DBConnection_mdl->get_row_details ( 'get_project_detail',$project_id,true );
+		$detail_project=$this->DBConnection_mdl->get_row_details ( 'get_detail_project',$project_id,true );
 			
 		//print_test($detail_project); exit;
 		//$res=$this->DBConnection_mdl->remove_element($project_id,'project');
@@ -1320,16 +1337,36 @@ class Install extends CI_Controller {
 	
 	private function populate_common_tables($target_db='current'){
 		$target_db=($target_db=='current')?project_db():$target_db;
-		$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
+	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
+		$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison');
 		foreach ($configs as $key => $value) {
-			$tab_config=get_table_config($value);
+			//$tab_config=get_table_config($value);
 			//$res=$this->create_table_config($tab_config,$target_db);
-			$res=$this->manage_stored_procedure_lib->create_table_config($tab_config,$target_db);
-		
+			//$res=$this->manage_stored_procedure_lib->create_table_config($tab_config,$target_db);
+			
+			//create tables
+			
+			
+			$table_configuration=get_table_configuration($value);
+			$res=create_table_configuration($table_configuration,$target_db);
+			
 		}
 		
 	}
 	
-	
+	private function populate_common_tables_views($target_db='current'){
+		$target_db=($target_db=='current')?project_db():$target_db;
+		$configs=array('papers');
+		foreach ($configs as $key => $value) {
+			$table_configuration=get_table_configuration($value);
+			if(!empty($table_configuration['table_views'])){
+				foreach ($table_configuration['table_views'] as $key=> $view_value) {
+						
+					create_view($view_value);
+				}
+			}
+		}
+		
+	}
 	
 }

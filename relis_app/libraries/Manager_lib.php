@@ -903,7 +903,7 @@ class Manager_lib
 		$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
 		
 		if (is_project_creator(project_db()) OR has_usergroup(1)){
-			$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'manager/display_element/config/1','icon'=>'gears');
+			$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/configurations/1','icon'=>'gears');
 			$menu['settings']['menu']['install_form_editor']=array('label'=>'Update Installation','url'=>'install/install_form_editor','icon'=>'refresh');
 		
 		}

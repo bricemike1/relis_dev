@@ -23,16 +23,6 @@ CREATE TABLE IF NOT EXISTS `assigned` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;;;;
 
 
-DROP TABLE IF EXISTS `author`;;;;
-CREATE TABLE IF NOT EXISTS `author` (
-  `author_id` int(11) NOT NULL AUTO_INCREMENT,
-  `author_name` varchar(200) NOT NULL,
-  `author_desc` text,
-  `author_picture` varchar(300) DEFAULT NULL,
-  `author_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`author_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;;;;
-
 
 DROP TABLE IF EXISTS `classification`;;;;
 CREATE TABLE IF NOT EXISTS `classification` (
@@ -41,26 +31,6 @@ CREATE TABLE IF NOT EXISTS `classification` (
   `note` varchar(500) DEFAULT NULL,
   class_active  int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`class_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
-
-
-
-DROP TABLE IF EXISTS `classification_scheme`;;;;
-CREATE TABLE IF NOT EXISTS `classification_scheme` (
-  `scheme_id` int(11) NOT NULL AUTO_INCREMENT,
-  `scheme_label` varchar(100) NOT NULL,
-  `scheme_title` varchar(100) NOT NULL,
-  `scheme_parent` varchar(100) NOT NULL DEFAULT 'main',
-  `scheme_mandatory` int(1) NOT NULL DEFAULT '0',
-  `scheme_category` varchar(30) NOT NULL,
-  `scheme_type` varchar(30) DEFAULT NULL,
-  `scheme_size` int(11) DEFAULT NULL,
-  `scheme_source` varchar(1000) DEFAULT NULL,
-  `scheme_source_main_field` varchar(100) DEFAULT NULL,
-  `scheme_number_of_values` varchar(2) NOT NULL DEFAULT '1',
-  `scheme_order` int(2) NOT NULL DEFAULT '1',
-  `scheme_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`scheme_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
 
@@ -81,13 +51,15 @@ CREATE TABLE IF NOT EXISTS `config` (
   `screening_validation_on` int(2) NOT NULL DEFAULT '1',
   `classification_on` int(2) NOT NULL DEFAULT '1',
   `screening_result_on` int(2) NOT NULL DEFAULT '1',
+  `source_papers_on` int(2) NOT NULL DEFAULT '0',
+  `search_strategy_on` int(2) NOT NULL DEFAULT '0',
   `config_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
 
-INSERT INTO `config` (`config_id`, `config_type`, `csv_field_separator`, `csv_field_separator_export`, `editor_url`, `editor_generated_path`, `config_active`) VALUES
-(1, 'default', ';', ',', 'http://127.0.0.1:8080/relis/texteditor', 'C:/relis_workspace', 1);;;;
+INSERT INTO `config` (`config_id`, `config_type`, `editor_url`, `editor_generated_path`, `csv_field_separator`, `csv_field_separator_export`, `screening_screening_conflict_resolution`, `screening_conflict_type`, `import_papers_on`, `assign_papers_on`, `screening_on`, `screening_validation_on`, `classification_on`, `screening_result_on`, `source_papers_on`, `search_strategy_on`, `config_active`) VALUES
+(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/relis_workspace', ';', ',', 'Majority', 'IncludeExclude', 1, 1, 1, 1, 1, 1, 1, 1, 1);;;;
 
 DROP TABLE IF EXISTS `exclusion`;;;;
 CREATE TABLE IF NOT EXISTS `exclusion` (
@@ -104,21 +76,27 @@ CREATE TABLE IF NOT EXISTS `exclusion` (
 
 DROP TABLE IF EXISTS `paper`;;;;
 CREATE TABLE IF NOT EXISTS `paper` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `bibtexKey` varchar(100) NOT NULL,
+   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bibtexKey` varchar(30) NOT NULL,
   `title` varchar(200) NOT NULL,
-  `doi` varchar(1000) DEFAULT NULL,
+  `preview` longtext,
+  `bibtex` longtext,
+  `abstract` longtext,
+  `doi` varchar(200) DEFAULT NULL,
+  `year` int(4) DEFAULT NULL,
   `venueId` int(11) DEFAULT NULL,
-  `bibtex` longtext DEFAULT NULL,
-  `preview` longtext DEFAULT NULL,
-  `abstract` longtext DEFAULT NULL,
+  `papers_sources` int(11) DEFAULT NULL,
+  `search_strategy` int(11) DEFAULT NULL,
+  `added_by` int(11) DEFAULT NULL,
+  `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `addition_mode` enum('Automatic','Manually') NOT NULL DEFAULT 'Manually',
+  `added_active_phase` varchar(20) NOT NULL,
   `screening_status` enum('Pending','In review','Included','Excluded','In conflict','Resolved included','Resolved excluded') NOT NULL DEFAULT 'Pending',
   `classification_status` enum('Waiting','To classify','Classified') NOT NULL DEFAULT 'Waiting',
-  `paper_excluded` int(1) NOT NULL DEFAULT '0',
-  `operation_code` varchar(20) DEFAULT '01',
+  `paper_excluded` int(2) NOT NULL DEFAULT '0',
+  `operation_code` varchar(20) DEFAULT NULL,
   `paper_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `IX_Paper_bibtexKey` (`bibtexKey`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;;;;
 
 
@@ -143,7 +121,6 @@ CREATE TABLE IF NOT EXISTS `ref_tables` (
   PRIMARY KEY (`reftab_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
-INSERT INTO `ref_tables` VALUES (1,'ref_exclusioncrieria','zref_exclusioncrieria','Exclusion criteria',1);;;;
 
 DROP TABLE IF EXISTS `str_management`;;;;
 CREATE TABLE IF NOT EXISTS `str_management` (
@@ -158,27 +135,16 @@ CREATE TABLE IF NOT EXISTS `str_management` (
 
 
 
-DROP TABLE IF EXISTS `venue`;;;;
-CREATE TABLE IF NOT EXISTS `venue` (
-  `venue_id` int(11) NOT NULL AUTO_INCREMENT,
-  `venue_abbreviation` varchar(20) NOT NULL,
-  `venue_fullName` longtext,
-  `venue_year` smallint(6) NOT NULL,
-  `venue_volume` smallint(6) DEFAULT NULL,
-  `venue_totalNumPapers` smallint(6) DEFAULT NULL,
-  `venue_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`venue_id`),
-  UNIQUE KEY `IX_Venue` (`venue_abbreviation`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;;;;
-
-
-DROP TABLE IF EXISTS `zref_exclusioncrieria`;;;;
-CREATE TABLE IF NOT EXISTS `zref_exclusioncrieria` (
-  `ref_id` int(11) NOT NULL AUTO_INCREMENT,
-  `ref_value` varchar(50) NOT NULL,
-  `ref_desc` varchar(250) DEFAULT NULL,
-  `ref_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`ref_id`)
+DROP TABLE IF EXISTS `operations`;;;;
+CREATE TABLE IF NOT EXISTS `operations` (
+  `operation_id` int(11) NOT NULL AUTO_INCREMENT,
+  `operation_code` varchar(20) NOT NULL DEFAULT '01',
+  `operation_type` enum('import_paper','assign_papers','assign_papers_validation') NOT NULL DEFAULT 'import_paper',
+  `operation_desc` varchar(200) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `operation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `operation_active` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`operation_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
 -- VIEWS
@@ -289,7 +255,12 @@ UPDATE paper SET  paper_excluded = 0  WHERE id = _paper_id ;
 COMMIT;
 END;;;;
 
-
+DROP PROCEDURE IF EXISTS  exclude_paper ;;;;
+CREATE   PROCEDURE  exclude_paper  (IN  _paper_id  INT)  BEGIN
+START TRANSACTION;
+UPDATE paper SET  paper_excluded = 1  WHERE id = _paper_id ;
+  COMMIT;
+ END;;;;
 
 DROP PROCEDURE IF EXISTS  get_classifications ;;;;
 CREATE   PROCEDURE  get_classifications  ( _paperId  INT)  BEGIN
@@ -308,22 +279,6 @@ FROM classification
 WHERE (class_id = _classificationId);
 COMMIT;
 END;;;;
-
-DROP PROCEDURE IF EXISTS  get_classification_scheme ;;;;
-CREATE   PROCEDURE  get_classification_scheme  ()  BEGIN
-START TRANSACTION;
-SELECT * FROM classification_scheme 
-WHERE (scheme_active=1) ORDER BY field_order ASC;
-COMMIT;
-END;;;;
-
-DROP PROCEDURE IF EXISTS  exclude_paper ;;;;
-CREATE   PROCEDURE  exclude_paper  (IN  _paper_id  INT)  BEGIN
-START TRANSACTION;
-UPDATE paper SET  paper_excluded = 1  WHERE id = _paper_id ;
-  COMMIT;
- END;;;;
- 
  
 DROP PROCEDURE IF EXISTS  count_papers_assigned ;;;;
 CREATE   PROCEDURE  count_papers_assigned  (IN  _user_id  INT, IN  _search  VARCHAR(500))  BEGIN 
@@ -341,8 +296,6 @@ CREATE   PROCEDURE  count_papers_pending  (IN  _search  VARCHAR(100))  BEGIN STA
 
 DROP PROCEDURE IF EXISTS  count_papers_processed ;;;;
 CREATE   PROCEDURE  count_papers_processed  (IN  _search  VARCHAR(100))  BEGIN START TRANSACTION; SET @search_bibtexKey := CONCAT('%',TRIM(_search),'%') ; SET @search_title := CONCAT('%',TRIM(_search),'%') ; SET @search_preview := CONCAT('%',TRIM(_search),'%') ; SELECT count(*) as nbr FROM view_paper_processed WHERE paper_active=1 AND ( (bibtexKey LIKE @search_bibtexKey) OR (title LIKE @search_title) OR (preview LIKE @search_preview) ) ; COMMIT; END;;;;
-
-
 
 
 DROP PROCEDURE IF EXISTS  get_list_papers_assigned ;;;;

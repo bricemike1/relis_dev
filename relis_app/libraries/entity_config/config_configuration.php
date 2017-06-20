@@ -209,7 +209,7 @@ function get_configuration() {
 	   	
 	   			//'page_template'=>'general/display_element',
 	   	
-	   			'data_source'=>'get_configuration',
+	   			'data_source'=>'get_detail_config',
 	   			'generate_stored_procedure'=>True,
 	   				
 	   			'fields'=>array(
@@ -261,7 +261,7 @@ function get_configuration() {
 	   	
 	   			//'page_template'=>'general/display_element',
 	   	
-	   			'data_source'=>'get_configuration',
+	   			'data_source'=>'get_detail_config',
 	   			'generate_stored_procedure'=>False,
 	   				
 	   			'fields'=>array(
@@ -302,8 +302,8 @@ function get_configuration() {
 	   			'page_template'=>'general/frm_entity',
 	   	
 	   			'redirect_after_save'=>'op/display_element/configurations/1',
-	   			'data_source'=>'get_configuration',
-	   			'db_save_model'=>'update_configuration',
+	   			'data_source'=>'get_detail_config',
+	   			'db_save_model'=>'update_config',
 	   	
 	   			'generate_stored_procedure'=>True,
 	   				
@@ -350,8 +350,8 @@ function get_configuration() {
 	   			'page_template'=>'general/frm_entity',
 	   	
 	   			'redirect_after_save'=>'op/display_element/config_papers/1',
-	   			'data_source'=>'get_configuration',
-	   			'db_save_model'=>'update_configuration',
+	   			'data_source'=>'get_detail_config',
+	   			'db_save_model'=>'update_config',
 	   	
 	   			'generate_stored_procedure'=>False,
 	   				

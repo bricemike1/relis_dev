@@ -1100,11 +1100,11 @@ END";
 			$sql.=") ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		
 			$res_sql = $this->CI->manage_mdl->run_query($sql,False,$target_db);
-			echo $del_line."<br/><br/>";
+	//		echo $del_line."<br/><br/>";
 			
-			echo $sql;
+	//		echo $sql;
 			
-			print_test($res_sql);
+		//	print_test($res_sql);
 			return "$del_line $sql";
 		}
 		
@@ -1495,7 +1495,7 @@ END";
 		/*
 		 * Création de la procedure stocké pour supprimer un élément
 		 */
-		public function generate_stored_procedure_remove($config,$run_query=TRUE,$verbose=TRUE,$target_db='current'){
+		public function generate_stored_procedure_remove($config,$target_db='current',$run_query=TRUE,$verbose=TRUE){
 		
 			$target_db=($target_db=='current')?project_db():$target_db;
 			$this->CI->db2 = $this->CI->load->database($target_db, TRUE);
