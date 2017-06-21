@@ -34,8 +34,8 @@
                   
                  <div class="tab-pane active" id="home">
                          <p class="lead">Assign papers </p>
-                          <p>Select users: <br/><b> Number of papers to assign :<u><?php echo $number_papers ?></u></b>
-                           <br/><i> Number of papers already assigned :<u><?php echo $number_papers_assigned ?></u></i><br/></p>
+                          <p>Select users: <br/><b> Number of papers to assign :<?php echo $number_papers ?></b>
+                           <br/><i> Number of papers already assigned :<?php echo $number_papers_assigned ?></i><br/></p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
                          echo form_open_multipart('relis/manager/save_assign_screen_validation',$attributes);

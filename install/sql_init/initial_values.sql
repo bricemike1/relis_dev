@@ -164,10 +164,10 @@ COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `add_users`$$
-CREATE  PROCEDURE `add_users`(_user_id INT , _user_state INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(105) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  LONGBLOB  , _user_projects INT , _created_by INT)
+CREATE  PROCEDURE `add_users`(_user_id INT , _user_state INT , _user_name  VARCHAR(55) , _user_username  VARCHAR(25) , _user_mail  VARCHAR(105) , _user_usergroup INT , _user_password  VARCHAR(40) , _user_picture  LONGBLOB  , _created_by INT)
 BEGIN
 START TRANSACTION;
-INSERT INTO users (user_state , user_name , user_username , user_mail , user_usergroup , user_password , user_picture , user_projects , created_by) VALUES (_user_state , _user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture , _user_projects , _created_by);
+INSERT INTO users (user_state , user_name , user_username , user_mail , user_usergroup , user_password , user_picture  , created_by) VALUES (_user_state , _user_name , _user_username , _user_mail , _user_usergroup , _user_password , _user_picture  , _created_by);
 SELECT user_id AS id_value FROM users WHERE user_id = LAST_INSERT_ID();
 COMMIT;
 END$$

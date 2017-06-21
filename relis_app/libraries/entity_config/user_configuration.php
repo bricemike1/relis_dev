@@ -199,7 +199,6 @@ function get_config_user() {
 					'user_usergroup'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'user_password'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'user_picture'=>array('mandatory'=>'','field_state'=>'enabled'),
-					'user_projects'=>array('mandatory'=>'','field_state'=>'enabled'),
 					'created_by'=>array('mandatory'=>'','field_state'=>'hidden')
 									
 					),
@@ -238,7 +237,6 @@ function get_config_user() {
 						'user_mail'=>array('mandatory'=>'','field_state'=>'enabled','pattern'=>'valid_email'),
 						'user_usergroup'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						'user_password'=>array('mandatory'=>'','field_state'=>'enabled'),
-						//'user_projects'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						'user_picture'=>array('mandatory'=>'','field_state'=>'enabled')
 							
 				),
