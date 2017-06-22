@@ -15,7 +15,7 @@ function get_operations_str_mng() {
 	);
 	
 	
-	$operations['detail_string']=array(
+	$operations['detail_str_mng']=array(
 			'type'=>'Detail',
 			'tab_ref'=>'str_mng',
 			'operation_id'=>'detail_str_mng'

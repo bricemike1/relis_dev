@@ -595,7 +595,7 @@ class Install extends CI_Controller {
 			
 			//echo "<h2>initialise stored procedures</h2>";
 			$this->update_stored_procedure('init',FALSE,$project_short_name,TRUE);
-			
+			$this->populate_common_tables_views($project_short_name);
 			if($verbose)
 				echo "Database initialised";
 			
@@ -1152,7 +1152,7 @@ class Install extends CI_Controller {
 		
 	
 		if($config=='init'){
-			$old_configs=array('assignation','exclusion','operations');
+			$old_configs=array('assignation','exclusion','operations','papers');
 			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
@@ -1161,14 +1161,7 @@ class Install extends CI_Controller {
 			$old_configs=array($config);
 				
 		}
-		foreach ($new_configs as $k => $config) {
-			if($config=='papers')
-				$this->manage_stored_procedure_lib->create_stored_procedure_count($config,TRUE,$verbose,$target_db);
-			
-				create_stored_procedures($config,$target_db ,False);
-			
-			
-		}
+		
 		
 		
 		foreach ($old_configs as $k => $config) {
@@ -1189,22 +1182,26 @@ class Install extends CI_Controller {
 			/*
 			 * Stored procedure to remove element
 			*/
+				if($config!='papers')
 			$this->manage_stored_procedure_lib->create_stored_procedure_remove($config,TRUE,$verbose,$target_db);
 				
 			/*
 			 * Stored procedure to add element
 			*/
+			if($config!='papers')
 			$this->manage_stored_procedure_lib->create_stored_procedure_add($config,TRUE,$verbose,$target_db);
 				
 	
 			/*
 			 * Stored procedure to update element
 			*/
+			if($config!='papers')
 			$this->manage_stored_procedure_lib->create_stored_procedure_update($config,TRUE,$verbose,$target_db);
 	
 			/*
 			 * Stored procedure to get detail element (select row)
 			*/
+			if($config!='papers')
 			$this->manage_stored_procedure_lib->create_stored_procedure_detail($config,TRUE,$verbose,$target_db);
 			
 			
@@ -1212,6 +1209,15 @@ class Install extends CI_Controller {
 				//$this->manage_stored_procedure_lib->add_froreign_keys_constraint($config,TRUE,$verbose,$target_db);
 			}
 				
+		}
+		
+		foreach ($new_configs as $k => $config) {
+			if($config=='papers')
+				$this->manage_stored_procedure_lib->create_stored_procedure_count($config,TRUE,$verbose,$target_db);
+					
+				create_stored_procedures($config,$target_db ,False);
+					
+					
 		}
 	
 	}
@@ -1362,7 +1368,7 @@ class Install extends CI_Controller {
 			if(!empty($table_configuration['table_views'])){
 				foreach ($table_configuration['table_views'] as $key=> $view_value) {
 						
-					create_view($view_value);
+					create_view($view_value,$target_db);
 				}
 			}
 		}

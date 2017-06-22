@@ -1457,7 +1457,7 @@ function user_project($project_id , $user=0,$user_role=""){
 		return $ci->manage_stored_procedure_lib->create_table_configuration($config,$target_db);
 	}
 	
-	function create_view($config,$target_db='current',$run_query=TRUE,$verbose=TRUE)
+	function create_view($config,$target_db='current',$run_query=TRUE,$verbose=FALSE)
 	{
 	
 		$ci = get_instance ();

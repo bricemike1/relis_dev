@@ -639,7 +639,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'operation_description'=>'Characteristics of a paper',
 			'page_title'=>'Paper ',
 		  
-			'data_source'=>'get_detail_paper',
+			'data_source'=>'get_detail_papers',
 			'generate_stored_procedure'=>True,
 		  
 			'fields'=>array(

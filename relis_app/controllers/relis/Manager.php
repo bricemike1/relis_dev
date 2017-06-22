@@ -3518,7 +3518,7 @@ class Manager extends CI_Controller {
 	
 	
 	
-		$content_item = $this->DBConnection_mdl->get_row_details ( 'get_detail_paper',$ref_id,TRUE);
+		$content_item = $this->DBConnection_mdl->get_row_details ( 'get_detail_papers',$ref_id,TRUE);
 		//get_detail_paper
 		//print_test($content_item);
 	

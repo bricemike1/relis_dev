@@ -435,8 +435,8 @@ class Op extends CI_Controller {
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
 		// todo correction gestion des utilisateurs
-		if(admin_config($ref_table))
-			$data['left_menu_admin']=True;
+		//if(admin_config($ref_table))
+			//$data['left_menu_admin']=True;
 			
 			
 			/*
@@ -1906,8 +1906,8 @@ class Op extends CI_Controller {
 					}
 						
 						
-					if($post_arr ['table_config'] =='config')
-						update_paper_status_all();
+					//if($post_arr ['table_config'] =='config')
+						//update_paper_status_all();
 							
 						
 					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){

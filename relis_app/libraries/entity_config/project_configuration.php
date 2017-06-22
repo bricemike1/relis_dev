@@ -157,7 +157,7 @@ function get_project() {
 	   			'page_template'=>'general/frm_entity',
 	   			'redirect_after_save'=>'op/entity_list/list_projects',
 	   			'redirect_after_save'=>'manager/projects_list',
-	   			'data_source'=>'get_project_detail',
+	   			'data_source'=>'get_detail_project',
 	   			'db_save_model'=>'update_project',
 	   	
 	   			'generate_stored_procedure'=>True,

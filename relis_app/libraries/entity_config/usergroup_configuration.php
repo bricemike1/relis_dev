@@ -105,12 +105,7 @@ function get_config_usergroup() {
 	   			
 	  
 	   			'list_links'=>array(
-	   					'view'=>array(
-	   							'label'=>'View',
-	   							'title'=>'Disaly element',
-	   							'icon'=>'folder',
-	   							'url'=>'op/view_element/users/',
-	   					)
+	   					
 	   	
 	   			),
 	   	

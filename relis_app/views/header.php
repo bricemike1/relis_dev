@@ -66,7 +66,7 @@
       <div class="main_container"  <?php echo $background?>>
         
         
-       <?php if( empty($left_menu_admin)){
+       <?php if( project_db()!='default'){
        	
        	if($this->session->userdata('working_perspective')=='screen')
        	

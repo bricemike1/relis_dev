@@ -147,7 +147,7 @@ class Home extends CI_Controller {
 												->result_array();
 		
 		$phases_list=array();
-		$yes_no=array('0'=>'','1'=>'X');
+		$yes_no=array('0'=>'','1'=>'Yes');
 		$i=1;
 		foreach ($screening_phases as $k => $phase) {
 		//	print_test($phase);
@@ -159,11 +159,11 @@ class Home extends CI_Controller {
 			
 			
 			if($phase['phase_state']=='Open'){
-				$select_but=get_top_button ( 'all', 'Select', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Select','fa-play','',' btn-info ' ,False);
-				$close_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Close','fa-cog','',' btn-danger ' ,False);
+				$select_but=get_top_button ( 'all', 'Go to the phase', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Go to','fa-send','',' btn-info ' ,False);
+				$close_but=get_top_button ( 'all', 'Lock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Lock','fa-lock','',' btn-danger ' ,False);
 			}else{
 				
-				$open_but=get_top_button ( 'all', 'Open the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Open','fa-cog','',' btn-success ' ,False);					
+				$open_but=get_top_button ( 'all', 'Unlock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Unlock','fa-unlock','',' btn-success ' ,False);					
 			}	
 			
 			if(!is_project_creator(project_db()) OR !has_usergroup(1)){

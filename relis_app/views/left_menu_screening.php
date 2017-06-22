@@ -50,8 +50,8 @@
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 			
-			<?
-			
+			<?php
+	
 			foreach ($left_menu as $key_menu_section => $value_menu_section) {
 			?>	
 				<div class="menu_section">
