@@ -782,15 +782,62 @@ function user_project($project_id , $user=0,$user_role=""){
 			$user=$ci->session->userdata('user_id');
 		}
 		$sql="select user_id from users where user_usergroup=$usergroup_id AND user_id=$user AND user_active=1 ";
-	
+	//echo $sql; 
 		$user_res = $ci->db->query($sql)->num_rows();
-	
+		//echo $user_res;
+	//exit;
 		if($user_res>0){
 			return TRUE;
 		}else{
 			return FALSE;
 		}
 	
+	}
+	
+	function has_user_role($role , $user=0, $project_id=0){
+		$ci = get_instance ();
+	
+		if($user==0){
+			$user=$ci->session->userdata('user_id');
+		}
+		
+		if($project_id==0){
+			$project_id=$ci->session->userdata('project_id');
+		}
+		
+		$sql="select userproject_id from userproject where user_id=$user AND  project_id=$project_id AND user_role LIKE '".$role."' AND    	userproject_active=1 ";
+	//echo $sql; exit;
+		$user_res = $ci->db->query($sql)->num_rows();
+	//print_test($user_res);
+		if($user_res>0){
+			return TRUE;
+		}else{
+			return FALSE;
+		}
+	
+	}
+	
+	function can_review_project(){
+		
+		if( has_user_role('Reviewer') OR  has_user_role('Project admin')  OR has_usergroup(1))
+			return true;
+			else 
+			return false;
+
+	}
+	
+	function can_manage_project(){
+	
+	if(has_user_role('Project admin')  OR has_usergroup(1))
+			
+			return TRUE;
+		else
+			return false;
+	//	print_test(has_user_role('Project admin'));
+	//	print_test(has_usergroup(1));
+		//print_test($res);
+		//exit;
+		//return $res;
 	}
 	
 	function box_header($title="",$content="",$w1=6,$w2=6,$w6=6){

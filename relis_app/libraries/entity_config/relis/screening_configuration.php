@@ -539,7 +539,7 @@ function get_screening() {
 				
 				'master_field'=>'paper_id',
 				'parent_config'=>'papers',
-				'parent_detail_source'=>'get_detail_paper',//To get the name of the user to be displayed in the title
+				'parent_detail_source'=>'get_detail_papers',//To get the name of the user to be displayed in the title
 				'parent_detail_source_field'=>'title',
 				
 	   			'generate_stored_procedure'=>False,

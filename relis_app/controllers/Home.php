@@ -166,7 +166,7 @@ class Home extends CI_Controller {
 				$open_but=get_top_button ( 'all', 'Unlock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Unlock','fa-unlock','',' btn-success ' ,False);					
 			}	
 			
-			if(!is_project_creator(project_db()) OR !has_usergroup(1)){
+			if(!can_manage_project()){
 				$close_but="";
 				$open_but="";
 			}

@@ -922,13 +922,13 @@ class Manager_lib
 		
 		$menu['general']['menu']['home']=array('label'=>'Home','url'=>'home/screening','icon'=>'home');
 	
-		if(get_appconfig_element('screening_on'))
+		if(get_appconfig_element('screening_on') AND can_review_project())
 		$menu['general']['menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'toggle-right');
 		
-		if(get_appconfig_element('assign_papers_on'))
+		//if(get_appconfig_element('assign_papers_on'))
 			
 		
-		if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+		if(can_manage_project() OR get_appconfig_element('screening_result_on') ){
 			$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');				
 			//$menu['general']['menu']['papers']['sub_menu']['processed']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_paper/processed', '');
 			
@@ -943,16 +943,19 @@ class Manager_lib
 		if(active_screening_phase()){
 			$phase_info=active_screening_phase_info();
 			if($phase_info['phase_type']!='Validation')
-			{
+			{		
+					if(can_review_project())
 					$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'newspaper-o');
 					
+					if(can_manage_project())
 					$menu['general']['menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', 'icon'=>'share');
 					
 					
 					$menu['general']['menu']['papers_screen']['sub_menu']['my_assignment']=array( 'label'=>'My assignments', 'url'=>'op/entity_list/list_my_assignments', '');
 					$menu['general']['menu']['papers_screen']['sub_menu']['my_screen']=array( 'label'=>'My screenings', 'url'=>'op/entity_list/list_my_screenings', '');
 					
-					if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+				//	if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
+					if(can_manage_project() OR get_appconfig_element('screening_result_on') ){
 						$menu['general']['menu']['papers_screen']['sub_menu']['all_assignments']=array( 'label'=>'All assignments', 'url'=>'op/entity_list/list_assignments', '');
 						$menu['general']['menu']['papers_screen']['sub_menu']['all_screen']=array( 'label'=>'All screenings', 'url'=>'op/entity_list/list_screenings', '');
 						$menu['general']['menu']['papers_screen']['sub_menu']['completion']=array( 'label'=>'Completion', 'url'=>'relis/manager/screen_completion', '');
@@ -963,10 +966,13 @@ class Manager_lib
 			}else {
 			
 				if(get_appconfig_element('screening_validation_on')){
-					
+				if(can_review_project())	
 				$menu['general']['menu']['papers_screen_validate']=array('label'=>'Screening validation','url'=>'','icon'=>'newspaper-o');
+				
+				if(can_manage_project())
 				$menu['general']['menu']['validate_screen']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', 'icon'=>'share');
-			//	$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
+			
+				//$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
 				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_assignments']=array( 'label'=>'Assignments', 'url'=>'op/entity_list/list_assignments', 'icon'=>'');
 				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_screenings']=array( 'label'=>'Screenings', 'url'=>'op/entity_list/list_screenings', 'icon'=>'');
 				$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate_completion']=array( 'label'=>'Completion ', 'url'=>'relis/manager/screen_completion/validate', 'icon'=>'');
@@ -1014,7 +1020,7 @@ class Manager_lib
 			if(is_project_creator(project_db()) OR has_usergroup(1) OR get_appconfig_element('screening_result_on') ){
 				$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
 				//$menu['general']['menu']['papers']['sub_menu']['processed']=array( 'label'=>'Papers in conflict', 'url'=>'relis/manager/list_paper/processed', '');
-				if(get_appconfig_element('import_papers_on'))
+				if(get_appconfig_element('import_papers_on') AND can_manage_project())
 					$menu['general']['menu']['papers']['sub_menu']['import_papers']=array( 'label'=>'Import papers', 'url'=>'relis/manager/import_papers', '');
 						
 					$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All papers', 'url'=>'op/entity_list/list_all_papers', '');
@@ -1054,11 +1060,14 @@ class Manager_lib
 				$menu['settings']['menu']['authors']=array('label'=>'Authors','url'=>'op/entity_list/list_authors','icon'=>'users');
 				$menu['settings']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'list');
 				//$menu['settings']['menu']['papers']=array('label'=>'Papers test','url'=>'op/entity_list/list_papers','icon'=>'list');
-				$menu['settings']['menu']['operations']=array('label'=>'Operations','url'=>'manager/entity_list/operations','icon'=>'reorder');
-				$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
-				$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
+				
 	
-				if (is_project_creator(project_db()) OR has_usergroup(1)){
+			//	if (is_project_creator(project_db()) OR has_usergroup(1)){
+				if (can_manage_project()){
+						$menu['settings']['menu']['operations']=array('label'=>'Operations','url'=>'manager/entity_list/operations','icon'=>'reorder');			
+					$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
+					$menu['settings']['menu']['sql_query']=array('label'=>'SQL','url'=>'home/sql_query','icon'=>'database');
+					$menu['settings']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
 					//$menu['settings']['menu']['configuration_old']=array('label'=>'Configuration','url'=>'manager/display_element/config/1','icon'=>'gears');
 					$menu['settings']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/configurations/1','icon'=>'gears');
 					$menu['settings']['menu']['configuration']['sub_menu']['general']=array('label'=>'General configuration','url'=>'op/display_element/configurations/1','icon'=>'');
