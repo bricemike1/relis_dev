@@ -115,15 +115,16 @@
 
             <!-- /menu footer buttons -->
             <div class="sidebar-footer hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('Home')?>" href="<?php echo base_url() ?>/home">
-                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-              </a>
-              
-              <a  data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('Choose project')?>" href="<?php echo base_url()?>manager/projects_list.html">
+              <a data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('Main')?>" href="<?php echo base_url() ?>manager/projects_list.html">
                 <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
               </a>
+              
               <a data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('UP')?>" href="#">
-                <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+               <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+              </a>
+              
+              <a  data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('Dashboard')?>" href="<?php echo base_url()?>home.html">
+                <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
               </a>
               <a data-toggle="tooltip" data-placement="top" title="<?php echo lng_min('Log Out')?>" href="<?php echo base_url()?>/auth/discon">
                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>

@@ -239,13 +239,19 @@ function get_screening() {
 												'evaluation'=>'equal',
 												'add_on_generation'=>FALSE,
 												'parameter_type'=>'VARCHAR(20)'
-											)
+											),
+					'assignment_role'=>array('field'=>'assignment_role',
+												'value'=>'Screening',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
 	   			),
 	   	
 	   			'list_links'=>array(
 	   					'view'=>array(
 	   							'label'=>'View',
-	   							'title'=>'Disaly element',
+	   							'title'=>'Display element',
 	   							'icon'=>'folder',
 	   							'url'=>'op/display_element/display_assignment/',
 	   					),
@@ -274,11 +280,18 @@ function get_screening() {
 	   	
 	   			),
 	   	);
+		
+			$operations['list_assignments_validation']=$operations['list_assignments'];
+			$operations['list_assignments_validation']['page_title']='Assignments for validation';
+			$operations['list_assignments_validation']['conditions']['assignment_role']['value']='Validation';
+			
+			
+		
 		$operations['list_my_assignments']=array(
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List of assignments',
 	   			'operation_description'=>'List assignments',
-	   			'page_title'=>'List of my assignments',
+	   			'page_title'=>'My screening assignments',
 				
 	   			'page_template'=>'general/list',
 				'table_display_style'=>'dynamic_table',
@@ -309,6 +322,12 @@ function get_screening() {
 												'add_on_generation'=>FALSE,
 												'parameter_type'=>'VARCHAR(20)'
 											),
+					'assignment_role'=>array('field'=>'assignment_role',
+												'value'=>'Screening',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
 					'user'=>array('field'=>'user_id',
 												'value'=>active_user_id(),
 												'evaluation'=>'equal',
@@ -350,6 +369,12 @@ function get_screening() {
 	   			),
 	   	);
 		
+		$operations['list_my_validations_assignment']=$operations['list_my_assignments'];
+		$operations['list_my_validations_assignment']['page_title']='Validations asssigned to me';
+		$operations['list_my_validations_assignment']['conditions']['assignment_role']['value']='Validation';
+		$operations['list_my_validations_assignment']['generate_stored_procedure']=FALSE;
+		
+		
 	   	$operations['list_screenings']=array(
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List of screenings',
@@ -378,9 +403,16 @@ function get_screening() {
 		   			'conditions'=>array('screening_status'=>array(
 		   					'field'=>'screening_status',
 		   					'value'=>'Done',
-		   					'evaluation'=>'',
-		   					'add_on_generation'=>True
+		   					'evaluation'=>'equal',
+							'add_on_generation'=>FALSE,
+							'parameter_type'=>'VARCHAR(20)'
 		   			),
+					'assignment_role'=>array('field'=>'assignment_role',
+												'value'=>'Screening',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
 					'screening_phase'=>array('field'=>'screening_phase',
 												'value'=>active_screening_phase(),
 												'evaluation'=>'equal',
@@ -415,12 +447,28 @@ function get_screening() {
 	   					 
 	   			),
 	   	);
+		//List all validations
+		$operations['list_screenings_validation']=$operations['list_screenings'];
+		$operations['list_screenings_validation']['page_title']='Screenings  validation';
+		$operations['list_screenings_validation']['conditions']['assignment_role']['value']='Validation';
+		$operations['list_screenings_validation']['generate_stored_procedure']=FALSE;
+		
+		//List all pending validation
+		$operations['list_pending_screenings_validation']=$operations['list_screenings_validation'];
+		$operations['list_pending_screenings_validation']['page_title']='Pending screenings for validation';
+		$operations['list_pending_screenings_validation']['conditions']['screening_status']['value']='Pending';
+		
+		//List all pending screenings
+		$operations['list_all_pending_screenings']=$operations['list_pending_screenings_validation'];
+		$operations['list_all_pending_screenings']['page_title']='Pending screenings';
+		$operations['list_all_pending_screenings']['conditions']['assignment_role']['value']='Screening';
+		
 		
 			$operations['list_my_screenings']=array(
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List of screenings',
 	   			'operation_description'=>'List screenings',
-	   			'page_title'=>'List of my screenings',
+	   			'page_title'=>'My screenings',
 	   	
 	   			'page_template'=>'general/list',
 	   			'table_display_style'=>'dynamic_table',
@@ -444,9 +492,16 @@ function get_screening() {
 		   			'conditions'=>array('screening_status'=>array(
 		   					'field'=>'screening_status',
 		   					'value'=>'Done',
-		   					'evaluation'=>'',
-		   					'add_on_generation'=>True
+		   					'evaluation'=>'equal',
+							'parameter_type'=>'VARCHAR(20)',
+		   					'add_on_generation'=>False
 		   			),
+					'assignment_role'=>array('field'=>'assignment_role',
+												'value'=>'Screening',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
 					'screening_phase'=>array('field'=>'screening_phase',
 												'value'=>active_screening_phase(),
 												'evaluation'=>'equal',
@@ -487,6 +542,25 @@ function get_screening() {
 	   					 
 	   			),
 	   	);
+		// list of my screenings pending
+		$operations['list_my_pending_screenings']=$operations['list_my_screenings'];
+		$operations['list_my_pending_screenings']['page_title']='My pending screening';
+		$operations['list_my_pending_screenings']['conditions']['screening_status']['value']='Pending';
+		$operations['list_my_pending_screenings']['generate_stored_procedure']=FALSE;
+		
+		
+		//list of my pending validations
+		$operations['list_my_pending_validation']=$operations['list_my_pending_screenings'];
+		$operations['list_my_pending_validation']['page_title']='My pending validation';
+		$operations['list_my_pending_validation']['conditions']['assignment_role']['value']='Validation';
+		
+		
+		//list of my  validations done
+		$operations['list_my_done_validation']=$operations['list_my_pending_validation'];
+		$operations['list_my_done_validation']['page_title']='My validations';
+		$operations['list_my_done_validation']['conditions']['screening_status']['value']='Done';
+		
+		
 	   	$operations['new_assignment']=array(
 	   			'operation_type'=>'Add',
 	   			'operation_title'=>'New assignment',
@@ -586,12 +660,12 @@ function get_screening() {
 	   	
 	   			'fields'=>array(
 	   					'screening_id'=>array('mandatory'=>'','field_state'=>'hidden'),	   					
-	   					'paper_id'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'paper_id'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
 	   					'user_id'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'assignment_note'=>array('mandatory'=>'','field_state'=>'enabled'),
 	   					'assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'assignment_role'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'screening_phase'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'assignment_role'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
+	   					'screening_phase'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
 	   	
 	   			),
 	   		  
@@ -641,7 +715,12 @@ function get_screening() {
 	   			),
 	   	
 	   	);
-		$operations['edit_screen']=$operations['screen_paper'];
+		$operations['validate_screen']=$operations['screen_paper'];
+		$operations['validate_screen']['page_title']="Screening validation";
+		$operations['validate_screen']['redirect_after_save']="relis/manager/screen_paper_validation";
+		
+		$operations['edit_screen']=$operations['screen_paper'];	
+		
 		$operations['edit_screen']['redirect_after_save']='op/entity_list/list_screenings';
 		$operations['edit_screen']['page_title']='Edit screening';
 		

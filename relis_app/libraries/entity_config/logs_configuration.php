@@ -10,7 +10,6 @@ function get_logs() {
 	   	
 	   	//list view
 	   	$config['order_by']='log_id DESC '; //mettre la valeur à mettre dans la requette
-	   //	$config['search_by']='log_user_id';// separer les champs par virgule
 	   	
 	 
 	   	
@@ -32,7 +31,7 @@ function get_logs() {
 				'mandatory'=>' mandatory ' 
 	   	);
 	   	$fields['log_user_id']=array(
-	   			'field_title'=>'Utilisateur',
+	   			'field_title'=>'User',
 	   			'field_type'=>'number',
 				'field_size'=>11,
 				'default_value'=>1,
@@ -46,7 +45,7 @@ function get_logs() {
 	   	);
 		
 	   	$fields['log_event']=array(
-	   			'field_title'=>'Evenement',
+	   			'field_title'=>'Action',
 	   			'field_type'=>'text',				
 				'field_size'=>200,  	   			
 				'input_type'=>'text', 
@@ -54,7 +53,7 @@ function get_logs() {
 	   	);	
 		$fields['log_time']=array(
 	   			'field_title'=>'Time',
-	   			'field_title'=>'Creation time',
+	   			'field_title'=>'Time',
 	   			'field_type'=>'time',
 	   			//'input_type'=>'text',
 				'default_value'=>'CURRENT_TIMESTAMP',
@@ -163,7 +162,7 @@ function get_logs() {
 				'operation_type'=>'List',
 				'operation_title'=>'List logs',
 				'operation_description'=>'List logs',
-				'page_title'=>'List of users',
+				'page_title'=>'List of logs',
 				
 				//'page_template'=>'list',
 				

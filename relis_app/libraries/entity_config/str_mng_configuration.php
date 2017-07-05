@@ -95,7 +95,7 @@ function get_str_mng() {
 			'page_title'=>'Add string',			
 			'save_function'=>'op/save_element',
 			'page_template'=>'general/frm_entity',
-			'redirect_after_save'=>'home',
+			'redirect_after_save'=>'op/entity_list/list_str_mng',
 			'db_save_model'=>'add_str_mng',
 				
 			'generate_stored_procedure'=>True,
@@ -122,6 +122,43 @@ function get_str_mng() {
 			
 		);
 		
+		$operations['edit_str_mng']=array(
+			'operation_type'=>'Edit',
+			'operation_title'=>'Edit string',	
+			'operation_description'=>'Edit string',	
+			'page_title'=>'Edit string',			
+			'save_function'=>'op/save_element',
+			'page_template'=>'general/frm_entity',
+				
+			'redirect_after_save'=>'op/entity_list/list_str_mng',
+			'data_source'=>'get_detail_str_mng',
+			'db_save_model'=>'update_str_mng',
+		
+			'generate_stored_procedure'=>True,
+				
+					
+			'fields'=>array(
+					'str_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+					'str_label'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
+					'str_text'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+					'str_lang'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
+					//'str_category'=>array('mandatory'=>'','field_state'=>'hidden')
+									
+					),
+				
+				'top_links'=>array(
+							
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'close',
+										'url'=>'home',
+									)
+				
+				),
+			
+		);
+		
 		$operations['detail_str_mng']=array(
 				'operation_type'=>'Detail',
 				'operation_title'=>'Detail of a string',
@@ -136,7 +173,7 @@ function get_str_mng() {
 						'str_label'=>array(),
 						'str_text'=>array(),
 						'str_lang'=>array(),
-						'str_category'=>array()
+						//'str_category'=>array()
 							
 				),
 				
@@ -155,11 +192,30 @@ function get_str_mng() {
 				),
 		);
 		
+		
+		//configure edition mode button
+		
+		if(edition_mode_active()){
+			$edit_mode=array(
+										'label'=>'Close edition mode',
+										'title'=>'Close edition mode',
+										'icon'=>'fa-ban',
+										'url'=>'config/update_edition_mode/no',
+									);
+		}else{
+			$edit_mode=array(
+										'label'=>'Open edition mode',
+										'title'=>'Open edition mode',
+										'icon'=>'fa-check',
+										'url'=>'config/update_edition_mode/yes',
+									);
+		}
+		
 		$operations['list_str_mng']=array(
 				'operation_type'=>'List',
-				'operation_title'=>'List logs',
-				'operation_description'=>'List logs',
-				'page_title'=>'List of users',
+				'operation_title'=>'List ',
+				'operation_description'=>'List ',
+				'page_title'=>'List ',
 				
 				//'page_template'=>'list',
 				
@@ -182,8 +238,18 @@ function get_str_mng() {
 									'title'=>'Disaly element',
 									'icon'=>'folder',
 									'url'=>'op/display_element/detail_str_mng/',
+								),
+						'edit'=>array(
+									'label'=>'Edit',
+									'title'=>'Edit element',
+									'icon'=>'edit',
+									'url'=>'op/edit_element/edit_str_mng/',
+								),
+						'delete'=>array(
+									'label'=>'Delete',
+									'title'=>'Delete the user',
+									'url'=>'op/delete_element/remove_user/'
 								)
-												
 				),
 				'conditions'=>array('active_lang'=>array(
 												'field'=>'str_lang',
@@ -197,7 +263,7 @@ function get_str_mng() {
 			
 				
 				'top_links'=>array(
-							
+							'add_sc'=>$edit_mode,
 							'close'=>array(
 										'label'=>'',
 										'title'=>'Close',
@@ -206,6 +272,18 @@ function get_str_mng() {
 									)
 				
 				),
+		);
+		
+		$operations['remove_str_mng']=array(
+				'operation_type'=>'Remove',
+				'operation_title'=>'Remove element',
+				'operation_description'=>'Delete a string',
+				
+				'redirect_after_delete'=>'op/entity_list/list_str_mng',
+				'db_delete_model'=>'remove_str_mng',
+				'generate_stored_procedure'=>True,
+					
+				
 		);
 		
 		$config['operations']=$operations;

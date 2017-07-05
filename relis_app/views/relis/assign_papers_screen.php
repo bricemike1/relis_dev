@@ -50,7 +50,7 @@
                       <div class="tab-content">
                         <div class="tab-pane active" id="home">
                           <p class="lead">Assign papers - Automatic</p>
-                          <p>Select users: <b> Number of papers :<u><?php echo $number_papers ?></u></b><br/></p>
+                          <p><b> Number of papers :<u><?php echo $number_papers ?></u></b><br/></p>
                           <form class="form-horizontal"  method="post" action="../manage/list_paper_screen/all/_/0/2">
                          <?php 
                        

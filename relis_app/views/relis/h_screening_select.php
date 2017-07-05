@@ -158,7 +158,7 @@
                    <div class="col-md-6 col-sm-6 col-xs-12 profile_details">
                         <div class=" col-sm-12 well profile_view">
                           <div class="col-sm-12">
-                            <h4 class="briefs"><i><?php echo $value['usergroup_name']." ".lng('user')?></i></h4>
+                            <h4 class="briefs"><i><?php echo $value['usergroup_name']?></i></h4>
                             <div class="left col-xs-7">
                               <h2><?php echo $value['user_name']?></h2>
                               

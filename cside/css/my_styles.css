@@ -46,3 +46,9 @@ table.sql_result{table-layout:auto;}
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
   background-color: #eee;
 }
+
+.action_butt{
+	width:90%;
+	margin:auto;
+	font-size:15px;
+}

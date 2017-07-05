@@ -68,7 +68,17 @@ function get_operations_paper() {
 	);
 	
 	
+	$operations['list_papers_screen_included_after_conflict']=array(
+			'type'=>'List',
+			'tab_ref'=>'papers',
+			'operation_id'=>'list_papers_screen_included_after_conflict'
+	);
 	
+	$operations['list_papers_screen_excluded_after_conflict']=array(
+			'type'=>'List',
+			'tab_ref'=>'papers',
+			'operation_id'=>'list_papers_screen_excluded_after_conflict'
+	);
 	
 	
 	

@@ -196,8 +196,6 @@ class Op extends CI_Controller {
 					array_push($list_links, $link);
 						
 						
-				
-				
 		}
 	
 		
@@ -210,6 +208,7 @@ class Op extends CI_Controller {
 		/**
 		 * @var array $field_list va contenir les champs à afficher 
 		 */
+		$link_field_list=array();
 		$field_list=array();
 		$field_list_header=array();
 		foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k => $v) {
@@ -224,16 +223,19 @@ class Op extends CI_Controller {
 				$field_header=!empty($v['field_title'])?$v['field_title']:$ref_table_config['fields'][$k]['field_title'];
 				
 				array_push($field_list_header, $field_header);
+				if(!empty($v['link'])){
+					$link_field_list[$k]=$v;
+				}
 		
 			
 			}
 		}
-		//print_test($field_list);
+	//print_test($link_field_list);
 		$i=1;
 		$list_to_display=array();
 		
 		foreach ($data['list'] as $key => $value) {
-			
+			//print_test($value);
 			$element_array=array();
 			foreach ($field_list as $key_field=> $v_field) {
 				//print_test($v_field);
@@ -273,13 +275,14 @@ class Op extends CI_Controller {
 						
 					}
 				
-						
-						
 					
 				}
 				
-			
+			if(!empty($link_field_list[$v_field]))	
 				
+				$element_array[$v_field]=string_anchor($link_field_list[$v_field]['link']['url'].$value [$link_field_list[$v_field]['link']['id_field']],
+									$element_array[$v_field],
+									$link_field_list[$v_field]['link']['trim']);
 				
 			}
 			
@@ -292,8 +295,20 @@ class Op extends CI_Controller {
 			$arr_buttons=array();
 			foreach ($list_links as $key_l => $value_l) {
 				
-				if(!empty($value_l['icon']))
-					$value_l['label']= icon($value_l['icon']).' '.lng_min($value_l['label']);
+				
+				
+			if($ref_table=='operations' AND !empty($value['operation_state'])){//setting redo link for list of operations
+				if($value['operation_state']=='Cancelled'){
+					$value_l['icon']='repeat';
+					$value_l['label']='Redo';
+					$value_l['url']='manager/undo_cancel_operation/';
+				}
+			}
+				
+			
+			if(!empty($value_l['icon']))
+				$value_l['label']= icon($value_l['icon']).' '.lng_min($value_l['label']);
+			
 				
 				array_push($arr_buttons, array(
 						'url'=> $value_l['url'].$value [$table_id],
@@ -302,9 +317,7 @@ class Op extends CI_Controller {
 							
 				)	);
 			}
-			
-		
-			
+				
 			$action_button=create_button_link_dropdown($arr_buttons,lng_min('Action'));
 	
 		
@@ -672,7 +685,7 @@ class Op extends CI_Controller {
 			 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 			 */
 			if($display_type=='modal'){
-				$this->load->view ( 'general/frm_reference_modal', $data );
+				$this->load->view ( 'general/frm_entity_modal', $data );
 			}else{
 					$this->load->view ( 'body', $data );
 			}

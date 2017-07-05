@@ -595,7 +595,7 @@ class Config extends CI_Controller {
 	
 	public function update_edition_mode($value="no"){
 		$this->session->set_userdata('language_edit_mode',$value);
-		redirect('manager/entity_list/str_mng');
+		redirect('op/entity_list/list_str_mng');
 	}
 	
 	

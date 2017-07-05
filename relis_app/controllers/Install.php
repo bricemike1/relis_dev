@@ -1152,8 +1152,8 @@ class Install extends CI_Controller {
 		
 	
 		if($config=='init'){
-			$old_configs=array('assignation','exclusion','operations','papers');
-			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config');
+			$old_configs=array('assignation','exclusion','papers');
+			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
 			//$configs=get_relis_common_configs();
@@ -1344,7 +1344,7 @@ class Install extends CI_Controller {
 	private function populate_common_tables($target_db='current'){
 		$target_db=($target_db=='current')?project_db():$target_db;
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
-		$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison');
+		$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations');
 		foreach ($configs as $key => $value) {
 			//$tab_config=get_table_config($value);
 			//$res=$this->create_table_config($tab_config,$target_db);

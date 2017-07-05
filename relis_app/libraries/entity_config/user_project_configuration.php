@@ -66,6 +66,7 @@ function get_user_project() {
 			'input_type'=>'select',
 			'input_select_source'=>'array',
 			'input_select_values'=>array('Reviewer' => 'Reviewer',
+					'Validator' => 'Validator',
 					'Project admin' => 'Project admin',
 					'Guest' => 'Guest'			
 			),
@@ -335,7 +336,16 @@ function get_user_project() {
 	   					'added_by'=>array(),
 	   					'add_time'=>array(),
 							
-				)
+				),
+				'top_links'=>array(
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									)
+				),
+				
 	   			);
 		$operations['remove_userproject']=array(
 				'operation_type'=>'Remove',

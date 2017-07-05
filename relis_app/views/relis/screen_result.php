@@ -42,7 +42,7 @@
              
             
            <?php 
-           
+          
            echo box_header("Result");
            
            $tmpl = array (
@@ -66,12 +66,7 @@
            
            
            echo box_header("Decision per user");
-           
-              $tmpl = array (
-           		'table_open'  => '<table class="table table-striped table-hover">',
-           		'table_close'  => '</table>'
-           );
-           
+         
            $this->table->set_template($tmpl);
            if(!empty($result_per_user))
            {
@@ -82,24 +77,22 @@
          
            echo  box_footer();
            
-           
-           
-           
+
            ?>
-                  
-                  
-                 <!--   </div>
-                
-                
-                
-                  
-                  <div class="row">
-                
-                  -->  
-                  
-             
+                            </div>
+                             <div class="row">
+                       <?php 
+           if(!empty($screening_conflict_resolution))
+           {
+
+	           echo box_header("Conflict resolution");                
+	           $this->table->set_template($tmpl);           
+	           echo $this->table->generate($screening_conflict_resolution); 
+	           echo  box_footer();
             
-           <?php 
+           }
+           
+       
            
            echo box_header("Exclusions criteria");
            $tmpl = array (

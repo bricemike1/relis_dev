@@ -28,25 +28,12 @@
                 
 				<div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                  <?php 
-                // print_test($projects['list'] );
-                 
-                 if(empty($projects['list'] )){
-                 	// add new project button
-                 	echo"<div style='text-align:center; padding:20px;'>";
-                 	echo"<p>";
-                 	echo lng('No project available!');
-                 	echo"</p><br/><br/>";
-                 	
-                 	if(isset($add_project_button))
-                 	echo $add_project_button;
-                 	echo"</div>";
-                 }
-               //  print_test($projects);
+               
                  foreach ($projects['list'] as $key => $value) {
                  	
                  ?>
                  <a href="<?php echo base_url().'manager/set_project/'.$value['project_id']?>">
-                 <div class="col-md-3 col-sm-12 col-xs-12 col-md-offset-1">
+                 <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-1">
                         <div class="thumbnail">
                           <div class="image view view-first">
                             <img style="height: 100%; display: block;" src="<?php echo $value['icon']?>" alt="<?php echo $value['project_description']?>" />
@@ -70,9 +57,23 @@
                         </div>
                       </div>
                       </a>
-                 <?php }?>
+                 <?php }
                  
-                  
+                 echo"<div style='text-align:center; padding:20px;'>";
+                 if(empty($projects['list'] )){
+                 	// add new project button
+                 	
+	                 	echo"<p>";
+	                 	echo lng('No project available!');
+	                 	echo"</p><br/><br/>";
+                  }	
+                 	if(isset($add_project_button))
+                 	echo $add_project_button;
+                 
+                 echo"</div>";
+                 
+                 
+                 ?>
                 </div>
                 
                 

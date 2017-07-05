@@ -211,6 +211,13 @@ function get_screen_info(){
 		
 	}
 
+
+     $(document).ready(function(){
+    	 
+    	  $("#div_display ").css("display",'none'); 
+    	});     
+  
+
 	  </script>
 	
 

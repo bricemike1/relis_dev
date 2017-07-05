@@ -76,8 +76,8 @@ function get_config_screen_phase() {
 	   			'field_title'=>'State',
 	   			'field_type'=>'text',
 				'field_size'=>20,
-				'field_value'=>'Pending',
-				'default_value'=>'Pending',
+				'field_value'=>'Closed',
+				'default_value'=>'Closed',
 				'mandatory'=>' mandatory ',
 				'input_type'=>'select',
 				'input_select_source'=>'array',
@@ -353,11 +353,11 @@ function get_config_screen_phase() {
 					'phase_title'=>array(),
 					
 					'displayed_fields'=>array(),
-					'source_paper'=>array(),
-					'source_paper_status'=>array(),
+					//'source_paper'=>array(),
+					//'source_paper_status'=>array(),
 					'screen_phase_state'=>array(),
 					'screen_phase_order'=>array(),
-					'phase_type'=>array(),
+					//'phase_type'=>array(),
 					'screen_phase_final'=>array()
 							
 				),
@@ -389,15 +389,15 @@ function get_config_screen_phase() {
 							'add_sc'=>array(
 										'label'=>'Add screeninng phase',
 										'title'=>'Add a new phase',
-										'icon'=>'addx',
+										'icon'=>'fa-plus',
 										'url'=>'op/add_element/add_screen_phase',
 									),
-							'add_val'=>array(
+						/*	'add_val'=>array(
 										'label'=>'Add validation phase',
 										'title'=>'Add a new phase',
 										'icon'=>'plus',
 										'url'=>'op/add_element/add_validation_phase',
-									),
+									),*/
 							'close'=>array(
 										'label'=>'',
 										'title'=>'Close',

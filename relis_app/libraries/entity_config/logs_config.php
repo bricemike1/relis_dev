@@ -50,7 +50,7 @@ function get_logs() {
 	   			'mandatory'=>' mandatory '
 	   	);
 	   	$fields['log_user_id']=array(
-	   			'field_title'=>'Utilisateur',
+	   			'field_title'=>'User',
 	   			'field_type'=>'number',
 	   			'field_value'=>'normal',
 	   			'on_add'=>'enabled',
@@ -64,7 +64,7 @@ function get_logs() {
 	   	);
 		
 	   	$fields['log_event']=array(
-	   			'field_title'=>'Evenement',
+	   			'field_title'=>'Action',
 	   			'field_type'=>'text',
 	   			'field_value'=>'normal',
 	   			'on_add'=>'enabled',

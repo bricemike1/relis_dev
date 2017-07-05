@@ -112,6 +112,12 @@ function get_operations_screening() {
 			'operation_id'=>'screen_paper'
 	);
 	
+	$operations['screen_validation']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'screening',
+			'operation_id'=>'validate_screen'
+	);
+	
 	$operations['edit_screen']=array(
 			'type'=>'Edit',
 			'tab_ref'=>'screening',
@@ -124,6 +130,53 @@ function get_operations_screening() {
 			'operation_id'=>'resolve_conflict'
 	);
 	
+	$operations['list_assignments_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_assignments_validation'
+	);
+	
+	
+	$operations['list_screenings_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_screenings_validation'
+	);
+	
+	$operations['list_my_pending_screenings']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_pending_screenings'
+	);
+	
+	$operations['list_my_pending_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_pending_validation'
+	);
+	
+	$operations['list_my_done_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_done_validation'
+	);
+	$operations['list_my_validations_assignment']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_my_validations_assignment'
+	);
+	
+	$operations['list_pending_screenings_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_pending_screenings_validation'
+	);
+	
+	$operations['list_all_pending_screenings']=array(
+			'type'=>'List',
+			'tab_ref'=>'screening',
+			'operation_id'=>'list_all_pending_screenings'
+	);
 	return $operations;
 	
 	

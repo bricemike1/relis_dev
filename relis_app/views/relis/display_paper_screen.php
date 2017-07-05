@@ -88,12 +88,12 @@
 								
 								echo "<table class='table table-striped'>";
 								echo "<tr>";
-								echo "<th style='width:20%'>".lng(' User')."</th>";
-								echo "<th style='width:20%'>".lng('Assignment type')."</th>";
-								echo "<th style='width:20%'>".lng('Decision')."</th>";
-								echo "<th style='width:20%'>".lng('Criteria')."</th>";
-								//echo "<th style='width:20%'>".lng('Note')."</th>";
-								echo "<th style='width:20%'>".lng('Time')."</th>";
+								echo "<th >".lng(' User')."</th>";
+								echo "<th >".lng(' Category')."</th>";
+								echo "<th>".lng('Assignment type')."</th>";
+								echo "<th >".lng('Decision')."</th>";
+								echo "<th >".lng('Criteria')."</th>";
+								echo "<th >".lng('Time')."</th>";
 								if(!empty($screen_edit_link)){
 									echo "<th ></th>";
 								}
@@ -101,12 +101,12 @@
 								foreach($screenings as $k=>$v){
 									 
 									echo "<tr>";
-									echo "<td style='width:20%'>".$v['user_name']."</td>";
-									echo "<td style='width:20%'>".$v['assignment_type']."</td>";
-									echo "<td style='width:20%'>".$v['screening_decision']."</td>";
-									echo "<td style='width:20%'>".$v['exclusion_criteria']."</td>";
-								//	echo "<td style='width:20%'>".$v['screening_note']."</td>";
-									echo "<td style='width:20%'>".$v['screening_time']."</td>";
+									echo "<td>".$v['user_name']."</td>";
+									echo "<td >".$v['assignment_role']."</td>";
+									echo "<td >".$v['assignment_type']."</td>";
+									echo "<td >".$v['screening_decision']."</td>";
+									echo "<td >".$v['exclusion_criteria']."</td>";
+									echo "<td >".$v['screening_time']."</td>";
 									if(!empty($screen_edit_link)){
 										echo "<td style=''>".$v['edit_link']."</td>";
 									}

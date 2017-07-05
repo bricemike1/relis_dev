@@ -1714,8 +1714,10 @@ class Manager extends CI_Controller {
 				unset($data['projects']['list'][$key]);
 			}
 		}
+		//print_test($data['projects']['list']);
 		
-		//$data ['add_project_button'] = get_top_button ( 'all', 'Add new project', 'install/new_project','Add new project','fa-plus','',' btn-success ',false );
+		if(has_usergroup(1) OR has_usergroup(2))
+		$data ['add_project_button'] = get_top_button ( 'all', 'Add new project', 'install/new_project','Add new project','fa-plus','',' btn-primary ',false );
 			
 		$data['page']='general/projects_list';
 		
@@ -2233,6 +2235,55 @@ class Manager extends CI_Controller {
 		$this->add_element('assignment_screen',$data);
 	}
 	
+	public function cancel_operation($operations_id,$active_value=0){
+		//get operation detail
+		$sql="SELECT * FROM operations WHERE 	operation_id=$operations_id";
+		$res=$this->db_current->query($sql)->row_array();
+		print_test($res);
+		
+		if(!empty($res)){
+		
+			if($res['operation_type']=='assign_papers_validation' OR $res['operation_type']=='assign_papers'  ){//asssign papers
+				
+				$sql="UPDATE screening_paper set screening_active = $active_value where 	operation_code LIKE '".$res['operation_code']."'";
+				
+			}else{//import papers
+				$sql="UPDATE paper set paper_active = $active_value  where 	operation_code LIKE '".$res['operation_code']."'";
+			}
+			
+			$res=$this->manage_mdl->run_query($sql);
+			
+			$operation_state=!empty($active_value)?'Active':'Cancelled';
+			
+			$sql_update_operation=$sql="UPDATE operations set operation_state = '".$operation_state."'  where 	operation_id = $operations_id ";
+			
+			$res=$this->manage_mdl->run_query($sql);
+		
+			set_top_msg(lng_min("Operation done"));
+			
+		}else{
+			
+			set_top_msg(lng_min("Error : operation not found"),'error');
+		}
+		
+		redirect('op/entity_list/list_operations');
+	}
+	
+	public function undo_cancel_operation($operations_id){
 	
 	
+		$this->cancel_operation($operations_id,1);
+	
+	}
+	
+	public function activate_classification($value=1){
+	
+		if($value!=1)
+			$value=0;
+		
+		set_appconfig_element('classification_on', $value);
+		
+		redirect ('home/screening_select');
+	
+	}
 }

@@ -19,13 +19,32 @@ function get_operations_configuration() {
 			'tab_ref'=>'config',
 			'operation_id'=>'edit_conf_papers'
 	);
+	$operations['edit_config_dsl']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'config',
+			'operation_id'=>'edit_config_dsl'
+	);
+	$operations['edit_config_screening']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'config',
+			'operation_id'=>'edit_config_screening'
+	);
 	
 	$operations['config_papers']=array(
 			'type'=>'Detail',
 			'tab_ref'=>'config',
 			'operation_id'=>'config_papers'
 	);
-	
+	$operations['config_dsl']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'config',
+			'operation_id'=>'config_dsl'
+	);
+	$operations['config_screening']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'config',
+			'operation_id'=>'config_screening'
+	);
 	return $operations;
 	
 	

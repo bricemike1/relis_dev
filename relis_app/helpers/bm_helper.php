@@ -622,9 +622,20 @@ function lng($str,$category="default",$lang='en',$edit_allowed=True){
 	}
 	if($ci->session->userdata('language_edit_mode')=='yes' AND $edit_allowed){
 		
-		$res='<a style=" color:red" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/edit_element/str_mng/'.$id.'/modal"  data-modal_title="Edit text ">'.$res.' </a>';
+	//	$res='<a style=" color:red" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/edit_element/str_mng/'.$id.'/modal"  data-modal_title="Edit text ">'.$res.' </a>';
+		$res='<a style=" color:red" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="op/edit_element/edit_str_mng/'.$id.'/modal"  data-modal_title="Edit text ">'.$res.' </a>';
 	}
 	return $res;
+	
+}
+
+function edition_mode_active(){
+	$ci = get_instance ();
+	if($ci->session->userdata('language_edit_mode')=='yes'){
+		return TRUE;
+	}else{
+		return false;
+	}
 	
 }
 
@@ -651,6 +662,15 @@ function get_appconfig_element($element="all",$source="db"){
 	}else{
 			return "0";
 		}
+	
+}
+
+function set_appconfig_element($element_label,$value,$source="db"){
+	$ci = get_instance ();
+
+	$sql="UPDATE config SET $element_label = '$value' WHERE config_id=1 ";
+	
+	$res=$ci->manage_mdl->run_query($sql);
 	
 }
 
@@ -817,46 +837,34 @@ function user_project($project_id , $user=0,$user_role=""){
 	
 	}
 	
-	function can_review_project(){
+	function can_review_project($user=0, $project_id=0){
 		
-		if( has_user_role('Reviewer') OR  has_user_role('Project admin')  OR has_usergroup(1))
+		if( has_user_role('Reviewer',$user,$project_id) OR has_user_role('Validator',$user,$project_id) OR  has_user_role('Project admin',$user,$project_id)  OR has_usergroup(1,$user))
 			return true;
 			else 
 			return false;
 
 	}
+	function can_validate_project($user=0, $project_id=0){
 	
-	function can_manage_project(){
+		if( has_user_role('Validator',$user,$project_id) OR  has_user_role('Project admin',$user,$project_id)  OR has_usergroup(1,$user))
+			return true;
+			else
+				return false;
 	
-	if(has_user_role('Project admin')  OR has_usergroup(1))
+	}
+	
+	function can_manage_project($user=0, $project_id=0){
+	
+	if(has_user_role('Project admin',$user,$project_id)  OR has_usergroup(1,$user))
 			
 			return TRUE;
 		else
 			return false;
-	//	print_test(has_user_role('Project admin'));
-	//	print_test(has_usergroup(1));
-		//print_test($res);
-		//exit;
-		//return $res;
-	}
-	
-	function box_header($title="",$content="",$w1=6,$w2=6,$w6=6){
-		echo  '<div class="col-md-'.$w1.' col-sm-'.$w1.' col-xs-'.$w1.'">
-              <div class="x_panel tile  overflow_hidden">
-                <div class="x_title">
-                  <h2>'.$title.'</h2>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">'.$content;
 	
 	}
 	
-	
-	function box_footer(){
-		echo "</div>
-              </div>
-            </div>";
-	}
+
 	
 	function  save_metrics($info,$type="metric"){
 		
@@ -942,7 +950,7 @@ function user_project($project_id , $user=0,$user_role=""){
 	if($type=='screen' AND !get_appconfig_element('classification_on')){
 		
 	}else{
-		echo '<div class="" role="tabpanel" data-example-id="togglable-tabs">
+	/*	echo '<div class="" role="tabpanel" data-example-id="togglable-tabs">
                       <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
                        <li role="presentation" class="'.$g_active.'"><a href="'.base_url().'manager/set_perspective/class" id="home-tabb" >Classification</a>
                         </li>
@@ -954,7 +962,7 @@ function user_project($project_id , $user=0,$user_role=""){
                       <div id="myTabContent2" class="tab-content">
 	
                       </div>
-                    </div>';
+                    </div>';*/
 	}
 	}
 	
@@ -1172,7 +1180,7 @@ function user_project($project_id , $user=0,$user_role=""){
 			$users=	$ci->manager_lib->get_reference_select_values('users;user_name');
 			$criterias=$ci->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
 			$decision_source_array=array(
-					'new_screen'=>'Screening',
+					'new_screen'=>'Normal screening',
 					'edit_screen'=>'Screening edition',
 					'conflict_resolution'=>'Conflict resolution',
 			);
@@ -1576,5 +1584,17 @@ function user_project($project_id , $user=0,$user_role=""){
 						array('screen_phase_id' => active_screening_phase()), 1)->row_array();
 						
 		return $res;
+	
+	}
+	
+	function screening_validation_source_paper_status(){
+		
+		return 'Excluded';
+	
+	}
+	
+	function screening_validator_assignment_type(){
+	
+		return 'Normal';
 	
 	}

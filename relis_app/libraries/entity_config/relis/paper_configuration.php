@@ -279,7 +279,7 @@ function get_papers() {
 			'name'=>'view_paper_decision',
 			'desc'=>'',
 			
-			'script'=>'SELECT S.screening_id,S.screening_phase,P.id, P.bibtexKey,P.title,P.paper_active,IFNULL(D.screening_decision,"Pending") as screening_status from screening_paper S 
+			'script'=>'SELECT S.screening_id,S.screening_phase,S.user_id,P.id, P.bibtexKey,P.title,P.paper_active,IFNULL(D.screening_decision,"Pending") as screening_status ,IFNULL(D.decision_source,"Pending") as decision_source from screening_paper S 
 LEFT JOIN  paper P ON(S.paper_id=P.id AND P.paper_active=1 ) 
 LEFT JOIN  screen_decison D ON (S.paper_id=D.paper_id AND S.screening_phase=D.screening_phase AND D.decision_active=1 ) 
 WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
@@ -480,8 +480,14 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'fields'=>array(
 					'id'=>array(),
 					'bibtexKey'=>array(),
-					'title'=>array(),
-					'authors'=>array(),
+					'title'=>array(
+						'link'=>array(
+								'url'=>'relis/manager/display_paper_screen/',
+								'id_field'=>'id',
+								'trim'=>'100'
+							)
+					),
+					//'authors'=>array(),
 					'screening_status'=>array('field_title'=>'Decision'),
 					 
 			),
@@ -489,14 +495,14 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'search_by'=>'bibtexKey,title,preview,abstract',
 			
 			'list_links'=>array(
-					'view'=>array(
+					/*'view'=>array(
 							'label'=>'View',
 							'title'=>'Disaly element',
 							'icon'=>'folder',
 							'url'=>'op/display_element/detail_paper/',
 							'url'=>'relis/manager/display_paper_screen/',
 					),
-					/*'edit'=>array(
+					'edit'=>array(
 							'label'=>'Edit',
 							'title'=>'Edit',
 							'icon'=>'edit',
@@ -539,7 +545,9 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 																'parameter_type'=>'VARCHAR(20)'
 														));
 
-
+	unset($operations['list_pending_papers']['top_links']['add']);
+	unset($operations['list_pending_papers']['list_links']['delete']);
+	
 	$operations['list_included_papers']=$operations['list_pending_papers'];
 	$operations['list_included_papers']['page_title']='Pending papers';
 	$operations['list_included_papers']['data_source']='get_list_included_papers';
@@ -577,8 +585,15 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 							'evaluation'=>'equal',
 							'add_on_generation'=>False,
 							'parameter_type'=>'VARCHAR(10)'
+					),
+					/*'user_id'=>array(
+							'field'=>'user_id',
+							'value'=>active_user_id(),
+							'evaluation'=>'equal',
+							'add_on_generation'=>FALSE,
+							'parameter_type'=>'VARCHAR(20)'
 					)
-			
+			*/
 			),
 			'list_links'=>array(
 					'view'=>array(
@@ -632,6 +647,23 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 	$operations['list_papers_screen_conflict']=$operations['list_papers_screen_excluded'];
 	$operations['list_papers_screen_conflict']['page_title']='Papers in conflict';
 	$operations['list_papers_screen_conflict']['conditions']['screening_status']['value']='In conflict';
+	
+	
+	
+	$operations['list_papers_screen_included_after_conflict']=$operations['list_papers_screen_included'];
+	$operations['list_papers_screen_included_after_conflict']['page_title']='Included papers after conflict';
+	$operations['list_papers_screen_included_after_conflict']['data_source']='get_list_papers_screen_per_status_decision_source';
+	$operations['list_papers_screen_included_after_conflict']['conditions']['decision_source']=array(
+																'field'=>'decision_source',
+																'value'=>'conflict_resolution',
+																'evaluation'=>'equal',
+																'add_on_generation'=>False,
+																'parameter_type'=>'VARCHAR(20)'
+															);
+	$operations['list_papers_screen_excluded_after_conflict']=$operations['list_papers_screen_included_after_conflict'];
+	$operations['list_papers_screen_excluded_after_conflict']['page_title']='Excluded papers after conflict';
+	$operations['list_papers_screen_excluded_after_conflict']['generate_stored_procedure']=FALSE;
+	$operations['list_papers_screen_excluded_after_conflict']['conditions']['screening_status']['value']='Excluded';
 	
 	$operations['detail_paper']=array(
 			'operation_type'=>'Detail',

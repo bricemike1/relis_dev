@@ -89,21 +89,9 @@
                 <a id="menu_toggle"><i class="fa fa-bars"></i></a>
 				
               </div>
-              <ul class="nav navbar-nav navbar-left">
-              <?php 
-				if($this->session->userdata('project_title')){
-				?>
-				<li>
-				 
-              	<h2 style="padding-top: 10px; padding-right:50px;"><?php echo $this->session->userdata('project_title')?> &nbsp  &nbsp</h2> 
-              
-              	</li>
-                <?php 
-				}
-                ?>
-              </ul>
-              <ul class="nav navbar-nav navbar-right" style="width:30%">
-              	
+             
+              <ul class="nav navbar-nav navbar-right" >
+              	  
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                   <?php 
@@ -129,13 +117,21 @@
                 </li>
                 <li role="presentation" class="dropdown">
                   <span class="dropdown-toggle info-number" aria-expanded="false">
-                    <?php $this->load->view('lang');?>
-                   
-                  </span>
-                  
-                </li role="presentation" class="dropdown">
-				
-                  </ul>
+                    <?php $this->load->view('lang'); ?>                  
+                  </span>                  
+                </li >
+			 	<?php 
+				if($this->session->userdata('project_title')){
+				?>
+					<li>
+					 
+	              	<h2 style="padding-top: 10px;  padding-right: 100px ;"><?php echo $this->session->userdata('project_title')?> &nbsp  &nbsp</h2> 
+	              
+	              	</li>
+                <?php 
+				}
+                ?>
+                </ul>
                 </li>
 
               </ul>

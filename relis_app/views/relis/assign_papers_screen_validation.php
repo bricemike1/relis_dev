@@ -34,7 +34,7 @@
                   
                  <div class="tab-pane active" id="home">
                          <p class="lead">Assign papers </p>
-                          <p>Select users: <br/><b> Number of papers to assign :<?php echo $number_papers ?></b>
+                          <p><b> Number of papers to assign :<?php echo $number_papers ?></b>
                            <br/><i> Number of papers already assigned :<?php echo $number_papers_assigned ?></i><br/></p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
@@ -58,14 +58,20 @@
                          echo form_hidden(array( 'papers_sources' => $papers_sources));
                          echo form_hidden(array( 'paper_source_status' => $paper_source_status));
                          
-                         $i=1;
-                        foreach ($users as $user_id => $user_name) {
-                        	echo checkbox_form_bm($user_name,'user_'.$i,'user_'.$user_id,$user_id);
-                        	$i++;
-                        }
                        
-                  
-                         echo "<hr/>";
+                        if(empty($assign_to_connected)){
+                        	$i=1;
+		                        foreach ($users as $user_id => $user_name) {
+		                        	echo checkbox_form_bm($user_name,'user_'.$i,'user_'.$user_id,$user_id);
+		                        	$i++;
+		                        }
+		                       
+		                  
+		                         echo "<hr/>";
+                        }else{
+                        	echo form_hidden(array( 'assign_papers_to' => active_user_id()));
+                        	
+                        }
                          
                     //     echo dropdown_form_bm("Paper to validate",'paper_to_validate','paper_to_validate',$papers_categories,'Excluded',' 1 mandatory');
                           

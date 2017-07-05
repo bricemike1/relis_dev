@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `userproject` (
   `userproject_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL ,
   `project_id` int(11) NOT NULL,
-  `user_role` enum('Reviewer','Project admin','Guest') NOT NULL DEFAULT 'Reviewer',
+  `user_role` enum('Reviewer','Validator','Project admin','Guest') NOT NULL DEFAULT 'Reviewer',
   `added_by` int(11) NOT NULL DEFAULT '1',
   `add_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `userproject_active` int(1) NOT NULL DEFAULT '1',
@@ -408,6 +408,15 @@ SET @query = CONCAT("Select * from  ",source ,"  WHERE ", source_id ," = '",id_v
  PREPARE stmt FROM @query;
  EXECUTE stmt; -- execute statement
  DEALLOCATE PREPARE stmt; -- release the statement memory.
+END$$
+
+DROP PROCEDURE IF EXISTS `add_string`$$
+CREATE  PROCEDURE `add_string`(_str_id INT , _str_label  VARCHAR(405) , _str_text  VARCHAR(805) , _str_lang  VARCHAR(8) , _str_category  VARCHAR(23))
+BEGIN
+START TRANSACTION;
+INSERT INTO str_management (str_label , str_text , str_lang , str_category) VALUES (_str_label , _str_text , _str_lang , _str_category);
+SELECT str_id AS id_value FROM str_management WHERE str_id = LAST_INSERT_ID();
+COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `get_string`$$

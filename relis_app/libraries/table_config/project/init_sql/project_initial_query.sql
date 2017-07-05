@@ -49,17 +49,22 @@ CREATE TABLE IF NOT EXISTS `config` (
   `assign_papers_on` int(2) NOT NULL DEFAULT '1',
   `screening_on` int(2) NOT NULL DEFAULT '1',
   `screening_validation_on` int(2) NOT NULL DEFAULT '1',
-  `classification_on` int(2) NOT NULL DEFAULT '1',
+  `classification_on` int(2) NOT NULL DEFAULT '0',
   `screening_result_on` int(2) NOT NULL DEFAULT '1',
   `source_papers_on` int(2) NOT NULL DEFAULT '0',
   `search_strategy_on` int(2) NOT NULL DEFAULT '0',
+  `key_paper_prefix` varchar(20) NOT NULL DEFAULT 'Paper_',
+  `key_paper_serial` int(10) NOT NULL DEFAULT '1',
+  `validation_default_percentage` int(3) NOT NULL DEFAULT '20',
+  `screening_status_to_validate` enum('Excluded','Included') NOT NULL DEFAULT 'Excluded',
+  `screening_validator_assignment_type` enum('Normal','Veto','Info') NOT NULL DEFAULT 'Normal',
   `config_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
 
-INSERT INTO `config` (`config_id`, `config_type`, `editor_url`, `editor_generated_path`, `csv_field_separator`, `csv_field_separator_export`, `screening_screening_conflict_resolution`, `screening_conflict_type`, `import_papers_on`, `assign_papers_on`, `screening_on`, `screening_validation_on`, `classification_on`, `screening_result_on`, `source_papers_on`, `search_strategy_on`, `config_active`) VALUES
-(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/relis_workspace', ';', ',', 'Majority', 'IncludeExclude', 1, 1, 1, 1, 1, 1, 1, 1, 1);;;;
+INSERT INTO `config` (`config_id`, `config_type`, `editor_url`, `editor_generated_path`, `csv_field_separator`, `csv_field_separator_export`, `screening_screening_conflict_resolution`, `screening_conflict_type`, `import_papers_on`, `assign_papers_on`, `screening_on`, `screening_validation_on`, `screening_result_on`, `source_papers_on`, `search_strategy_on`,`key_paper_prefix`,`key_paper_serial`, `config_active`) VALUES
+(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/relis_workspace', ';', ',', 'Majority', 'IncludeExclude', 1, 1, 1, 1, 1, 1, 1,'Paper_',1, 1);;;;
 
 DROP TABLE IF EXISTS `exclusion`;;;;
 CREATE TABLE IF NOT EXISTS `exclusion` (
@@ -239,6 +244,15 @@ SET @query = CONCAT("Select * from  ",source ,"  WHERE ", source_id ," = '",id_v
 PREPARE stmt FROM @query;
 EXECUTE stmt;  
 DEALLOCATE PREPARE stmt;  
+END;;;;
+
+DROP PROCEDURE IF EXISTS `add_string` ;;;;
+CREATE  PROCEDURE `add_string`(_str_id INT , _str_label  VARCHAR(405) , _str_text  VARCHAR(805) , _str_lang  VARCHAR(8) , _str_category  VARCHAR(23))
+BEGIN
+START TRANSACTION;
+INSERT INTO str_management (str_label , str_text , str_lang , str_category) VALUES (_str_label , _str_text , _str_lang , _str_category);
+SELECT str_id AS id_value FROM str_management WHERE str_id = LAST_INSERT_ID();
+COMMIT;
 END;;;;
 
 DROP PROCEDURE IF EXISTS  get_string ;;;;

@@ -34,7 +34,7 @@
                   
                  <div class="tab-pane active" id="home">
                           <p class="lead">Assign papers </p>
-                          <p>Select users: <br/><b> Number of papers to assign :<?php echo $number_papers ?></b>
+                          <p><b> Number of papers to assign :<?php echo $number_papers ?></b>
                            <br/><i> Number of papers already assigned :<?php echo $number_papers_assigned ?></i><br/></p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');

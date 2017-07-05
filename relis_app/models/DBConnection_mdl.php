@@ -796,7 +796,7 @@ class DBConnection_mdl extends CI_Model
 		 */
 		function set_str($str,$category="default",$lang='en'){
 			$this->db2 = $this->load->database(project_db(), TRUE);
-			$data=$this->db2->query ( "CALL add_str_mng('','".$str."','".$str."','".$lang."','".$category."')" );
+			$data=$this->db2->query ( "CALL add_string('','".$str."','".$str."','".$lang."','".$category."')" );
 			mysqli_next_result( $this->db2->conn_id );
 			$res=$data->row_array();
 			if(!empty($res)){

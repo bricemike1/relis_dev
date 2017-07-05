@@ -45,6 +45,30 @@ class Home extends CI_Controller {
 		$data['assigned_me_papers']=$this->DBConnection_mdl->count_papers('assigned_me');
 		$data['excluded_papers']=$this->DBConnection_mdl->count_papers('excluded');
 		
+		
+		//if(!empty($data['all_papers'])){
+			$data['classification_completion']['title']="Classification completion";
+			$data['classification_completion']['all_papers']=array('value'=>$data['all_papers'],
+					'title'=>'All',
+					'url'=>'relis/manager/list_paper'
+			);
+			$data['classification_completion']['pending_papers']=array('value'=>$data['pending_papers'],
+					'title'=>'Pending',
+					'url'=>'relis/manager/list_paper/pending'
+		
+			);
+			$data['classification_completion']['done_papers']=array('value'=>$data['processed_papers'],
+					'title'=>'Screened',
+					'url'=>'relis/manager/list_paper/processed'
+			);
+			
+				
+			$data['classification_completion']['gauge_all']=$data['all_papers'];
+			$data['classification_completion']['gauge_done']=$data['processed_papers'];
+		//}
+		
+		
+		
 		$data['configuration']=get_project_config($this->session->userdata ( 'project_db' ));
 		/*
 		 * Récuperation des participants dans l'application
@@ -95,38 +119,148 @@ class Home extends CI_Controller {
 			 * Recuperation du nombre de papiers par catégorie
 			 */
 			
-			$my_assignations=$this->Relis_mdl->get_user_assigned_papers(active_user_id(),'simple_screen',active_screening_phase());
-			
-			$total_papers=count($my_assignations);
-			$papers_screened=0;
-			foreach ($my_assignations as $key => $value) {
-					
-				if($value['screening_status']=='Done'){
-					$papers_screened++;
-				}else{
-					/*if(empty($paper_to_screen)){
-						$paper_to_screen=$value['paper_id'];
-						//$assignment_id=$value['assignment_id'];
-					}*/
-				}
+		
+		//	$screening_completion=$this->get_user_completion(active_user_id(),active_screening_phase(),'Screening');
+			$screening_completion=$this->get_user_completion(active_user_id(),active_screening_phase(),'Screening');
+			//print_test($screening_completion);
+			if(!empty($screening_completion['all_papers'])){
+				$data['screening_completion']['title']="My screening completion";
+				$data['screening_completion']['all_papers']=array('value'=>$screening_completion['all_papers'],
+																	'title'=>'All',
+																	'url'=>'op/entity_list/list_my_assignments'
+																	);
+				$data['screening_completion']['pending_papers']=array('value'=>$screening_completion['all_papers']-$screening_completion['papers_done'],
+						'title'=>'Pending',
+						'url'=>'op/entity_list/list_my_pending_screenings'
+				);
+				$data['screening_completion']['done_papers']=array('value'=>$screening_completion['papers_done'],
+						'title'=>'Screened',
+						'url'=>'op/entity_list/list_my_screenings'
+				);
+				$data['screening_completion']['conflict_papers']=array('value'=>$screening_completion['papers_in_conflict'],
+						'title'=>'Conflicts',
+						'url'=>'op/entity_list/list_papers_screen_conflict'
+				);
+				
+				$data['screening_completion']['gauge_all']=$screening_completion['all_papers'];
+				$data['screening_completion']['gauge_done']=$screening_completion['papers_done'] - $screening_completion['papers_in_conflict'];
 			}
 			
 			
-			$data['all_papers']=$total_papers;
-			$data['processed_papers']=$papers_screened;
-			$data['pending_papers']=$total_papers - $papers_screened;
-			$data['assigned_me_papers']=$total_papers;
+			//general screening completion
+			$general_screening_completion=$this->get_user_completion(0,active_screening_phase(),'Screening');
+			//print_test($general_screening_completion);
+			if(!empty($general_screening_completion['all_papers'])){
+				$data['general_screening_completion']['title']="General screening completion";
+				$data['general_screening_completion']['all_papers']=array('value'=>$general_screening_completion['all_papers'],
+						'title'=>'All',
+						'url'=>'op/entity_list/list_assignments'
+				);
+				$data['general_screening_completion']['pending_papers']=array('value'=>$general_screening_completion['all_papers']-$general_screening_completion['papers_done'],
+						'title'=>'Pending',
+						'url'=>'op/entity_list/list_all_pending_screenings'
+						
+				);
+				$data['general_screening_completion']['done_papers']=array('value'=>$general_screening_completion['papers_done'],
+						'title'=>'Screened',
+						'url'=>'op/entity_list/list_screenings'
+				);
+				$data['general_screening_completion']['conflict_papers']=array('value'=>$general_screening_completion['papers_in_conflict'],
+						'title'=>'Conflicts',
+						'url'=>'op/entity_list/list_papers_screen_conflict'
+				);
 			
+				$data['general_screening_completion']['gauge_all']=$general_screening_completion['all_papers'];
+				$data['general_screening_completion']['gauge_done']=$general_screening_completion['papers_done'] - $general_screening_completion['papers_in_conflict'];
+			//	$data['general_screening_completion']['gauge_done']=0;
+			}
+			
+			
+			
+			
+			
+			$validation_completion=$this->get_user_completion(active_user_id(),active_screening_phase(),'screen_validation');
+			//print_test($validation_completion);
+			if(!empty($validation_completion['all_papers'])){
+				$data['validation_completion']['title']="My validations completion";
+				$data['validation_completion']['all_papers']=array('value'=>$validation_completion['all_papers'],
+						'title'=>'All',
+						'url'=>'op/entity_list/list_my_validations_assignment'
+				);
+				$data['validation_completion']['pending_papers']=array('value'=>$validation_completion['all_papers']-$validation_completion['papers_done'],
+						'title'=>'Pending',
+						'url'=>'op/entity_list/list_my_pending_validation'
+				);
+				$data['validation_completion']['done_papers']=array('value'=>$validation_completion['papers_done'],
+						'title'=>'Validated',
+						'url'=>'op/entity_list/list_my_done_validation'
+				);
+			
+				$data['validation_completion']['gauge_all']=$validation_completion['all_papers'];
+				$data['validation_completion']['gauge_done']=$validation_completion['papers_done'];
+			}
+			
+			
+			////general screening validation completion
+			$general_validation_completion=$this->get_user_completion(0,active_screening_phase(),'screen_validation');
+			//print_test($validation_completion);
+			
+			
+			if(!empty($general_validation_completion['all_papers'])){
+				$data['general_validation_completion']['title']="General validations completion";
+				$data['general_validation_completion']['all_papers']=array('value'=>$general_validation_completion['all_papers'],
+						'title'=>'All',
+						'url'=>'op/entity_list/list_assignments_validation'
+				);
+				$data['general_validation_completion']['pending_papers']=array('value'=>$general_validation_completion['all_papers']-$general_validation_completion['papers_done'],
+						'title'=>'Pending',
+						'url'=>'op/entity_list/list_pending_screenings_validation'
+				);
+				$data['general_validation_completion']['done_papers']=array('value'=>$general_validation_completion['papers_done'],
+						'title'=>'Validated',
+						'url'=>'op/entity_list/list_screenings_validation'
+				);
+			
+				$data['general_validation_completion']['gauge_all']=$general_validation_completion['all_papers'];
+				$data['general_validation_completion']['gauge_done']=$general_validation_completion['papers_done'];
+			}
+			
+			//print_test($data);
+			
+			//$shortut operations
+			
+			$action_but=array();
+			if(can_manage_project())
+			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for screening', 'relis/manager/assignment_screen','Assign papers for screening','fa-mail-forward','',' btn-info action_butt ' ,False);
+			
+			if(can_review_project())
+			$action_but['screen']=get_top_button ( 'all', 'Screen papers', 'relis/manager/screen_paper','Screen papers','fa-toggle-right','',' btn-info action_butt ' ,False);
+			
+			if(can_manage_project() OR get_appconfig_element('screening_result_on') ){
+				$action_but['screen_result']=get_top_button ( 'all', 'Screening completion', 'relis/manager/screen_completion','Screening completion','fa-tasks','',' btn-info action_butt ' ,False);
+				$action_but['screen_completion']=get_top_button ( 'all', 'Screening result', 'relis/manager/screen_result','Screening result','fa-th','',' btn-info action_butt ' ,False);
+			}
+			
+			$data['action_but_screen']=$action_but;
+			
+			$action_but=array();
+			if(get_appconfig_element('screening_validation_on') ){
+				if(can_validate_project()){
+					$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/validate_screen_set','Assign papers for validation','fa-mail-forward','',' btn-primary action_butt ' ,False);
+					$action_but['screen']=get_top_button ( 'all', 'Validate screening', 'relis/manager/screen_paper_validation','Validate screening','fa-toggle-right','',' btn-primary action_butt ' ,False);
+				}
+				$action_but['screen_result']=get_top_button ( 'all', 'Validation completion', 'relis/manager/screen_completion/validate','Validation completion','fa-tasks','',' btn-primary action_butt ' ,False);
+				$action_but['screen_completion']=get_top_button ( 'all', 'Validation result', 'relis/manager/screen_validation_result','Validation result','fa-th','',' btn-primary action_butt ' ,False);
+					
+				$data['action_but_validate']=$action_but;
+			
+			}
+		//	print_test($action_but);
 			$data['configuration']=get_project_config($this->session->userdata ( 'project_db' ));
 			/*
 			 * Récuperation des participants dans l'application
 			 */
-			$data['users']=$this->DBConnection_mdl->get_users_all();
-			foreach ($data['users'] as $key => $value) {
-				if(! (user_project($this->session->userdata('project_id'),$value['user_id'])) OR $value['user_usergroup'] == 1 ){
-					unset($data['users'][$key]);
-				}
-			}
+		
 	
 			/*
 			 * Chargement de la vue qui va s'afficher
@@ -136,6 +270,27 @@ class Home extends CI_Controller {
 			$this->load->view('body',$data);
 	
 		
+	}
+	
+	function get_user_completion($user_id,$screening_phase,$phase_type='Screening'){
+		
+		$my_assignations=$this->Relis_mdl->get_user_assigned_papers($user_id,$phase_type,$screening_phase);
+			$total_papers=count($my_assignations);
+		$papers_screened=0;
+		$conflicts=0;
+		foreach ($my_assignations as $key => $value) {
+				
+			if($value['screening_status']=='Done'){
+				$papers_screened++;
+				if($value['paper_status']=='In conflict'){
+					$conflicts++;
+				}
+			}
+		}
+		$result['all_papers']=$total_papers;
+		$result['papers_done']=$papers_screened;
+		$result['papers_in_conflict']=$conflicts;
+		return $result;
 	}
 	
 	public function screening_select()
@@ -149,42 +304,113 @@ class Home extends CI_Controller {
 		$phases_list=array();
 		$yes_no=array('0'=>'','1'=>'Yes');
 		$i=1;
-		foreach ($screening_phases as $k => $phase) {
-		//	print_test($phase);
-			$select_but="";
-			$open_but="";
-			$close_but="";
-			
-			
-			
-			
-			if($phase['phase_state']=='Open'){
-				$select_but=get_top_button ( 'all', 'Go to the phase', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Go to','fa-send','',' btn-info ' ,False);
-				$close_but=get_top_button ( 'all', 'Lock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Lock','fa-lock','',' btn-danger ' ,False);
-			}else{
+		
+		if(get_appconfig_element('screening_on')){
+			foreach ($screening_phases as $k => $phase) {
 				
-				$open_but=get_top_button ( 'all', 'Unlock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Unlock','fa-unlock','',' btn-success ' ,False);					
-			}	
-			
-			if(!can_manage_project()){
-				$close_but="";
+				//print_test($phase);
+				
+			//	print_test($phase);
+				$select_but="";
 				$open_but="";
+				$close_but="";
+				
+				$user_completion=$this->get_user_completion(active_user_id(), $phase['screen_phase_id'],'');
+				if(!empty($user_completion['all_papers'])){
+					$user_perc=!empty($user_completion['all_papers'])?round((($user_completion['papers_done']-$user_completion['papers_in_conflict'])*100 / $user_completion['all_papers']),2)." %":'-';
+				}else{
+					$user_perc="-";
+				}
+				
+				
+				$user_completion=$this->get_user_completion(0, $phase['screen_phase_id'],'');
+				if(!empty($user_completion['all_papers'])){
+					$gen_perc=!empty($user_completion['all_papers'])?round((($user_completion['papers_done']-$user_completion['papers_in_conflict'])*100 / $user_completion['all_papers']),2)." %":'-';
+				}else{
+					$gen_perc="-";
+				}
+				
+				//classification completion
+				
+				$all_papers=$this->DBConnection_mdl->count_papers('all');
+				$processed_papers=$this->DBConnection_mdl->count_papers('processed');
+				if(!empty($all_papers)){
+					$class_perc=!empty($all_papers)?round(($processed_papers*100 / $all_papers),2)." %":'-';
+				}else{
+					$class_perc="-";
+				}
+				
+				if($phase['phase_state']=='Open'){
+					$select_but=get_top_button ( 'all', 'Go to the phase', 'home/select_screen_phase/'.$phase['screen_phase_id'],'Go to','fa-send','',' btn-info ' ,False);
+					$close_but=get_top_button ( 'all', 'Lock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'].'/2','Close','fa-lock','',' btn-danger ' ,False);
+				}else{
+					
+					$open_but=get_top_button ( 'all', 'Unlock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Open','fa-unlock','',' btn-success ' ,False);					
+				}	
+				
+				if(!can_manage_project()){
+					$close_but="";
+					$open_but="";
+				}
+				$temp=array(
+						'num'=>$i,
+						
+						'Title'=>"Screening : ".$phase['phase_title'],
+						'State'=>$phase['phase_state'],
+						'Final phase'=>$yes_no[$phase['screen_phase_final']],
+						'User_completion'=>$user_perc,
+						'Gen_completion'=>$gen_perc,
+						'action'=>$open_but.$close_but.$select_but,
+				);
+				array_push($phases_list, $temp);
+				
+				$i++;
 			}
-			$temp=array(
-					'num'=>$i,
-					'Type'=>$phase['phase_type'],
-					'Title'=>$phase['phase_title'],
-					'State'=>$phase['phase_state'],
-					'Final phase'=>$yes_no[$phase['screen_phase_final']],
-					'action'=>$open_but.$close_but.$select_but,
-			);
-			array_push($phases_list, $temp);
+		}
+		//classification completion
 			
-			$i++;
+		$all_papers=$this->DBConnection_mdl->count_papers('all');
+		$processed_papers=$this->DBConnection_mdl->count_papers('processed');
+		if(!empty($all_papers)){
+			$class_perc=!empty($all_papers)?round(($processed_papers*100 / $all_papers),2)." %":'-';
+		}else{
+			$class_perc="-";
 		}
 		
+		//add clasificsation phase
+		$select_but="";
+		$open_but="";
+		$close_but="";
+		
+		if(get_appconfig_element('classification_on')){
+			$select_but=get_top_button ( 'all', 'Go to classification', 'manager/set_perspective/class','Go to','fa-send','',' btn-info ' ,False);
+			$close_but=get_top_button ( 'all', 'Lock the phase', 'manager/activate_classification/0','Close','fa-lock','',' btn-danger ' ,False);
+			$class_state="Open";
+		}else{
+			$open_but=get_top_button ( 'all', 'Unlock the phase', 'manager/activate_classification','Open','fa-unlock','',' btn-success ' ,False);				
+			$class_state="Closed";
+		}
+		
+		if(!can_manage_project()){
+			$close_but="";
+			$open_but="";
+		}
+		
+		$class=array(
+				'num'=>$i,
+				'Title'=>'Classification',
+				'State'=>$class_state,
+				'Final phase'=>'',
+				'User_completion'=>'',
+				'Gen_completion'=>$class_perc,
+				'action'=>$open_but.$close_but.$select_but,
+		);
+		array_push($phases_list, $class);
+		
+		
+		
 		if(!empty($phases_list)){
-			array_unshift($phases_list, array('#','Category','Title','State','Final phase',''));
+			array_unshift($phases_list, array('#','Title','State','Screening final phase','My completion','General completion'));
 		}
 		
 	//	print_test($phases_list);
@@ -503,10 +729,10 @@ class Home extends CI_Controller {
 			 */
 			if($query_type!='multi'){
 			$data ['top_buttons'] = get_top_button ( 'all', 'Switch to multi query!', 'home/sql_query/multi','Switch to multi query!',' fa-exchange','',' btn-info ' );
-			$data['title']='Parse an SQL query';
+			$data['title']='Run SQL query';
 			}else{
 				$data ['top_buttons'] = get_top_button ( 'all', 'Switch to single query!', 'home/sql_query/','Switch to single query!',' fa-exchange','',' btn-info ' );
-				$data['title']=lng_min('Parse multiple SQL queries');
+				$data['title']=lng_min('Run multiple SQL queries');
 			}	
 			$data['page']='sql';
 			$this->load->view('body',$data);
@@ -619,10 +845,10 @@ class Home extends CI_Controller {
 			}
 			if($query_type!='multi'){
 				$data ['top_buttons'] = get_top_button ( 'all', 'Switch to multi query!', 'home/sql_query/multi','Switch to multi query!',' fa-exchange','',' btn-info ' );
-				$data['title']=lng_min('Parse an SQL query');
+				$data['title']=lng_min('Run SQL query');
 			}else{
 				$data ['top_buttons'] = get_top_button ( 'all', 'Switch to single query!', 'home/sql_query/','Switch to single query!',' fa-exchange','',' btn-info ' );
-				$data['title']=lng_min('Parse multiple SQL queries');
+				$data['title']=lng_min('Run multiple SQL queries');
 			}
 			
 			

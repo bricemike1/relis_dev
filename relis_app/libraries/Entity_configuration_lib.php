@@ -93,7 +93,10 @@ public function get_table_configuration($_table,$target_db='current')
 				$table_configurations['str_mng']=get_str_mng();
 				break;
 						
-						
+			case 'operations':
+				require_once("entity_config/relis/operations_configuration.php");
+				$table_configurations['operations']=get_operation();
+				break;
 			
 				
 				
@@ -128,10 +131,7 @@ public function get_table_configuration($_table,$target_db='current')
 					break;	
 				*/	
 				
-				case 'operations':
-					require_once("entity_config/relis/operations_config.php");
-					$table_configurations['operations']=get_operation();
-					break;	
+				
 			//--------------------------------	
 			
 	
