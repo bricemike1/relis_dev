@@ -1743,6 +1743,7 @@ class Manager extends CI_Controller {
 			$this->session->set_userdata('project_id',$project_id);
 			$this->session->set_userdata('project_title',$item_data['project_title']);
 			$this->session->set_userdata('working_perspective','screen');
+			$this->session->set_userdata('current_screen_phase',0);
 			}	
 		}
 	
@@ -1770,9 +1771,7 @@ class Manager extends CI_Controller {
 	
 	///----------------------------- to be updated
 	
-	private function zz(){
-		
-	}
+	
 	
 	private function zget_reference_select_values($config,$start_with_empty=True,$get_leaf=False,$multiselect=False){
 	

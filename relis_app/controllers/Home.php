@@ -300,7 +300,7 @@ class Home extends CI_Controller {
 		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
 												->get_where('screen_phase', array('screen_phase_active'=>1))
 												->result_array();
-		
+		$this->session->set_userdata('working_perspective','screen');
 		$phases_list=array();
 		$yes_no=array('0'=>'','1'=>'Yes');
 		$i=1;

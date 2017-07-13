@@ -1714,8 +1714,8 @@ class Manager extends CI_Controller {
 			$classification_status='To classify';
 		}
 		
-		echo $classification_status;
-		exit;
+		//echo $classification_status;
+		//exit;
 		$i=1;
 		foreach ($data_array as $key => $value) {
 			if($key >= ($paper_start_from -1 )) {

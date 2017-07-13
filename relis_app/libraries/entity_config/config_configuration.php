@@ -221,6 +221,16 @@ function get_configuration() {
 	   			'input_type'=>'text',
 	   			'mandatory'=>' mandatory '
 	   	);
+		$fields['screening_reviewer_number']=array(
+	   			'field_title'=>'Reviews per paper',
+	   			'field_type'=>'int',	   			
+	   			'field_value'=>'2',
+	   			'default_value'=>'2',
+	   			'field_size'=>3,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' mandatory '
+	   	);
+		
 		
 		$fields['screening_status_to_validate']=array(
 				'field_title'=>'Screening status to validate',
@@ -407,10 +417,10 @@ function get_configuration() {
 	   					'screening_on'=>array(),
 	   					'screening_validation_on'=>array(),
 	   					'screening_result_on'=>array(),
+						'screening_reviewer_number'=>array(),
 	   					'screening_conflict_type'=>array(),	   					
 						'screening_screening_conflict_resolution'=>array(),
-	   					'validation_default_percentage'=>array(),
-						'screening_status_to_validate'=>array(),
+	   					'validation_default_percentage'=>array(),						
 	   					'screening_validator_assignment_type'=>array(),
 	   					
 	   						
@@ -546,10 +556,10 @@ function get_configuration() {
 	   					'screening_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_result_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+						'screening_reviewer_number'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_conflict_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_screening_conflict_resolution'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'screening_status_to_validate'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
 	   					'screening_validator_assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					  				
 	   			),

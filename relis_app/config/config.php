@@ -285,6 +285,7 @@ $config['base_url'] = "http://localhost/relis/relis_dev";
 $config['sess_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/sessions";
 $config['editor_generated_path'] = "D:\www\dslforge\workspace";
 $config['editor_generated_path'] = "C:/relis_workspace";
+$config['editor_generated_path'] = "D:\www\dslforge\workbench";
 $config['editor_url'] = "http://127.0.0.1:8080/relis/texteditor";
 
 $config['metrics_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/metrics";
@@ -301,7 +302,7 @@ $config['common_relis_configs'] = array('assignation','author','config','exclusi
 $config['project_specific_config_folder']="relis_app/libraries/table_config/project/";
 
 // The prefix that will have the new databases for projects  installed
-$config['project_db_prefix'] = "relis_dev_new_";
+$config['project_db_prefix'] = "relis_dev_new2_";
 
 // Added configuration
 
