@@ -10,10 +10,10 @@ class Manager_lib
 	}
 	
 	
-	 function get_reference_select_values($config,$start_with_empty=True,$get_leaf=False,$multiselect=False){
+	 function get_reference_select_values($config,$start_with_empty=True,$get_leaf=False,$multiselect=False,$filter=array()){
 	
 		$conf=explode(";", $config);
-		//print_test($conf);
+	//	print_test($conf);
 		$ref_table=$conf[0];
 		$fields=$conf[1];
 		$ref_table_config=get_table_configuration($ref_table);
@@ -65,12 +65,14 @@ class Manager_lib
 					
 			}
 	
-			//	$extra_condition="";
+				$extra_condition="";
 	
-				
-	
-			$res=$this->CI->DBConnection_mdl->get_reference_select_values($ref_table_config,$fields);
-				
+			//Pour les dipendantdynamiccategory ajouter une condition pour les enregistrements relatifs à cet element	
+			if(!empty($filter) AND !empty($ref_table_config['fields'][$filter['filter_field']])){
+				$extra_condition=" AND  ".$filter['filter_field']. " = '".$filter['filter_value']."'";
+			}
+			$res=$this->CI->DBConnection_mdl->get_reference_select_values($ref_table_config,$fields,$extra_condition);
+			//print_test($res);	
 			$result=array();
 			if($res AND $start_with_empty)
 				$result['']="Select...";
@@ -592,7 +594,7 @@ class Manager_lib
 		$detail_result = $this->CI->DBConnection_mdl->get_row_details ( $table_config['operations'][$current_operation]['data_source'],$ref_id ,true,$table_config['config_id']);
 	
 		$content_item=$detail_result;
-		
+	//	print_test($detail_result);
 		$item_data=array();
 	
 	
@@ -638,7 +640,7 @@ class Manager_lib
 				//print_test($array);
 	
 				//Pour les  multivalues
-				if((isset($value['number_of_values']) AND ($value['number_of_values']=='*' OR $value['number_of_values']!='1') ) AND !empty($value['input_select_key_field'])){
+				if(((isset($value['number_of_values']) AND ($value['number_of_values']=='*' OR $value['number_of_values']!='1') ) AND !empty($value['input_select_key_field']) ) OR (!empty($value['category_type'] ) AND  $value['category_type'] =='WithSubCategories') ){
 					if($value['number_of_values']=="0" OR $value['number_of_values']=="-1"  OR $value['number_of_values']=="*")
 					{
 						$max_number_of_value=0;
@@ -660,8 +662,14 @@ class Manager_lib
 						//$add_button = create_button_link('manager/add_element_child/'.$Tvalues_source[0].'/'.$value['input_select_key_field'].'/'.$ref_table.'/'.$ref_id,'<i class="fa fa-plus"></i> Add',"btn-success",'Add ');
 
 						if($modal_link){//use modal
-							$modal_title="Add : ".$value['field_title'];
-							$add_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/add_element_child_modal/'.$Tvalues_source[0].'/'.$value['input_select_key_field'].'/'.$ref_table.'/'.$ref_id.'"  data-modal_title="'.$modal_title.'" ><i class="fa fa-plus"></i>Add</a>';
+							$modal_title="Add  : ".$value['field_title'];
+							$add_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  
+									data-modal_link="manager/add_element_child_modal/'.$Tvalues_source[0].'/'.$value['input_select_key_field'].'/'.$ref_table.'/'.$ref_id.'"
+									data-modal_title="'.$modal_title.'" ><i class="fa fa-plus"></i>Add</a>';
+							
+							$add_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"
+									data-modal_link="'.$value_field['drilldown_add_link'].$ref_id.'/_/new/modal"
+									data-modal_title="'.$modal_title.'" ><i class="fa fa-plus"></i>Add</a>';
 						}
 					}else{
 						$add_button = "";
@@ -699,9 +707,11 @@ class Manager_lib
 								{
 									if(!empty($value_field['drilldown_edit_link'])){
 										$edit_button = create_button_link($value_field['drilldown_edit_link'].$value_v['refId'].'/'.$ref_id,'<i class="fa fa-pencil"></i> Edit',"btn-info",'Edit ');
+										
 										if($modal_link){//use modal for classification
 											$modal_title="Edit : ".$value['field_title'];
 											$edit_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/edit_drilldown/'.$Tconfig[0].'/'.$ref_table.'/'.$key.'/'.$ref_id.'/'.$value_v['refId'].'/modal"  data-modal_title="'.$modal_title.'" ><i class="fa fa-pencil"></i>Edit</a>';
+											$edit_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="'.$value_field['drilldown_edit_link'].$value_v['refId'].'/'.$ref_id.'/modal"  data-modal_title="'.$modal_title.'" ><i class="fa fa-pencil"></i>Edit</a>';
 										}
 									
 									}
@@ -793,18 +803,18 @@ class Manager_lib
 	
 						}else{// si la valeur n'est pas encore enregistré
 								
-								
+							$add_button = "";
 							if((isset($value['drill_down_type']) AND $value['drill_down_type'] == 'not_linked') OR !$editable OR empty($value_field['drilldown_add_link']))
 							{
 								$add_button = "";
 							}else{
 								$array['edit']=1;
-								$add_button = create_button_link($value_field['drilldown_add_link'].$ref_id,'<i class="fa fa-plus"></i> Add',"btn-success",'Add ');
+								//$add_button = create_button_link($value_field['drilldown_add_link'].$ref_id,'<i class="fa fa-plus"></i> Add',"btn-success",'Add ');
 									
 								if($ref_table=='classification'){//use modal for classification
 									$modal_title="Add : ".$value['field_title'];
 									//TODO correct this line for classification
-									$add_button='<a  class="btn btn-xs btn-success" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/add_element_drilldown_modal/'.$Tconfig[0].'/'.$ref_table.'/'.$key.'/'.$ref_id.'"  data-modal_title="'.$modal_title.'" ><i class="fa fa-plus"></i>Add</a>';
+									//$add_button='<a  class="btn btn-xs btn-success" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"  data-modal_link="manager/add_element_drilldown_modal/'.$Tconfig[0].'/'.$ref_table.'/'.$key.'/'.$ref_id.'"  data-modal_title="'.$modal_title.'" ><i class="fa fa-plus"></i>Add</a>';
 								}
 									
 									
@@ -815,8 +825,8 @@ class Manager_lib
 					}else{
 						
 					
-					//	print_test($array);
-						if($array['val']=='0' AND empty($value_field['diplay_null'])){ //Avoid displaying zero in empty number fields
+						
+						if($array['val']=='0' AND empty($value['display_null'])){ //Avoid displaying zero in empty number fields
 							///print_test($array);
 							$array['val']="";
 							$array['val2'][0]="";
@@ -870,7 +880,8 @@ class Manager_lib
 		
 		
 		
-		$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'relis/manager/list_classification','icon'=>'list');
+		//$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'relis/manager/list_classification','icon'=>'list');
+		$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'op/entity_list/list_classification','icon'=>'list');
 		
 		
 		
@@ -886,7 +897,7 @@ class Manager_lib
 		$reftables=$this->CI->manage_mdl->get_reference_tables_list();
 		foreach ($reftables as $key => $value) {
 			
-			$menu['general']['menu']['reference']['sub_menu'][$value['reftab_label']]=array('label'=>$value['reftab_desc'],'url'=>'manager/entity_list/'.$value['reftab_label'],'icon'=>'');
+			$menu['general']['menu']['reference']['sub_menu'][$value['reftab_label']]=array('label'=>$value['reftab_desc'],'url'=>'op/entity_list/list_'.$value['reftab_label'],'icon'=>'');
 		}
 		
 		return $menu;
@@ -919,6 +930,9 @@ class Manager_lib
 			$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'op/entity_list/list_papers_screen_excluded', '');
 			$menu['general']['menu']['papers']['sub_menu']['screen_paper_conflict']=array( 'label'=>'Papers in conflict', 'url'=>'op/entity_list/list_papers_screen_conflict', '');
 		}
+		
+		
+		
 		
 		if(active_screening_phase()){
 			$phase_info=active_screening_phase_info();
@@ -997,7 +1011,18 @@ class Manager_lib
 		$menu['general']['menu']['home']=array('label'=>'Home','url'=>'home/screening_select','icon'=>'home');
 		$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
 	
-		
+	
+		//---------------------------------------------------------
+		$menu['general']['menu']['qa']=array('label'=>'-- Test QA','url'=>'','icon'=>'check');		
+		$menu['general']['menu']['qa']['sub_menu']['all_papers']=array( 'label'=>'Questions', 'url'=>'op/entity_list/list_qa_questions', '');
+		$menu['general']['menu']['qa']['sub_menu']['screen_paper_pending']=array( 'label'=>'Response', 'url'=>'op/entity_list/list_qa_responses', '');
+		$menu['general']['menu']['qa']['sub_menu']['qa_assignment_set']=array( 'label'=>'Assign for quality assessment', 'url'=>'relis/manager/qa_assignment_set', '');
+		$menu['general']['menu']['qa']['sub_menu']['list_qa_assignment']=array( 'label'=>'Assignment for quality assessment', 'url'=>'op/entity_list/list_qa_assignment', '');
+		$menu['general']['menu']['qa']['sub_menu']['list_qa_result']=array( 'label'=>'Quality assessment', 'url'=>'op/entity_list/list_qa_result', '');
+		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list']=array( 'label'=>'Conduct quality assessment', 'url'=>'relis/manager/qa_conduct_list', '');
+		//$menu['general']['menu']['qa']['sub_menu']['screen_paper_included']=array( 'label'=>'Validation', 'url'=>'op/entity_list/list_papers_screen_included', '');
+		//$menu['general']['menu']['qa']['sub_menu']['screen_paper_included']=array( 'label'=>'Result', 'url'=>'op/entity_list/list_papers_screen_included', '');
+		//---------------------------------------------------------
 		
 		if(get_appconfig_element('import_papers_on') AND can_manage_project()){
 			
@@ -1022,10 +1047,12 @@ class Manager_lib
 			if(get_appconfig_element('screening_on'))
 				$menu['settings']['menu']['configuration']['sub_menu']['screen']=array('label'=>'Screening configuration','url'=>'op/display_element/config_screening/1','icon'=>'');
 			
+			$menu['settings']['menu']['configuration']['sub_menu']['qa']=array('label'=>'QA configuration','url'=>'op/display_element/config_qa/1','icon'=>'');
+			
 			$menu['settings']['menu']['configuration']['sub_menu']['dsl']=array('label'=>'DSL configuration','url'=>'op/display_element/config_dsl/1','icon'=>'');
 				
 				
-			$menu['settings']['menu']['configuration']['sub_menu']['space']=array('label'=>'_______________','url'=>'','icon'=>'');
+			//$menu['settings']['menu']['configuration']['sub_menu']['space']=array('label'=>'_______________','url'=>'','icon'=>'');
 			if(get_appconfig_element('screening_on'))
 				$menu['settings']['menu']['configuration']['sub_menu']['screen_phases']=array('label'=>'Screening phases','url'=>'op/entity_list/list_screen_phases','icon'=>'');
 			
@@ -1044,7 +1071,7 @@ class Manager_lib
 					$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Papers included', 'url'=>'op/entity_list/list_included_papers', '');
 					$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Papers excluded', 'url'=>'op/entity_list/list_excluded_papers', '');
 			
-	
+		
 					
 				return $menu;
 	}
@@ -1067,7 +1094,7 @@ class Manager_lib
 		$menu['general']['menu']['usergroup']=array('label'=>'Usergroups','url'=>'op/entity_list/list_usergroups','icon'=>'users');
 		$menu['general']['menu']['logs']=array('label'=>'Logs','url'=>'op/entity_list/list_logs','icon'=>'sliders');
 		
-		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'manager/entity_list/str_mng','icon'=>'text-width');
+		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
 		$menu['general']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
 		}
 		

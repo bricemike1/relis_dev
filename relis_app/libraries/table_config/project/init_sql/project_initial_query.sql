@@ -59,7 +59,10 @@ CREATE TABLE IF NOT EXISTS `config` (
   `screening_reviewer_number` int(3) NOT NULL DEFAULT '2',
   `screening_status_to_validate` enum('Excluded','Included') NOT NULL DEFAULT 'Excluded',
   `screening_validator_assignment_type` enum('Normal','Veto','Info') NOT NULL DEFAULT 'Normal',
-  `config_active` int(1) NOT NULL DEFAULT '1',
+  `qa_on` int(2) NOT NULL DEFAULT '1',
+  `qa_open` int(2) NOT NULL DEFAULT '0',
+  `qa_cutt_off_score` double NOT NULL DEFAULT '1.5',
+  `config_active` int(2)  NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 

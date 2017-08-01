@@ -39,6 +39,9 @@ class Home extends CI_Controller {
 		/*
 		 * Recuperation du nombre de papiers par catégorie
 		 */
+			
+		//	$table_configuration=get_table_configuration('classification');
+		//	print_test($table_configuration);
 		$data['all_papers']=$this->DBConnection_mdl->count_papers('all');		
 		$data['processed_papers']=$this->DBConnection_mdl->count_papers('processed');
 		$data['pending_papers']=$this->DBConnection_mdl->count_papers('pending');
@@ -58,7 +61,7 @@ class Home extends CI_Controller {
 		
 			);
 			$data['classification_completion']['done_papers']=array('value'=>$data['processed_papers'],
-					'title'=>'Screened',
+					'title'=>'Processed',
 					'url'=>'relis/manager/list_paper/processed'
 			);
 			
@@ -357,7 +360,7 @@ class Home extends CI_Controller {
 						
 						'Title'=>"Screening : ".$phase['phase_title'],
 						'State'=>$phase['phase_state'],
-						'Final phase'=>$yes_no[$phase['screen_phase_final']],
+					//	'Final phase'=>$yes_no[$phase['screen_phase_final']],
 						'User_completion'=>$user_perc,
 						'Gen_completion'=>$gen_perc,
 						'action'=>$open_but.$close_but.$select_but,
@@ -367,6 +370,37 @@ class Home extends CI_Controller {
 				$i++;
 			}
 		}
+		
+		//quality assessment
+		
+		if(get_appconfig_element('qa_on')){
+			$select_but="";
+			$open_but="";
+			$close_but="";
+			if(get_appconfig_element('qa_open')){
+				$select_but=get_top_button ( 'all', 'Go to QA', 'manager/set_perspective/qa','Go to','fa-send','',' btn-info ' ,False);
+				$close_but=get_top_button ( 'all', 'Lock the phase', 'manager/activate_classification/0','Close','fa-lock','',' btn-danger ' ,False);
+				$qa_state="Open";
+			}else{
+				$open_but=get_top_button ( 'all', 'Unlock the phase', 'manager/activate_classification','Open','fa-unlock','',' btn-success ' ,False);
+				$qa_state="Closed";
+			}
+			
+			$qa=array(
+					'num'=>$i,
+					'Title'=>'Quality assessment',
+					'State'=>$qa_state,
+					//'Final phase'=>'',
+					'User_completion'=>'',
+					'Gen_completion'=>'',
+					'action'=>$open_but.$close_but.$select_but,
+			);
+			array_push($phases_list, $qa);
+			
+			$i++;
+		}
+		
+		
 		//classification completion
 			
 		$all_papers=$this->DBConnection_mdl->count_papers('all');
@@ -400,7 +434,7 @@ class Home extends CI_Controller {
 				'num'=>$i,
 				'Title'=>'Classification',
 				'State'=>$class_state,
-				'Final phase'=>'',
+				//'Final phase'=>'',
 				'User_completion'=>'',
 				'Gen_completion'=>$class_perc,
 				'action'=>$open_but.$close_but.$select_but,
@@ -409,8 +443,12 @@ class Home extends CI_Controller {
 		
 		
 		
+		
+		
+		
 		if(!empty($phases_list)){
-			array_unshift($phases_list, array('#','Title','State','Screening final phase','My completion','General completion'));
+		//	array_unshift($phases_list, array('#','Title','State','Screening final phase','My completion','General completion'));
+			array_unshift($phases_list, array('#','Title','State','My completion','General completion'));
 		}
 		
 	//	print_test($phases_list);
@@ -575,34 +613,90 @@ class Home extends CI_Controller {
 	public function test_values(){
 		
 		
-			
 		$i=1;
 		
-		for($i=1;$i<=987;$i++){
+		for($i=1;$i<=1;$i++){
 		/*
 		 * Préparation des valeurs qui sont générés de façon aléatoire
 		 */	
 		$fields=array(
 			'class_paper_id'=>$i,	
-			'class_name'=>"Classification $i",	
-			'class_language'=>rand(1 , 6),	
-			'class_sourceLang'=>rand(2,5 ),	
-			'class_targetLang'=>rand(3 , 6),	
-			'class_domain'=>rand(1 , 13),	
-			'class_isHOT'=>rand(0 ,1 ),	
-			'class_isBiderectional'=>rand(0 ,1),	
-			'class_implementationAvailable'=>rand(0 ,1),	
-			'class_isIndustrial'=>rand(0 ,1)	
+			'transformation_name'=>"Test transformation $i",	
+			'domain'=>rand(1 , 5),	
+			'source_language'=>rand(1,3 ),	
+			'target_language'=>rand(3 , 4),	
+			'scope'=>rand(1 , 3),	
+			'industrial'=>rand(0 ,1 ),	
+			'bidirectional'=>rand(0 ,1),	
+			'year'=>rand(2011 ,2016),	
+			'number_citation'=>rand(2 ,2016),	
+			'user_id'=>1	
 				
 		);
 		
-		print_test($fields);
+		//print_test($fields);
 		
 		/*
 		 * Insertion des données
 		 */
-		$headersaved = $this->db->insert ( 'classification', $fields );
-	
+		//$headersaved = $this->db_current->insert ( 'classification', $fields );
+		//print_test($headersaved);
+		}
+		
+		$i=1;
+		
+		for($i=1;$i<=1;$i++){
+			/*
+			 * Préparation des valeurs qui sont générés de façon aléatoire
+			 */
+			
+			$intent_numbers=rand(1,3);
+			$j=1;
+			for($j=1;$j<=$intent_numbers;$j++){
+			$fields=array(
+					'parent_field_id'=>$i,
+					'name_used'=>"Intent $i $j",
+					'intent'=>rand(1 , 4),
+					'line_code'=>rand(2000,50000 ),
+					'op_result'=>rand(1 , 3),				
+		
+			);
+		
+			//print_test($fields);
+		
+			/*
+			 * Insertion des données
+			 */
+			//$headersaved = $this->db_current->insert ( 'intent', $fields );
+			//print_test($headersaved);
+			}
+		}
+		
+		$i=1;
+		
+		for($i=41;$i<=50;$i++){
+			/*
+			 * Préparation des valeurs qui sont générés de façon aléatoire
+			 */
+				
+			$intent_numbers=rand(1,4);
+			$j=1;
+			for($j=1;$j<=$intent_numbers;$j++){
+				$fields=array(
+						'parent_field_id'=>$i,
+						//'trans_language'=>rand(1 , 4)
+						'trans_language'=>$j
+		
+				);
+		
+				print_test($fields);
+		
+				/*
+				 * Insertion des données
+				 */
+				//$headersaved = $this->db_current->insert ( 'trans_language', $fields );
+				//print_test($headersaved);
+			}
 		}
 	
 	}

@@ -71,15 +71,15 @@
 							
 						//	$value['field_value']='Wait for It ;)';
 							if($var_check=='on_add'){
-								echo form_bm_just_test($value['field_title'],'<i>'.lng('This value will  be available after first saving').'</i>');
+								echo form_bm_just_test($value['field_title'],'<i>'.lng('This field will  be enabled on update').'</i>');
 							}else{
 								
 								if(!empty($drill_down_values[$key])){
 									
-									$text= "<table  class=' table-hover' style='width:100%; border-top:1px solid gray'>";
+									$text= "<table  class=' table-hover' style='width:100% ; border:1px solid #CCCCCC;  '>";
 									foreach ($drill_down_values[$key] as $key_drill => $values_drill) {
 										
-										$text.="<tr><td>".$values_drill."</td></tr>";
+										$text.="<tr><td style=' padding:3px 3px; ' >".$values_drill."</td></tr>";
 									}
 									$text.= "</table>";
 									

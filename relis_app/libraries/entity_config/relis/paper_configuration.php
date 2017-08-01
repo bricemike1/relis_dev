@@ -478,7 +478,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'generate_stored_procedure'=>True,
 		  
 			'fields'=>array(
-					'id'=>array(),
+				//	'id'=>array(),
 					'bibtexKey'=>array(),
 					'title'=>array(
 						'link'=>array(

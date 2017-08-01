@@ -79,6 +79,14 @@ function check_operation($operation,$type="List") {
 	
 	include_once('operations/op_operations.php');
 	$operations=array_merge($operations,get_operations_operations());
+	
+	include_once('operations/op_qa.php');
+	$operations=array_merge($operations,get_operations_qa());
+	
+	if(project_db() != 'default')
+	{	include_once('operations/op_generated.php');
+		$operations=array_merge($operations,get_operations_generated());
+	}
 	if(isset($operations[$operation]) AND $operations[$operation]['type']==$type ){
 			return $operations[$operation];
 	}else{

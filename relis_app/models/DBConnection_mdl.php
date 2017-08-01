@@ -684,6 +684,7 @@ class DBConnection_mdl extends CI_Model
 			
 			//exit;
 			$table_config=get_table_configuration($config);
+			//print_test($table_config);
 			$current_operation=$content['current_operation'];
 			$param="";
 			$i=0;

@@ -284,8 +284,7 @@ $config['base_url'] = "http://localhost/relis/relis_dev";
 
 $config['sess_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/sessions";
 $config['editor_generated_path'] = "D:\www\dslforge\workspace";
-$config['editor_generated_path'] = "C:/relis_workspace";
-$config['editor_generated_path'] = "D:\www\dslforge\workbench";
+$config['editor_generated_path'] = "C:/dslforge_workspace";
 $config['editor_url'] = "http://127.0.0.1:8080/relis/texteditor";
 
 $config['metrics_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/metrics";

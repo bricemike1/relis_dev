@@ -724,15 +724,15 @@ $result[ 'reference_tables' ] =$reference_tables;
 
 
 
- 		///	SCREEEEEEEEENNNNNNNEEEEN--------
+ 		
 
 $screening=array();
 
-$screening['review_per_paper']='7';
+$screening['review_per_paper']='2';
 
-$screening['conflict_type']='ExclusionCriteria';
+$screening['conflict_type']='IncludeExclude';
 
-$screening['conflict_resolution']='Unanimity';
+$screening['conflict_resolution']='Majority';
 
 $screening['validation_assigment_mode']='Normal';
 

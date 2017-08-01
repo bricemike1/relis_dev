@@ -45,6 +45,16 @@ function get_operations_configuration() {
 			'tab_ref'=>'config',
 			'operation_id'=>'config_screening'
 	);
+	$operations['edit_config_qa']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'config',
+			'operation_id'=>'edit_config_qa'
+	);
+	$operations['config_qa']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'config',
+			'operation_id'=>'config_qa'
+	);
 	return $operations;
 	
 	

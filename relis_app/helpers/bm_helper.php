@@ -91,6 +91,14 @@ function get_top_button($type='add',$title='',$link='',$label=" ",$icon=' fa-plu
 		return $button;
 }
 
+function create_button($label,$link,$title='',$bt_class=' btn-info ',$icon='',$icon2=''){
+if(empty($link))
+	return '<button class="btn '.$bt_class.'">  <i class=" fa '.$icon.'"></i> <i class=" fa '.$icon2.' "></i>'.$label.'</button></li>';
+else
+	return anchor($link,'<button class="btn '.$bt_class.'">  <i class=" fa '.$icon.'"></i> <i class=" fa '.$icon2.' "></i>'.$label.'</button></li>','title="'.$title.'"');
+	
+}
+
 function set_previous_page(){
 	$ci = get_instance();
 	$prev=str_replace("/relis/ci_relis/", "", $_SERVER['REQUEST_URI']);
@@ -1500,7 +1508,7 @@ function user_project($project_id , $user=0,$user_role=""){
 					return NULL;
 				}
 			}
-		}
+	}
 	
 	
 	

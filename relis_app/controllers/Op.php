@@ -94,9 +94,9 @@ class Op extends CI_Controller {
 							//print_test($v);
 							$dropoboxes[$k_field]=$field_det['input_select_values'];
 						}elseif($field_det['input_select_source']=='table'){
-						//print_test($v);
+					
 							$dropoboxes[$k_field]= $this->manager_lib->get_reference_select_values($field_det['input_select_values']);
-							
+						//	print_test($v);
 						}elseif($field_det['input_select_source']=='yes_no'){
 							$dropoboxes[$k_field]=array('0'=>"No",
 												'1'=>"Yes"
@@ -106,10 +106,7 @@ class Op extends CI_Controller {
 			}
 		}
 		
-		//print_test($dropoboxes);
 		
-		//exit;
-	
 		/*
 		 * Vérification des liens (links) a afficher sur la liste
 		 */
@@ -242,7 +239,7 @@ class Op extends CI_Controller {
 				if(isset($value[$v_field])){
 					if(isset($dropoboxes[$v_field][$value[$v_field]]) ){
 						$element_array[$v_field]=$dropoboxes[$v_field][$value[$v_field]];
-					}elseif(empty($value[$v_field])){
+					}elseif(empty($value[$v_field]) AND empty($ref_table_config['fields'][$v_field]['display_null'])){
 						$element_array[$v_field]="";
 					}else{
 						$element_array[$v_field]=$value[$v_field];
@@ -255,7 +252,8 @@ class Op extends CI_Controller {
 					
 					$element_array[$v_field]="";
 					
-					if(isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1){
+					if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR 
+							(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
 					
 						if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
 						{
@@ -286,6 +284,8 @@ class Op extends CI_Controller {
 				
 			}
 			
+			
+			//print_test($element_array);
 			/*
 			 * Ajout des liens(links) sur la liste
 			 */
@@ -409,7 +409,7 @@ class Op extends CI_Controller {
 		 */
 	
 		if(!$dynamic_table){
-			$data ['nav_pre_link'] = 'manager/entity_list/' .$ref_table.'/' . $val . '/';
+			$data ['nav_pre_link'] = 'op/entity_list/' .$operation_name.'/' . $val . '/';
 			$data ['nav_page_position'] = 5;
 			
 			$data['page']='general/list';
@@ -485,7 +485,8 @@ class Op extends CI_Controller {
 			/*
 			 * Appel de la fonction  récupérer la ligne à afficher
 			 */
-			$item_data = $this->manager_lib->get_detail($table_config,$ref_id);
+		//	print_test($table_config);
+			$item_data = $this->manager_lib->get_detail($table_config,$ref_id,False,False);
 			
 			$data['item_data']=$item_data;
 	
@@ -521,6 +522,7 @@ class Op extends CI_Controller {
 			/*
 			 * La vue qui va s'afficher
 			 */	
+		//	print_test($data);
 				$data ['page'] = 'general/display_element';
 				if(!empty($table_config['operations'][$ref_table_operation]['page_template'] )){
 						
@@ -715,7 +717,9 @@ class Op extends CI_Controller {
 	
 	//public function add_element_child($operation_name,$child_field,$ref_table_parent,$parent_id, $data = "",$operation="new",$display_type="normal") {
 	public function add_element_child($operation_name,$parent_id, $data = "",$operation="new",$display_type="normal") {
-		
+		if((! is_array ($data )) AND $data=='_')
+			$data=array();
+			
 		$op=check_operation($operation_name,'AddChild');
 		$ref_table_child=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
@@ -752,15 +756,21 @@ class Op extends CI_Controller {
 				$v=$table_config_child['fields'][$k];
 				if(!empty($v['input_type']) AND $v['input_type']=='select'){
 					if($v['input_select_source']=='table'){
-		
+						$filter=array();
+						if(!empty($v['category_type']) AND $v['category_type']='DependentDynamicCategory' AND !empty($v['filter_field'])){
+							$filter=array(
+									'filter_field'=>$v['filter_field'],
+									'filter_value'=>$parent_id,
+							);
+						}
 		
 						if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
 						{
-							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True,$filter);
 								
 								
 						}else{
-							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False,FALSE,$filter);
 								
 						}
 					}
@@ -786,6 +796,7 @@ class Op extends CI_Controller {
 		/*
 		 * Prépartions des valeurs qui vont apparaitres dans le formulaire
 		 */
+		//print_test($data);
 		$data['content_item'][$child_field]=$parent_id;
 		$data['table_config']=$table_config_child;
 		$data['operation_type']=$operation;
@@ -850,7 +861,7 @@ class Op extends CI_Controller {
 		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 		 */
 		if($display_type=='modal'){
-			$this->load->view ( 'general/frm_reference_modal', $data );
+			$this->load->view ( 'general/frm_entity_modal', $data );
 		}else{
 			$this->load->view ( 'body', $data );
 		}
@@ -980,10 +991,20 @@ class Op extends CI_Controller {
 	 */
 	
 	public function add_element_drilldown($operation_name,$parent_id, $data = "",$operation="new",$display_type="normal",$op_type="AddDrill") {
+		$init_op_type=$op_type;
+		if($op_type=='EditChild_validation'){
+			
+			$op_type='EditChild';
+			
+			
+		}
+		
 		
 		$op=check_operation($operation_name,$op_type);
 		$ref_table_child=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
+		
+		
 		
 		if(admin_config($ref_table_child))
 			$data['left_menu_admin']=True;
@@ -1001,6 +1022,19 @@ class Op extends CI_Controller {
 		 */
 		$table_config_child=get_table_configuration($ref_table_child);
 		$table_config_child['config_id']=$ref_table_child;
+		
+		if($init_op_type=='EditChild_validation'){
+			$content_item = $this->DBConnection_mdl->get_row_details( $table_config_child['operations'][$ref_table_operation]['data_source'],$parent_id ,true);
+		//	print_test($data);
+		//	print_test($content_item);
+			foreach ($content_item as $key => $value) {
+				if(!isset($data['content_item'][$key]))
+					$data['content_item'][$key]=$value;
+			}
+			
+	//		print_test($data);
+		//	exit;
+		}
 	
 		$table_config_child['current_operation']=$ref_table_operation;
 		//print_test($table_config_child['operations'][$ref_table_operation]); exit;
@@ -1042,15 +1076,22 @@ class Op extends CI_Controller {
 				$v=$table_config_child['fields'][$k];
 				if(!empty($v['input_type']) AND $v['input_type']=='select'){
 					if($v['input_select_source']=='table'){
+						$filter=array();
+						if(!empty($v['category_type']) AND $v['category_type']='DependentDynamicCategory' AND !empty($v['filter_field'])){
+							$filter=array(
+									'filter_field'=>$v['filter_field'],
+									'filter_value'=>$parent_id,
+							);
+						}
 		
 		
 						if(isset($table_config_child['fields'][$k]['multi-select']) AND $table_config_child['fields'][$k]['multi-select']=='Yes' )
 						{
-							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True);
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],False,False,True,$filter);
 		
 		
 						}else{
-							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False);
+							$table_config_child['fields'][$k]['input_select_values']= $this->manager_lib->get_reference_select_values($v['input_select_values'],True,False,False,$filter);
 		
 						}
 					}
@@ -1110,7 +1151,7 @@ class Op extends CI_Controller {
 				 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 				 */
 				if($display_type=='modal'){
-					$this->load->view ( 'general/frm_reference_modal', $data );
+					$this->load->view ( 'general/frm_entity_modal', $data );
 				}else{
 					$this->load->view ( 'body', $data );
 				}
@@ -1147,9 +1188,25 @@ class Op extends CI_Controller {
 		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true,$ref_table);
 	//	print_test($data);
 		
-		/*
-		 * Récuperation des valeurs pour les champs multi-select
-		 */
+		
+		//$table_config['current_operation']=$ref_table_operation;
+		
+		if(!empty($table_config['operations'][$ref_table_operation]['support_drilldown'])){
+		$table_config['current_operation']=$table_config['operations'][$ref_table_operation]['drilldown_source'];
+		
+		$item_data = $this->manager_lib->get_detail($table_config,$ref_id,True,True);
+		//print_test($item_data);
+		
+		foreach ($item_data as $key => $value) {
+			if(!empty($table_config['operations'][$ref_table_operation]['fields'][$value['field_id']])  AND 
+					$table_config['operations'][$ref_table_operation]['fields'][$value['field_id']]['field_state'] =='drill_down'){
+				$data['drill_down_values'][$value['field_id']]=$value['val2'];
+			}
+		}
+		}
+		
+		//print_test($data);
+		
 		foreach ($table_config['operations'][$ref_table_operation]['fields'] as $key => $v_field) {
 			$v=$table_config['fields'][$key];
 			if(!empty($v['input_type']) AND $v['input_type']=='select' AND $v['input_select_source']=='table'){
@@ -1204,6 +1261,7 @@ class Op extends CI_Controller {
 //	public function edit_drilldown($ref_table,$ref_table_parent,$parent_field,$parent_id,$ref_id,$display_type="normal") {
 	public function edit_drilldown($operation_name,$ref_id,$parent_id,$display_type="normal") {
 		
+		
 		$op=check_operation($operation_name,'EditChild');
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
@@ -1224,6 +1282,20 @@ class Op extends CI_Controller {
 	//	$data ['content_item'] = $this->DBConnection_mdl->get_row_details($ref_table,$ref_id);
 		$data ['content_item'] =$this->DBConnection_mdl->get_row_details( $table_config['operations'][$ref_table_operation]['data_source'],$ref_id ,true);
 		
+
+		if(!empty($table_config['operations'][$ref_table_operation]['support_drilldown'])){
+			$table_config['current_operation']=$table_config['operations'][$ref_table_operation]['drilldown_source'];
+		
+			$item_data = $this->manager_lib->get_detail($table_config,$ref_id,True,True);
+			//print_test($item_data);
+		
+			foreach ($item_data as $key => $value) {
+				if(!empty($table_config['operations'][$ref_table_operation]['fields'][$value['field_id']])  AND
+						$table_config['operations'][$ref_table_operation]['fields'][$value['field_id']]['field_state'] =='drill_down'){
+							$data['drill_down_values'][$value['field_id']]=$value['val2'];
+				}
+			}
+		}
 	
 		/*
 		 * Récuperation des valeurs pour les champs multi-select
@@ -1383,7 +1455,7 @@ class Op extends CI_Controller {
 		$post_arr = $this->input->post ();
 		
 		
-		//print_test($post_arr); exit;
+		//print_test($post_arr);
 		/*
 		 * Récupération de la configuration (structure ) de la table qui est concerné
 		 */
@@ -1589,10 +1661,10 @@ class Op extends CI_Controller {
 					$this->add_element ($current_operation,$data,$post_arr['operation_type'],$submit_mode ,'Edit');
 				}elseif($table_config['operations'][$current_operation]['operation_type']=='AddChild'){
 
-					$this->add_element_child ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
+					$this->add_element_child ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'],$submit_mode );
 					
 				}elseif($table_config['operations'][$current_operation]['operation_type']=='EditChild'){
-					$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild');
+					$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild_validation');
 				}
 				
 				/*
@@ -1770,7 +1842,7 @@ class Op extends CI_Controller {
 						$this->add_element_child ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
 							
 					}elseif($table_config['operations'][$current_operation]['operation_type']=='EditChild'){
-						$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild');
+						$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild_validation');
 					}
 				
 					
@@ -1856,7 +1928,7 @@ class Op extends CI_Controller {
 					$post_arr['table_name']=$table_config['table_name'];
 					$post_arr['table_id']=$table_config['table_id'];
 						
-					//print_test($post_arr); exit;
+				//	print_test($post_arr); //exit;
 						
 					/*
 					 * Appel de la fonction dna le modèle pour suvegarder les données dans la BD

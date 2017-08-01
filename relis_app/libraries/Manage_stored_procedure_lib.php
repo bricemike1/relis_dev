@@ -1057,6 +1057,16 @@ END";
 								$field_default="   NOT NULL DEFAULT '".$value['default_value']."' ";
 							}
 		
+						}elseif($value['field_type']=='real'){
+							$field_type=" double ";
+							
+							$field_default=(empty($value['mandatory']))?"   DEFAULT NULL ":"   NOT NULL ";
+							
+							if(!empty($value['default_value'])){
+		
+								$field_default="   NOT NULL DEFAULT '".$value['default_value']."' ";
+							}
+		
 						}elseif($value['field_type']=='image' ){
 							$field_default=(empty($value['mandatory']))?"   DEFAULT NULL ":"   NOT NULL ";
 							$field_type=" LONGBLOB ";
@@ -1102,7 +1112,7 @@ END";
 			$res_sql = $this->CI->manage_mdl->run_query($sql,False,$target_db);
 	//		echo $del_line."<br/><br/>";
 			
-	//		echo $sql;
+		//	echo $sql;
 			
 		//	print_test($res_sql);
 			return "$del_line $sql";

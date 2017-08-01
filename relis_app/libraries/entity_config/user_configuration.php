@@ -199,8 +199,8 @@ function get_config_user() {
 					'user_usergroup'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'user_password'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'user_picture'=>array('mandatory'=>'','field_state'=>'enabled'),
-					'created_by'=>array('mandatory'=>'','field_state'=>'hidden')
-									
+					'created_by'=>array('mandatory'=>'','field_state'=>'hidden'),
+					'user_projects'=>array('mandatory'=>'','field_state'=>'drill_down')				
 					),
 				
 				'top_links'=>array(
@@ -227,6 +227,9 @@ function get_config_user() {
 				'redirect_after_save'=>'op/entity_list/list_all_users',
 				'data_source'=>'get_user_detail',
 				'db_save_model'=>'update_users',
+				
+				'support_drilldown'=>TRUE,
+				'drilldown_source'=>'detail_user',
 		
 				'generate_stored_procedure'=>True,
 					
@@ -237,7 +240,8 @@ function get_config_user() {
 						'user_mail'=>array('mandatory'=>'','field_state'=>'enabled','pattern'=>'valid_email'),
 						'user_usergroup'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						'user_password'=>array('mandatory'=>'','field_state'=>'enabled'),
-						'user_picture'=>array('mandatory'=>'','field_state'=>'enabled')
+						'user_picture'=>array('mandatory'=>'','field_state'=>'enabled'),
+						'user_projects'=>array('mandatory'=>'','field_state'=>'drill_down')
 							
 				),
 		

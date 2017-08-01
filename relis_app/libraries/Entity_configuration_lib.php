@@ -97,9 +97,22 @@ public function get_table_configuration($_table,$target_db='current')
 				require_once("entity_config/relis/operations_configuration.php");
 				$table_configurations['operations']=get_operation();
 				break;
-			
-				
-				
+			case 'qa_questions':
+				require_once("entity_config/relis/qa_questions_configuration.php");
+				$table_configurations['qa_questions']=get_qa_questions();
+				break;
+			case 'qa_responses':
+				require_once("entity_config/relis/qa_responses_configuration.php");
+				$table_configurations['qa_responses']=get_qa_responses();
+				break;
+			case 'qa_result':
+				require_once("entity_config/relis/qa_result_configuration.php");
+				$table_configurations['qa_result']=get_qa_result();
+				break;	
+				case 'qa_assignment':
+					require_once("entity_config/relis/qa_assignment_configuration.php");
+					$table_configurations['qa_assignment']=get_qa_assignment();
+					break;
 				// relis project
 			
 						
@@ -159,8 +172,15 @@ public function get_table_configuration($_table,$target_db='current')
 			
 			foreach ($reftables as $key => $value) {
 				if($_table==$value['reftab_label']){
-						require_once("entity_config/refferences_config.php");
-						$table_configurations[$value['reftab_label']]=get_refference($value['reftab_table'],$value['reftab_desc']);
+					
+					//require_once("entity_config/references_configuration.php");
+					//$table_configurations['search_strategy']=get_reference('ref_search_strategy','Search strategy','search_strategy');
+					//break;
+					
+					//	require_once("entity_config/refferences_config.php");
+						//$table_configurations[$value['reftab_label']]=get_refference($value['reftab_table'],$value['reftab_desc']);
+						require_once("entity_config/references_configuration.php");
+						$table_configurations[$value['reftab_label']]=get_reference($value['reftab_table'],$value['reftab_desc'],$value['reftab_label']);
 					$continue=FALSE;
 				}
 				}
@@ -201,11 +221,12 @@ public function get_table_configuration($_table,$target_db='current')
 			$config=array();
 		}
 		
-	//	print_test($config); 
+		
 		if(empty($config['fields']))
 		{
 			set_top_msg('Error : Page "'.$_table.'" not found!','error');
-			redirect('home');
+		//	print_test($table_configurations); exit;
+ 		redirect('home');
 		
 		}else{
 			return $config;
@@ -273,25 +294,332 @@ public function get_table_configuration($_table,$target_db='current')
 		}
 		$install_config['reference_tables']=$reference_tab;
 		
-		if(!empty($install_config['reference_tables'])){
+		//if(!empty($install_config['reference_tables'])){
 			foreach ($install_config['config'] as $key_config => $config_values) {
+				$install_config['config'][$key_config]['config_id']=$install_config['config'][$key_config]['table_name'];
+				
+				$operation_fields=array();
+				
+				
 				foreach ($config_values['fields'] as $key_field => $value_field) {
+					
+					if(! empty($value_field['on_add']) AND ($value_field['on_add'] !='not_set')){
+						$operation_fields['add'][$key_field]=array(
+								'mandatory'=>!empty($value_field['mandatory'])?$value_field['mandatory']:'',
+								'field_state'=>$value_field['on_add'],
+						);
+					}
+					if(! empty($value_field['on_edit']) AND ($value_field['on_edit'] !='not_set')){
+						$operation_fields['edit'][$key_field]=array(
+								'mandatory'=>!empty($value_field['mandatory'])?$value_field['mandatory']:'',
+								'field_state'=>$value_field['on_edit'],
+						);
+					}
+						
+					if(! empty($value_field['on_list']) AND ($value_field['on_list'] =='show')){
+						$operation_fields['list'][$key_field]=array();
+					}
+					if(empty($value_field['on_view']) or (! empty($value_field['on_view']) AND ($value_field['on_view'] =='show'))){
+						
+						$field=array();
+						//verification si on doit ajouter des link pour ajout drilldown
+						if(!empty($value_field['input_select_source_type']) AND $value_field['input_select_source_type']=='drill_down'){
+							
+							$field=array(
+									'drilldown_add_link'=>'op/add_element_child/add_'.$value_field['input_select_values'].'/',
+									'drilldown_edit_link'=>'op/edit_drilldown/edit_'.$value_field['input_select_values'].'/',
+									'drilldown_remove_link'=>'op/delete_element/remove_'.$value_field['input_select_values'].'/',
+									'drilldown_display_link'=>'op/display_element/detail_'.$value_field['input_select_values'].'/',
+									
+							);
+						}
+						$operation_fields['detail'][$key_field]=$field;
+					}
+					
 					if(isset($value_field['category_type']) AND $value_field['category_type']=='IndependantDynamicCategory'){
 						//Get reference table
 						$ref_table='ref_'.Slug($value_field['input_select_values']).';ref_value';
 						$install_config['config'][$key_config]['fields'][$key_field]['input_select_values']=$ref_table;
 							
-					}elseif(isset($value_field['category_type'])  AND ( $value_field['category_type'] =='WithMultiValues' OR $value_field['category_type'] =='WithSubCategories' OR $value_field['category_type'] =='ParentExternalKey' )){
+					}elseif(isset($value_field['category_type'])  AND ( $value_field['category_type'] =='WithMultiValues' OR $value_field['category_type'] =='WithSubCategories' OR $value_field['category_type'] =='ParentExternalKey' OR $value_field['category_type'] =='DependentDynamicCategory' )){
 							
 						$input_select_values=trim($value_field['input_select_values']);
-							
-						$main_field=$install_config['config'][$input_select_values]['main_field'];
-						$install_config['config'][$key_config]['fields'][$key_field]['input_select_values']=$input_select_values.";".$main_field;
+							if(!empty($install_config['config'][$input_select_values]['main_field'])){	
+							$main_field=$install_config['config'][$input_select_values]['main_field'];
+							$install_config['config'][$key_config]['fields'][$key_field]['input_select_values']=$input_select_values.";".$main_field;
+						}
 					}
+					
+					
+					
 				}
+				
+				//add operations to differents configs
+				$install_config['config'][$key_config]['operations']=$this->add_operations_to_config($install_config['config'][$key_config],$operation_fields);
+				
 			}
-		}
+	//	}
+		
+			if(!empty($install_config['config']['classification']['operations']['add_classification'])){
+				
+				$install_config['config']['classification']['operations']['new_classification']=$install_config['config']['classification']['operations']['add_classification'];
+				$install_config['config']['classification']['operations']['new_classification']['operation_type']='AddChild';
+				$install_config['config']['classification']['operations']['new_classification']['parent_config']='papers';
+				$install_config['config']['classification']['operations']['new_classification']['master_field']='class_paper_id';
+				$install_config['config']['classification']['operations']['new_classification']['parent_detail_source']='get_detail_papers';
+				$install_config['config']['classification']['operations']['new_classification']['parent_detail_source_field']='title';
+				$install_config['config']['classification']['operations']['new_classification']['fields']['class_paper_id']['field_state']='hidden';
+				$install_config['config']['classification']['operations']['new_classification']['generate_stored_procedure']=FALSE;
+				$install_config['config']['classification']['operations']['new_classification']['redirect_after_save']='relis/manager/display_paper/~current_element~';
+				$install_config['config']['classification']['operations']['new_classification']['page_title']='Add a classification to the paper : ~current_parent_name~';
+			
+				
+				$install_config['config']['classification']['operations']['update_classification']=$install_config['config']['classification']['operations']['new_classification'];
+				$install_config['config']['classification']['operations']['update_classification']['operation_type']='EditChild';
+				$install_config['config']['classification']['operations']['update_classification']['fields']['class_paper_id']['field_state']='disabled';
+				$install_config['config']['classification']['operations']['update_classification']['page_title']="Edit classification";
+				$install_config['config']['classification']['operations']['update_classification']['db_save_model']="update_classification";
+				$install_config['config']['classification']['operations']['update_classification']['generate_stored_procedure']=True;
+				$install_config['config']['classification']['operations']['update_classification']['data_source']='get_detail_classification';
+				$install_config['config']['classification']['operations']['update_classification']['support_drilldown']=True;
+				$install_config['config']['classification']['operations']['update_classification']['drilldown_source']='detail_classification';
+				
+				
+			}
+			
+	 	
 		return $install_config;
+	}
+	
+	private function add_operations_to_config($config,$fields){
+		$operations=array();
+		 if($config!='classification'){
+		 if(!empty($fields['add'])){
+		 	$operations['add_'.$config['config_id']]=array(
+		 		'operation_type'=>'AddChild',
+		 		'operation_title'=>'Add a new '.$config['entity_label'],
+		 		'operation_description'=>'Add a new '.$config['entity_label'],
+		 		'page_title'=>'Add a new '.$config['entity_label'] .' to : ~current_parent_name~',
+		 		'page_title'=>'Add a new '.$config['entity_label'] ,
+		 		'save_function'=>'op/save_element',
+		 		'page_template'=>'general/frm_entity',
+
+		 		'parent_config'=>'classification',
+		 		'master_field'=>'parent_field_id',
+		 		'parent_detail_source'=>'get_detail_classification',
+		 		'parent_detail_source_field'=>'class_paper_id',
+		 		'redirect_after_save'=>'op/display_element/detail_classification/~current_element~',
+		 		'db_save_model'=>'add_'.$config['config_id'],
+		 
+		 		'generate_stored_procedure'=>True,
+		 			
+		 		'fields'=>$fields['add'],
+		 
+		 		'top_links'=>array(
+		 					
+		 				'back'=>array(
+		 						'label'=>'',
+		 						'title'=>'Close',
+		 						'icon'=>'close',
+		 						'url'=>'home',
+		 				)
+		 
+		 		),
+		 			
+		 );
+		 
+
+		 }
+		 
+		 if(!empty($fields['edit'])){
+		 	$operations['edit_'.$config['config_id']]=array(
+		 			'operation_type'=>'EditChild',
+		 			'operation_title'=>'Edit a  '.$config['entity_label'],
+		 			'operation_description'=>'Edit a '.$config['entity_label'],
+		 			'page_title'=>'Edit a  '.$config['entity_label'],
+		 			'save_function'=>'op/save_element',
+		 			'data_source'=>'get_detail_'.$config['config_id'],
+		 			'page_template'=>'general/frm_entity',
+		 			
+		 			'parent_config'=>'classification',
+		 			'master_field'=>'parent_field_id',
+		 			'parent_detail_source'=>'get_detail_classification',
+		 			'parent_detail_source_field'=>'class_paper_id',
+		 			
+		 			'redirect_after_save'=>'op/display_element/detail_classification/~current_element~',
+		 			'db_save_model'=>'update_'.$config['config_id'],
+		 		 	
+		 			'generate_stored_procedure'=>True,
+		 				
+		 			'fields'=>$fields['edit'],
+		 
+		 
+		 
+		 			'top_links'=>array(
+		 						
+		 					'back'=>array(
+		 							'label'=>'',
+		 							'title'=>'Close',
+		 							'icon'=>'close',
+		 							'url'=>'home',
+		 					)
+		 						
+		 			),
+		 				
+		 	);
+		 	 
+		 		
+		 }
+		 
+		 }else{
+		 if(!empty($fields['add'])){
+		 	$operations['add_'.$config['config_id']]=array(
+		 			'operation_type'=>'Add',
+		 			'operation_title'=>'Add a new '.$config['entity_label'],
+		 			'operation_description'=>'Add a new '.$config['entity_label'],
+		 			'page_title'=>'Add a new '.$config['entity_label'],
+		 			'save_function'=>'op/save_element',
+		 			'page_template'=>'general/frm_entity',
+		 			'redirect_after_save'=>'op/entity_list/list_'.$config['config_id'],
+		 			'db_save_model'=>'add_'.$config['config_id'],
+		 				
+		 			'generate_stored_procedure'=>True,
+		 
+		 			'fields'=>$fields['add'],
+		 				
+		 			'top_links'=>array(
+		 
+		 					'back'=>array(
+		 							'label'=>'',
+		 							'title'=>'Close',
+		 							'icon'=>'close',
+		 							'url'=>'home',
+		 					)
+		 						
+		 			),
+		 
+		 	);
+		 		
+		 
+		 }
+		 
+		 if(!empty($fields['edit'])){
+		 	$operations['edit_'.$config['config_id']]=array(
+		 			'operation_type'=>'Edit',
+		 			'operation_title'=>'Edit a  '.$config['entity_label'],
+		 			'operation_description'=>'Edit a '.$config['entity_label'],
+		 			'page_title'=>'Edit a  '.$config['entity_label'],
+		 			'save_function'=>'op/save_element',
+		 			'data_source'=>'get_detail_'.$config['config_id'],
+		 			'page_template'=>'general/frm_entity',
+		 			'redirect_after_save'=>'op/entity_list/list_'.$config['config_id'],
+		 			'db_save_model'=>'update_'.$config['config_id'],
+		 				
+		 			'generate_stored_procedure'=>True,
+		 
+		 			'fields'=>$fields['edit'],
+		 			
+		 			
+		 			
+		 			'top_links'=>array(
+		 
+		 					'back'=>array(
+		 							'label'=>'',
+		 							'title'=>'Close',
+		 							'icon'=>'close',
+		 							'url'=>'home',
+		 					)
+		 						
+		 			),
+		 
+		 	);
+		 		
+		 
+		 }
+		 }
+		 if(!empty($fields['list'])){
+		 	$operations['list_'.$config['config_id']]=array(
+		 			'operation_type'=>'List',
+		 			'operation_title'=>'List  '.$config['entity_label_plural'],
+		 			'operation_description'=>'List '.$config['entity_label_plural'],
+		 			'page_title'=>'List '.$config['entity_label_plural'],
+		 			//'table_display_style'=>'dynamic_table',
+		 			'data_source'=>'get_list_'.$config['config_id'],
+					'generate_stored_procedure'=>True,
+		 				
+		 			'fields'=>$fields['list'],
+		 			'list_links'=>array(
+		 					'view'=>array(
+		 							'label'=>'View',
+		 							'title'=>'Disaly element',
+		 							'icon'=>'folder',
+		 							'url'=>'op/display_element/detail_'.$config['config_id'].'/',
+		 					),
+		 			
+		 			),
+		 			'top_links'=>array(
+		 						
+		 					'back'=>array(
+		 							'label'=>'',
+		 							'title'=>'Close',
+		 							'icon'=>'close',
+		 							'url'=>'home',
+		 					)
+		 						
+		 			),
+		 				
+		 	);
+		 	 
+		 		
+		 }
+		 
+		 
+		 if(!empty($fields['detail'])){
+		 	$operations['detail_'.$config['config_id']]=array(
+		 			'operation_type'=>'Detail',
+		 			'operation_title'=>'Detail  '.$config['entity_label'],
+		 			'operation_description'=>'Detail '.$config['entity_label'],
+		 			'page_title'=>'Detail '.$config['entity_label'],
+		 
+		 			'data_source'=>'get_detail_'.$config['config_id'],
+		 			'generate_stored_procedure'=>True,
+		 		 	
+		 			'fields'=>$fields['detail'],
+		 			
+		 			'top_links'=>array(
+		 						
+		 					'back'=>array(
+		 							'label'=>'',
+		 							'title'=>'Close',
+		 							'icon'=>'close',
+		 							'url'=>'home',
+		 					)
+		 						
+		 			),
+		 		 	
+		 	);
+		 	 
+		 	 
+		 }
+		 
+		 $operations['remove_'.$config['config_id']]=array(
+		 		'operation_type'=>'Remove',
+		 		'operation_title'=>'Remove a '.$config['entity_label'],
+		 		'operation_description'=>'Delete a '.$config['entity_label'],
+		 		
+		 		//'redirect_after_delete'=>'op/entity_list/list_'.$config['config_id'],
+		 		'redirect_after_delete'=>'op/display_element/detail_classification/~current_element~',
+		 		'db_delete_model'=>'remove_'.$config['config_id'],
+		 		'generate_stored_procedure'=>True,
+		 			
+		 
+		 );
+		 
+		 return $operations;
+		// exit;
+		//add_operation operation
+		
+		 
 	}
 
 }

@@ -144,7 +144,7 @@ class Install extends CI_Controller {
 		 * @var string $dir : the location of the folder where the installation files are located
 		 */
 		$dir=get_ci_config('editor_generated_path');
-
+		
 		/**
 		 * @var string  $editor_url  the url adress of ReLiS Editor: 
 		 */
@@ -254,7 +254,8 @@ class Install extends CI_Controller {
 					rewind($fp);
 					while ( ($line = fgets($fp)) !== false) {
 					
-						fputs($f_new_temp, $line. "\n");
+						//fputs($f_new_temp, $line. "\n");
+						fputs($f_new_temp, $line);
 						//echo "$line<br>";
 					}
 				
@@ -343,7 +344,8 @@ class Install extends CI_Controller {
 					rewind($fp);
 					while ( ($line = fgets($fp)) !== false) {
 						
-						fputs($f_new_temp, $line. "\n");
+						//fputs($f_new_temp, $line. "\n");
+						fputs($f_new_temp, $line);
 						//echo "$line<br>";
 					}
 					
@@ -397,8 +399,8 @@ class Install extends CI_Controller {
 		
 		//Read installation configuration
 		$res_install_config= $this->entity_configuration_lib->get_install_config();
-		//print_test($res_install_config);
-	
+	//	print_test($res_install_config);
+		
 		//cleaning old installation
 		$this->clean_previous_installation();
 	
@@ -432,8 +434,9 @@ class Install extends CI_Controller {
 		if(!empty($res_install_config['config'])){
 			foreach ($res_install_config['config'] as $key_config => $config_values) {
 				array_push($generated_tables, $key_config);
-				$sql_table.=$this->create_table_config($config_values);
+				//$sql_table.=$this->create_table_config($config_values);
 				//$sql_table.="<br/><br/>";
+				$this->populate_common_tables('current',$key_config);
 				
 				$foreign_key=$this->get_froreign_keys_constraint($key_config,$config_values);
 				if(!empty($foreign_key)){
@@ -466,7 +469,6 @@ class Install extends CI_Controller {
 				$this->update_stored_procedure($key_config,FALSE,'current',TRUE);
 			}
 		}
-	
 	
 		if(!empty($res_install_config['reference_tables'])){
 			foreach ($res_install_config['reference_tables'] as $key => $value) {
@@ -645,8 +647,9 @@ class Install extends CI_Controller {
 				foreach ($res_install_config['config'] as $key_config => $config_values) {
 					array_push($generated_tables, $key_config);
 					//$sql_table.=$this->create_table_config($config_values,$project_short_name);
-					$sql_table.=$this->manage_stored_procedure_lib->create_table_config($config_values,$project_short_name);
+					//$sql_table.=$this->manage_stored_procedure_lib->create_table_config($config_values,$project_short_name);
 					//$sql_table.="<br/><br/>";
+					$this->populate_common_tables($project_short_name,$key_config);
 					
 					$foreign_key=$this->get_froreign_keys_constraint($key_config,$config_values);
 					if(!empty($foreign_key)){
@@ -832,7 +835,8 @@ class Install extends CI_Controller {
 			
 		rewind($fp);
 			    while ( ($line = fgets($fp)) !== false) {
-			    	 fputs($f_new, $line. "\n"); 
+			    	// fputs($f_new, $line. "\n"); 
+			    	 fputs($f_new, $line); 
 			      //echo "$line<br>";
 		    }
 		fclose($f_new);
@@ -900,7 +904,8 @@ class Install extends CI_Controller {
 			
 			rewind($fp);
 			    while ( ($line = fgets($fp)) !== false) {
-			    	 fputs($f_new, $line. "\n"); 
+			    	// fputs($f_new, $line. "\n"); 
+			    	 fputs($f_new, $line); 
 			      //echo "$line<br>";
 		    }
 		    fclose($f_new);
@@ -1167,12 +1172,13 @@ class Install extends CI_Controller {
 	
 		if($config=='init'){
 			$old_configs=array('assignation','exclusion','papers');
-			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations');
+			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations','qa_questions','qa_responses','qa_result','qa_assignment');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
 			//$configs=get_relis_common_configs();
 		}else{
-			$old_configs=array($config);
+			//$old_configs=array($config);
+			$new_configs=array($config);
 				
 		}
 		
@@ -1262,11 +1268,20 @@ class Install extends CI_Controller {
 		
 		
 		array_push($data['array_success'], 'Project removed');
+		
+		$sql = "UPDATE userproject SET userproject_active =0 where  project_id=$project_id";
+		
+		$res_sql=$this->manage_mdl->run_query($sql);
+		
+		array_push($data['array_success'], 'Project unassigned to users');
+		
 		$database_name=$this->config->item('project_db_prefix').$detail_project['project_label'];
 		
 		$sql = "DROP DATABASE $database_name";
 		
 		$res_sql=$this->manage_mdl->run_query($sql);
+		
+		
 		
 		array_push($data['array_success'], 'Database dropped');
 		
@@ -1355,10 +1370,17 @@ class Install extends CI_Controller {
 	}
 	
 	
-	private function populate_common_tables($target_db='current'){
+	private function populate_common_tables($target_db='current',$config='init'){
 		$target_db=($target_db=='current')?project_db():$target_db;
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
-		$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations');
+		
+		if($config=='init'){
+			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations','qa_questions','qa_responses','qa_result','qa_assignment');
+			}else{
+			$configs=array($config);
+		
+		}
+		
 		foreach ($configs as $key => $value) {
 			//$tab_config=get_table_config($value);
 			//$res=$this->create_table_config($tab_config,$target_db);
@@ -1366,8 +1388,8 @@ class Install extends CI_Controller {
 			
 			//create tables
 			
-			
-			$table_configuration=get_table_configuration($value);
+			//print_test($values);
+			$table_configuration=get_table_configuration($value,$target_db);
 			$res=create_table_configuration($table_configuration,$target_db);
 			
 		}

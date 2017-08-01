@@ -33,7 +33,7 @@
                   <div class="x_content" style="min-height:400px ">
                   
                  <div class="tab-pane active" id="home">
-                         <p class="lead">Assign papers </p>
+                        
                           <p><b> Number of papers to assign :<?php echo $number_papers ?></b>
                            <br/><i> Number of papers already assigned :<?php echo $number_papers_assigned ?></i><br/></p>
                           <?php 
@@ -60,6 +60,7 @@
                          
                        
                         if(empty($assign_to_connected)){
+                        	echo ' <p class="lead">Select validator(s) </p>';
                         	$i=1;
 		                        foreach ($users as $user_id => $user_name) {
 		                        	echo checkbox_form_bm($user_name,'user_'.$i,'user_'.$user_id,$user_id);
@@ -91,7 +92,7 @@
                     echo form_close();
                     
                     echo "<hr/>";
-                    echo "<h2>Preview of papers concerned</h2>";
+                    echo "<h2>Preview of papers to assign</h2>";
                     
                     if(!empty($paper_list)){
                     	$tmpl = array (

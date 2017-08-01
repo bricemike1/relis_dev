@@ -258,6 +258,39 @@ function get_configuration() {
 				'initial_value'=>'Excluded',
 				
 		);
+		
+		$fields['qa_on']=array(
+				'field_title'=>'Quality assessment enabled',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'1',
+				'default_value'=>'1',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'',
+		);
+		
+		$fields['qa_open']=array(
+				'field_title'=>'Quality assessment open',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'1',
+				'default_value'=>'0',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'',
+		);
+		
+		$fields['qa_cutt_off_score']=array(
+	   			'field_title'=>'Quality assessment cutt off score',
+	   			'field_type'=>'real',	   			
+	   			'field_value'=>'20',
+	   			'default_value'=>'1.5',
+	   			'field_size'=>5,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' mandatory '
+	   	);
+		
 	   	$fields['config_active']=array(
 	   			'field_title'=>'Active',
 	   			'field_type'=>'int',
@@ -389,6 +422,42 @@ function get_configuration() {
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
 	   							'url'=>'op/edit_element/edit_config_dsl/~current_element~',
+	   					),
+	   					'back'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'',
+	   							'url'=>'home',
+	   					),
+	   	
+	   	
+	   	
+	   			),
+	   	);
+		$operations['config_qa']=array(
+	   			'operation_type'=>'Detail',
+	   			'operation_title'=>'Information for  QA',
+	   			'operation_description'=>'QA configuration',
+	   			'page_title'=>'QA configuration',
+	   			'data_source'=>'get_detail_config',
+	   			'generate_stored_procedure'=>False,
+	   				
+	   			'fields'=>array(
+	   					//'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'qa_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					
+	   						
+	   			),
+	   	
+	   	
+	   			'top_links'=>array(
+	   					'edit'=>array(
+	   							'label'=>'',
+	   							'title'=>'Edit',
+	   							'icon'=>'edit',
+	   							'url'=>'op/edit_element/edit_config_qa/~current_element~',
 	   					),
 	   					'back'=>array(
 	   							'label'=>'',
@@ -561,6 +630,42 @@ function get_configuration() {
 	   					'screening_screening_conflict_resolution'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
 	   					'screening_validator_assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					  				
+	   			),
+	   	
+	   			'top_links'=>array(
+	   						
+	   					'back'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'close',
+	   							'url'=>'home',
+	   					)
+	   	
+	   			),
+	   				
+	   	);
+		
+		$operations['edit_config_qa']=array(
+	   			'operation_type'=>'Edit',
+	   			'operation_title'=>'Edit QA configurations',
+	   			'operation_description'=>'Edit QA configurations',
+	   			'page_title'=>'Edit Quality Assessment configurations ',
+	   			'save_function'=>'op/save_element',
+	   			'page_template'=>'general/frm_entity',
+	   	
+	   			'redirect_after_save'=>'op/display_element/config_qa/1',
+	   			'data_source'=>'get_detail_config',
+	   			'db_save_model'=>'update_config_da',
+	   	
+	   			'generate_stored_procedure'=>True,
+	   				
+	   			'fields'=>array(
+	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'qa_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+						
 	   					  				
 	   			),
 	   	

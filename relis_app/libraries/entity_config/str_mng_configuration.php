@@ -248,7 +248,7 @@ function get_str_mng() {
 						'delete'=>array(
 									'label'=>'Delete',
 									'title'=>'Delete the user',
-									'url'=>'op/delete_element/remove_user/'
+									'url'=>'op/delete_element/remove_str_mng/'
 								)
 				),
 				'conditions'=>array('active_lang'=>array(
@@ -260,7 +260,8 @@ function get_str_mng() {
 												)
 												
 				),
-			
+				
+				
 				
 				'top_links'=>array(
 							'add_sc'=>$edit_mode,

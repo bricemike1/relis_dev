@@ -33,9 +33,10 @@
                   <div class="x_content" style="min-height:400px ">
                   
                  <div class="tab-pane active" id="home">
-                          <p class="lead">Assign papers </p>
+                          
                           <p><b> Number of papers to assign :<?php echo $number_papers ?></b>
                            <br/><i> Number of papers already assigned :<?php echo $number_papers_assigned ?></i><br/></p>
+                           <p class="lead">Select reviewers </p>
                           <?php 
                          $attributes = array('class' => 'form-horizontal form_content');
                          echo form_open_multipart('relis/manager/save_assignment_screen',$attributes);
