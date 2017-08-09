@@ -246,18 +246,20 @@ class Manager_lib
 	
 	
 	
-	 function get_element_multi_values($config,$key_field,$element_id){
+	 function get_element_multi_values($config,$key_field,$element_id,$display_field=False){
 		 
 		 
 		$Tvalues_source=explode(';', $config);
 		 
 		$source_table_config=get_table_configuration($Tvalues_source[0]);
-		 
-		 
+		if($display_field)
+			$display_field=$Tvalues_source[1];
+		else 
+			$display_field=$source_table_config['table_id'];
 		 
 		$extra_condition=" AND $key_field ='".$element_id."'";
 		 
-		$res_values=$this->CI->DBConnection_mdl->get_reference_select_values($source_table_config,$source_table_config['table_id'],$extra_condition);
+		$res_values=$this->CI->DBConnection_mdl->get_reference_select_values($source_table_config,$display_field,$extra_condition);
 		 
 		 
 		$results=array();
@@ -265,7 +267,6 @@ class Manager_lib
 		foreach ($res_values as $value) {
 			array_push($results, $value['refDesc']);
 		}
-		//print_test($results);
 		return $results;
 	}
 	/*
@@ -882,12 +883,14 @@ class Manager_lib
 		
 		//$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'relis/manager/list_classification','icon'=>'list');
 		$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'op/entity_list/list_classification','icon'=>'list');
+		//$menu['general']['menu']['classificationss']=array('label'=>'--Classification Graph','url'=>'op/entity_list_graph/list_classification','icon'=>'list');
 		
 		
 		
 		$menu['general']['menu']['result']=array('label'=>'Result','url'=>'','icon'=>'pie-chart');
 		
 		$menu['general']['menu']['result']['sub_menu']['result_graph']=array( 'label'=>'Graphs', 'url'=>'relis/manager/result_graph', '');
+		$menu['general']['menu']['result']['sub_menu']['result_graph']=array( 'label'=>'Graphs', 'url'=>'op/entity_list_graph/list_classification', '');
 		
 		$menu['general']['menu']['result']['sub_menu']['result_export']=array( 'label'=>'Export', 'url'=>'relis/manager/result_export', '');
 		
@@ -899,6 +902,47 @@ class Manager_lib
 			
 			$menu['general']['menu']['reference']['sub_menu'][$value['reftab_label']]=array('label'=>$value['reftab_desc'],'url'=>'op/entity_list/list_'.$value['reftab_label'],'icon'=>'');
 		}
+		
+		return $menu;
+	}
+
+	function get_left_menu_qa(){
+	
+		$menu = array();
+	
+		$menu['general']=array(
+				'label'=>'General'
+		);
+		$menu['general']['menu']['home']=array('label'=>'Dashboard','url'=>'home/qa','icon'=>'th');
+		
+		//$menu['general']['menu']['classification']=array('label'=>'Classification','url'=>'relis/manager/list_classification','icon'=>'list');
+		$menu['general']['menu']['all_papers']=array( 'label'=>'Questions', 'url'=>'op/entity_list/list_qa_questions', 'icon'=>'question-circle');
+		$menu['general']['menu']['screen_paper_pending']=array( 'label'=>'Responses', 'url'=>'op/entity_list/list_qa_responses', 'icon'=>'check-circle');
+		$menu['general']['menu']['qa_assignment_set']=array( 'label'=>'Assign for quality assessment', 'url'=>'relis/manager/qa_assignment_set', 'icon'=>'user');
+		$menu['general']['menu']['qa_assignment_validation_set']=array( 'label'=>'Assign for quality assessment validation', 'url'=>'relis/manager/qa_assignment_validation_set', 'icon'=>'user');
+		
+		
+		$menu['general']['menu']['qa']=array('label'=>'Quality assessment','url'=>'','icon'=>'check');
+		
+		if(can_manage_project())
+		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list']=array( 'label'=>'My quality assessment', 'url'=>'relis/manager/qa_conduct_list', '');
+		
+		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list_mine']=array( 'label'=>'All quality assessment', 'url'=>'relis/manager/qa_conduct_list/all', '');
+		
+		$menu['general']['menu']['qa']['sub_menu']['list_qa_result']=array( 'label'=>'Result', 'url'=>'relis/manager/qa_conduct_result', '');
+		$menu['general']['menu']['qa']['sub_menu']['list_qa_result_excluded']=array( 'label'=>'QA Excluded', 'url'=>'relis/manager/qa_conduct_result/excluded', '');
+		
+		$menu['general']['menu']['qa_val']=array('label'=>'Validation','url'=>'','icon'=>'check');
+		
+		//	$menu['general']['menu']['qa']['sub_menu']['qa_assignment_set']=array( 'label'=>'Assign for quality assessment', 'url'=>'relis/manager/qa_assignment_set', '');
+		$menu['general']['menu']['qa_val']['sub_menu']['list_qa_assignment']=array( 'label'=>'Assignment for quality assessment Validation', 'url'=>'op/entity_list/list_qa_validation_assignment', '');
+		if(can_manage_project())
+			$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list']=array( 'label'=>'My quality assessment', 'url'=>'relis/manager/qa_conduct_list_val', '');
+		
+			$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_mine']=array( 'label'=>'All quality assessment', 'url'=>'relis/manager/qa_conduct_list_val/all', '');
+		
+			$menu['general']['menu']['qa_val']['sub_menu']['list_qa_result']=array( 'label'=>'Result', 'url'=>'relis/manager/qa_conduct_result', '');
+			
 		
 		return $menu;
 	}
@@ -937,10 +981,10 @@ class Manager_lib
 		if(active_screening_phase()){
 			$phase_info=active_screening_phase_info();
 		
-			$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'newspaper-o');
+			$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'search');
 			
 			if(can_review_project())
-			$menu['general']['menu']['papers_screen']['sub_menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'toggle-right');
+			$menu['general']['menu']['papers_screen']['sub_menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'');
 			
 			if(can_manage_project())
 			$menu['general']['menu']['papers_screen']['sub_menu']['assignment_screen']=array( 'label'=>'Assign papers for screening', 'url'=>'relis/manager/assignment_screen', 'icon'=>'');
@@ -963,10 +1007,10 @@ class Manager_lib
 			
 				if(get_appconfig_element('screening_validation_on') ){
 					
-				$menu['general']['menu']['papers_screen_validate']=array('label'=>'Validation','url'=>'','icon'=>'newspaper-o');
+				$menu['general']['menu']['papers_screen_validate']=array('label'=>'Validation','url'=>'','icon'=>'check-square-o');
 				
 				if(can_validate_project()){
-					$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Validate', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'toggle-right');					
+					$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Validate', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');					
 					$menu['general']['menu']['papers_screen_validate']['sub_menu']['validate_screen_assign']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', 'icon'=>'');
 				}
 				//$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');
@@ -1012,7 +1056,7 @@ class Manager_lib
 		$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
 	
 	
-		//---------------------------------------------------------
+		/*---------------------------------------------------------
 		$menu['general']['menu']['qa']=array('label'=>'-- Test QA','url'=>'','icon'=>'check');		
 		$menu['general']['menu']['qa']['sub_menu']['all_papers']=array( 'label'=>'Questions', 'url'=>'op/entity_list/list_qa_questions', '');
 		$menu['general']['menu']['qa']['sub_menu']['screen_paper_pending']=array( 'label'=>'Response', 'url'=>'op/entity_list/list_qa_responses', '');
@@ -1020,10 +1064,11 @@ class Manager_lib
 		$menu['general']['menu']['qa']['sub_menu']['list_qa_assignment']=array( 'label'=>'Assignment for quality assessment', 'url'=>'op/entity_list/list_qa_assignment', '');
 		$menu['general']['menu']['qa']['sub_menu']['list_qa_result']=array( 'label'=>'Quality assessment', 'url'=>'op/entity_list/list_qa_result', '');
 		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list']=array( 'label'=>'Conduct quality assessment', 'url'=>'relis/manager/qa_conduct_list', '');
+		
 		//$menu['general']['menu']['qa']['sub_menu']['screen_paper_included']=array( 'label'=>'Validation', 'url'=>'op/entity_list/list_papers_screen_included', '');
 		//$menu['general']['menu']['qa']['sub_menu']['screen_paper_included']=array( 'label'=>'Result', 'url'=>'op/entity_list/list_papers_screen_included', '');
 		//---------------------------------------------------------
-		
+		*/
 		if(get_appconfig_element('import_papers_on') AND can_manage_project()){
 			
 			$menu['general']['menu']['import_papers']=array( 'label'=>'Import papers', 'url'=>'relis/manager/import_papers', 'icon'=>'upload');
@@ -1044,10 +1089,11 @@ class Manager_lib
 			$menu['settings']['menu']['configuration']['sub_menu']['general']=array('label'=>'General configuration','url'=>'op/display_element/configurations/1','icon'=>'');
 			$menu['settings']['menu']['configuration']['sub_menu']['users']=array('label'=>'Papers configuration','url'=>'op/display_element/config_papers/1','icon'=>'');
 			
-			if(get_appconfig_element('screening_on'))
+		//	if(get_appconfig_element('screening_on'))
 				$menu['settings']['menu']['configuration']['sub_menu']['screen']=array('label'=>'Screening configuration','url'=>'op/display_element/config_screening/1','icon'=>'');
 			
 			$menu['settings']['menu']['configuration']['sub_menu']['qa']=array('label'=>'QA configuration','url'=>'op/display_element/config_qa/1','icon'=>'');
+			$menu['settings']['menu']['configuration']['sub_menu']['class']=array('label'=>'Classification configuration','url'=>'op/display_element/config_class/1','icon'=>'');
 			
 			$menu['settings']['menu']['configuration']['sub_menu']['dsl']=array('label'=>'DSL configuration','url'=>'op/display_element/config_dsl/1','icon'=>'');
 				

@@ -62,6 +62,10 @@ CREATE TABLE IF NOT EXISTS `config` (
   `qa_on` int(2) NOT NULL DEFAULT '1',
   `qa_open` int(2) NOT NULL DEFAULT '0',
   `qa_cutt_off_score` double NOT NULL DEFAULT '1.5',
+  `qa_validation_on` int(2) NOT NULL DEFAULT '0',
+  `qa_validation_default_percentage` int(3) NOT NULL DEFAULT '20',
+  `class_validation_on` int(2) NOT NULL DEFAULT '0',
+  `class_validation_default_percentage` int(3) NOT NULL DEFAULT '20',
   `config_active` int(2)  NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;

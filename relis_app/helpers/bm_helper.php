@@ -436,7 +436,7 @@ function create_button_link($url,$label,$button_class="btn-info",$title="",$type
 	return $button;
 }
 
-function create_button_link_dropdown($arr_buttons,$btn_label="Action") {
+function create_button_link_dropdown($arr_buttons,$btn_label="Action",$li_button=FALSE) {
 
 	//print_test($arr_buttons);
 	if(!empty($arr_buttons)){
@@ -444,10 +444,10 @@ function create_button_link_dropdown($arr_buttons,$btn_label="Action") {
 	//	print_test($arr_buttons);
 		if(count($arr_buttons)==1){
 			
-			$button=create_button_link($arr_buttons[0]['url'], $arr_buttons[0]['label'],'btn-info',$arr_buttons[0]['title']);
+			$button=create_button_link($arr_buttons[0]['url'], $arr_buttons[0]['label'],!empty($arr_buttons[0]['btn_type'])?$arr_buttons[0]['btn_type']:'btn-info',$arr_buttons[0]['title']);
 			
 		}else{
-			
+			if($li_button){
 			$button='<div class="btn-group">
 			<button class="btn btn-primary dropdown-toggle btn-xs" aria-expanded="false" data-toggle="dropdown" type="button">
 				'.$btn_label.'<span class="caret"></span>
@@ -462,7 +462,14 @@ function create_button_link_dropdown($arr_buttons,$btn_label="Action") {
 			
 			
 			$button.='</ul></div>'; //close the UL
-			
+			}else{
+				$button="";
+				foreach ($arr_buttons as $key => $value) {
+					
+					//$button.='<li>'.anchor ( $value['url'], !empty($value['label'])?($value['label']):"", 'class=""  title=" '.!empty($value['title'])?($value['title']):"".' "' ).'</li>';
+					$button.=create_button_link($value['url'], $value['label'],!empty($value['btn_type'])?$value['btn_type']:'btn-info',$value['title']);
+				}
+			}
 		}
 		
 		
@@ -1603,6 +1610,6 @@ function user_project($project_id , $user=0,$user_role=""){
 	
 	function screening_validator_assignment_type(){
 	
-		return 'Normal';
+		return get_appconfig_element('screening_validator_assignment_type');
 	
 	}

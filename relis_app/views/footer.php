@@ -93,15 +93,7 @@
     <!-- Custom Theme Scripts -->
     <script src="<?php echo site_url();?>cside/js/custom.js"></script>
     
-    <?php if (isset($has_graph))
-			{
-			
-			?>
-	
-	<script src="<?php echo site_url(); ?>cside/js/highcharts.js"></script>
-	<script src="<?php echo site_url(); ?>cside/js/exporting.js"></script>
-	
-	<?php }?>
+ 
 	<!-- bootstrap-datepicker -->
      <script src="<?php echo site_url();?>cside/vendors/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
      <!-- bootstrap-datepicker -->

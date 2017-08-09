@@ -1755,6 +1755,8 @@ class Manager extends CI_Controller {
 			
 			if(!empty($perspective) AND $perspective=='class'){
 				$this->session->set_userdata('working_perspective',$perspective);
+			}elseif(!empty($perspective) AND $perspective=='qa'){
+				$this->session->set_userdata('working_perspective',$perspective);
 			}else{
 				$this->session->set_userdata('working_perspective','screen');
 			}
@@ -2283,6 +2285,17 @@ class Manager extends CI_Controller {
 		set_appconfig_element('classification_on', $value);
 		
 		redirect ('home/screening_select');
+	
+	}
+	
+	public function activate_qa($value=1){
+	
+		if($value!=1)
+			$value=0;
+	
+			set_appconfig_element('qa_open', $value);
+	
+			redirect ('home/screening_select');
 	
 	}
 }

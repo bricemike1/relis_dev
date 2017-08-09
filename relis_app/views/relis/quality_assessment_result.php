@@ -41,54 +41,44 @@
                 <?php 
                 if(!empty($qa_list)){
                  $tmpl = array (
-                 				'heading_cell_start'    => '<td>',
-                 				'heading_cell_end'      => '</td>',
+                 				'heading_cell_start'    => '<th>',
+                 				'heading_cell_end'      => '</th>',
 		                		'table_open'  => '<table class="table  table-hover">',
 		                		'table_close'  => '</table>'
 		                );
            //   print_test($qa_list)  ;
               $i=1;
+              $qa_tab=array();
+             
                 foreach ($qa_list as $k_assign => $v_assign) {
-                	
-                	$score="<span style='margin-right:10px'> <button type='button' class='btn btn-round btn-info '> ".$v_assign['q_result_score']." </button></span>";
-                	$completed=empty($v_assign['paper_done'])?'':"<button type='button' class='btn btn-round btn-success '> <i class='fa fa-check'></i> </button>";
-                	
-                	echo"<a name='paper_".$v_assign['paper_id']."'></a>";
-                	echo box_header(anchor('relis/manager/display_paper_min/'.$v_assign['paper_id'],'<u>'.$v_assign['title'].'</u>'.$score.' '.$completed),'<i>'.$v_assign['user'].'</i>',12,12,12);
-                	$questions=array( );
-                	foreach ($v_assign['questions'] as $key_q => $q) {
-                	
-                		$responses="";
-                		foreach ($q['responses'] as $key_response => $response) {
-                			$but="";
-                			if(empty($response['result'])){
-                				$but=create_button ( $response['response']['response'], $response['link'],$response['response']['response'],' btn-default');
-                			}else{
-                				$but=create_button ( $response['response']['response'], '',$response['response']['response']);
-                				
-                			}
-                			
-                		
-                			$responses.=$but;
-                			 
+                	//print_test($v_assign);
+                	if($v_assign['q_result_score']<$qa_cutt_off_score){
+                		$butt='btn-danger';
+                	}else{
+                		$butt='btn-info';
                 		}
-                		
-                		$questions[$key_q]=array($q['question']['question']."<br/><div class='droite'>".$responses."</div>");
-                	}
-                //	print_test($questions);
-                	If(!empty($questions)){
+                	$score="<span style='margin-right:10px'> <button type='button' class='btn btn-round $butt '> ".$v_assign['q_result_score']." </button></span>";
+                	$completed=empty($v_assign['paper_done'])?'':"<button type='button' class='btn btn-round btn-success '> <i class='fa fa-check'></i> </button>";
+               		
+                	$qa_tab[$k_assign]['paper']=anchor('relis/manager/qa_conduct_detail/'.$v_assign['paper_id'],'<u>'.$v_assign['title'].'</u>');
+                	$qa_tab[$k_assign]['score']=$score;
+                	$qa_tab[$k_assign]['done']=$completed;
+                	
+                 }	
+                 if(!empty($qa_list)){
+                 	array_unshift($qa_tab, array('Paper','Score','Done')) ;
+                 }
+              //   print_test($qa_tab);
+                	If(!empty($qa_tab)){
 	                	$this->table->set_template($tmpl);
-	                	echo $this->table->generate($questions);
+	                	echo $this->table->generate($qa_tab);
 	                	
                 	}else{
-                		echo "No questions created ! ";
+                		echo "No papers assigned for quality assessment ! ";
                 	}
                 			echo  box_footer();
                 	$i++;
-                	//echo"</div>";
-                }	
-		
-		          
+                	   
                 }
                 ?>  
             	

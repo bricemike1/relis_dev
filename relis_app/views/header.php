@@ -39,7 +39,17 @@
     <script src="<?php echo site_url();?>cside/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="<?php echo site_url();?>cside/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-    
+       <?php if (isset($has_graph))
+			{
+			
+			?>
+	
+	<script src="<?php echo site_url(); ?>cside/js/highcharts.js"></script>
+	
+	<script src="<?php echo site_url(); ?>cside/js/drilldown.js"></script>
+	<script src="<?php echo site_url(); ?>cside/js/exporting.js"></script>
+	
+	<?php }?>
     
   </head>
   
@@ -72,6 +82,10 @@
        	
        	{
        		$this->load->view('left_menu_screening');
+       	}elseif($this->session->userdata('working_perspective')=='qa')
+       	
+       	{
+       		$this->load->view('left_menu_qa');
        	}else{
        		$this->load->view('left_menu');
        		 

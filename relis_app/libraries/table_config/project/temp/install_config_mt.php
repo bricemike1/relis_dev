@@ -2,7 +2,9 @@
 function get_classification_mt(){
 $reference_tables=array();//from nowit will worklike this
 $config=array();
-$result['project_title']='Model transformation';
+$result['class_action']='no_overide';
+$result['screen_action']='no_overide';
+$result['project_title']='Model transformation ';
 $result['project_short_name']='mt';
 $config['classification']['table_name']='classification';
 $config['classification']['config_id']='classification';
@@ -238,7 +240,7 @@ $config['classification']['fields'][ 'trans_language']=array(
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'compute_result'=>'no',
- 	'on_list'=>'hidden'				
+ 	'on_list'=>'show'				
  				);			
 
 $config['classification']['fields'][ 'source_language']=array( 		
@@ -551,7 +553,7 @@ $config['classification']['fields'][ 'intent']=array(
  	'on_add'=>'drill_down',
  	'on_edit'=>'drill_down',
  	'compute_result'=>'no',
- 	'on_list'=>'hidden'				
+ 	'on_list'=>'show'				
  				);			
 
 $config['intent_relation']['table_name']='intent_relation';
@@ -734,7 +736,7 @@ $config['classification']['fields'][ 'intent_relation']=array(
  	'input_select_key_field'=>'parent_field_id',
  	'compute_result'=>'no',
  	'multi-select' => 'no',
- 	'on_list'=>'hidden',
+ 	'on_list'=>'show',
  	'on_add'=>'drill_down',
  	'on_edit'=>'drill_down'			
  				);			
@@ -905,10 +907,83 @@ $result[ 'config' ] =$config;
 
 $result[ 'reference_tables' ] =$reference_tables;
 
+//QA area
+
+ 		
+$qa=array();
+$qa['cutt_off_score']='2';
+$qa['questions']=array();
+  array_push($qa['questions'], array(
+  										'title' =>"Question 1",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 2",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 3",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 4",
+  										)
+  );
+$qa['responses']=array();
+   array_push($qa['responses'], array(
+   										'title' =>"Yes",
+   										'score' =>"2",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"Partially",
+   										'score' =>"1",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"No",
+   										'score' =>"0",
+   										)
+   );
+$result[ 'qa' ]=$qa; 		
+
+//QA area
+
+
 //SCREENING area
 
 
 //SCREENING area
+
+//REPORTING
+$report=array();
+$report['domain']['type']='simple';
+$report['domain']['title']='Domain'; 		
+$report['domain']['id']='domain';
+$report['domain']['link']='false'; 
+$report['domain']['values']['field']='domain';
+$report['domain']['values']['style']='select';
+$report['domain']['values']['title']='Domain';  
+$charts=array();
+ 	array_push($charts, "pie");
+ 	array_push($charts, "bar");
+$report['domain']['chart']=$charts;
+$report['year_domain']['type']='compare';
+$report['year_domain']['title']='Domain per year'; 		
+$report['year_domain']['id']='year_domain';
+$report['year_domain']['link']='false'; 
+$report['year_domain']['values']['field']='domain';
+$report['year_domain']['values']['style']='select';
+$report['year_domain']['values']['title']='Domain';  
+$report['year_domain']['reference']['field']='year';
+ $report['year_domain']['reference']['style']='select';
+ $report['year_domain']['reference']['title']='Targeted year';  
+  $charts=array();
+   	array_push($charts, "line");
+   	array_push($charts, "bar");
+  $report['year_domain']['chart']=$charts;
+$result[ 'report' ]=$report; 		
+//REPORTING
 
 return $result;
 }

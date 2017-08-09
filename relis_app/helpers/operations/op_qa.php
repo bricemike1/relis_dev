@@ -99,11 +99,6 @@ function get_operations_qa() {
 	
 	//qa assignment
 
-	$operations['list_qa_assignment']=array(
-			'type'=>'List',
-			'tab_ref'=>'qa_assignment',
-			'operation_id'=>'list_qa_assignment'
-	);
 	
 	$operations['add_qa_assignment']=array(
 			'type'=>'Add',
@@ -129,6 +124,16 @@ function get_operations_qa() {
 			'operation_id'=>'remove_qa_assignment'
 	);
 	
+	$operations['list_qa_validation_assignment']=array(
+			'type'=>'List',
+			'tab_ref'=>'qa_validation_assignment',
+			'operation_id'=>'list_qa_validation_assignment'
+	);
+	$operations['remove_qa_validation_assignment']=array(
+			'type'=>'Remove',
+			'tab_ref'=>'qa_validation_assignment',
+			'operation_id'=>'remove_qa_validation_assignment'
+	);
 	return $operations;
 	
 	

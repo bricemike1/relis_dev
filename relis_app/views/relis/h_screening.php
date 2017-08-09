@@ -31,8 +31,9 @@
                   
                   box_header('Actions');
                   	if(!empty($action_but_screen)){
+                  		box_header('Screening');
                   ?>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  
                     
                     
                       <?php
@@ -43,13 +44,16 @@
                       	
                      ?>
                      
-                  </div>
-                <?php } ?> 
+                  
+                <?php 
+                box_footer();
+                  	} ?> 
                 
                  <?php
                   	if(!empty($action_but_validate)){
+                  		box_header('Validation');
                   ?>
-                  <div class="col-md-6 col-sm-6 col-xs-12">
+                  
                     
                     
                       <?php
@@ -60,8 +64,10 @@
                       	
                      ?>
                      
-                  </div>
-                <?php } 
+                  
+                <?php 
+                box_footer();
+                  	} 
                 box_footer()
                 ?> 
                 

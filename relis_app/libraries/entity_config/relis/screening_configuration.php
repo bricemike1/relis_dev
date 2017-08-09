@@ -527,6 +527,7 @@ function get_screening() {
 	   							'label'=>'Edit',
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
+	   						//	'btn_type'=>'btn-danger',
 	   							'url'=>'relis/manager/edit_screen/',
 	   					)
 	   					 

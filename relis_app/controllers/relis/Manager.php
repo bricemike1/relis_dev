@@ -711,7 +711,7 @@ class Manager extends CI_Controller {
 		if(!$paper_excluded){
 	
 			$data ['top_buttons'].=get_top_button ( 'all', "Exclude the paper", 'relis/manager/new_exclusion/'.$ref_id ,'Exclude'," fa-minus",'','btn-danger' )." ";
-	
+
 	
 			if(!empty(	$table_config['links']['edit']) AND !empty($table_config['links']['edit']['on_view'])  AND ($table_config['links']['edit']['on_view']== True) ){
 	
@@ -1720,8 +1720,11 @@ class Manager extends CI_Controller {
 		if(get_appconfig_element('screening_on')){
 			
 			$classification_status='Waiting';
+			$screening_status='Pending';
 		}else{
 			$classification_status='To classify';
+			
+			$screening_status='Included';
 		}
 		
 		//echo $classification_status;
@@ -2001,7 +2004,7 @@ class Manager extends CI_Controller {
 		}
 			
 		
-	
+		//print_test($result_fin);
 	 	
 		/*
 		 * La page contient des graphique cette valeur permettra le chargement de la librarie highcharts
@@ -2368,7 +2371,7 @@ class Manager extends CI_Controller {
 			$data['users']=$_assign_user;
 			$data['number_papers']=count($papers['to_assign']);
 			$data['number_papers_assigned']=count($papers['assigned']);
-			$data['reviews_per_paper']=2;
+			$data['reviews_per_paper']=get_appconfig_element('screening_reviewer_number');
 			
 			
 			
@@ -2511,7 +2514,6 @@ class Manager extends CI_Controller {
 		
 			//	$papers=$this->get_papers_to_screen($papers_sources);
 				$papers=$this->get_papers_to_screen($papers_sources,$paper_source_status);
-				
 			//	print_test($papers); exit;
 				$assign_papers= array();
 				$this->db2 = $this->load->database(project_db(), TRUE);
@@ -3703,6 +3705,145 @@ class Manager extends CI_Controller {
 	}
 	
 	
+	public function display_paper_min($ref_id,$display_type='det') {
+	
+	
+		//	print_test(get_paper_screen_result($ref_id));
+	
+		$ref_table="papers";
+	
+		/*
+		 * Récupération de la configuration(structure) de la table des papiers
+		 */
+		$table_config=get_table_configuration($ref_table);
+	
+	
+		/*
+		 * Appel de la fonction  récupérer les informations sur le papier afficher
+		 */
+		$table_config['current_operation']='detail_paper';
+		$paper_data=$this->manager_lib->get_detail($table_config,$ref_id);
+	
+		//	print_test($paper_data);
+	
+	
+		/*
+		 * Préparations des informations à afficher
+		 */
+	
+		//venue
+		$venue="";
+	
+		$authors="";
+		foreach ($paper_data as $key => $value) {
+			if($value['field_id']=='venueId' AND !empty($value['val2'][0])){
+				$venue=$value['val2'][0];
+			}elseif($value['field_id']=='authors' AND !empty($value['val2'])){
+	
+				if(count($value['val2']>1)){
+					$authors='<table class="table table-hover" ><tr><td> '.$value['val2'][0].'</td></tr>';
+					foreach ($value['val2'] as $k => $v) {
+						if($k>0){
+							$authors.="<tr><td> ".$v.'</td></tr>';
+						}
+					}
+	
+					$authors.="</table>";
+				}else{
+	
+					$authors=" : ".$value['val2'][0];
+				}
+	
+			}
+		}
+	
+	
+	
+	
+	
+	
+	
+		$content_item = $this->DBConnection_mdl->get_row_details ( 'get_detail_papers',$ref_id,TRUE);
+		//get_detail_paper
+		//print_test($content_item);
+	
+		$paper_name=$content_item['bibtexKey']." - ".$content_item['title'];
+		$paper_excluded=False;
+		if($content_item['paper_excluded']=='1'){
+			$paper_excluded=True;
+		}
+	
+		$data['paper_excluded']=$paper_excluded;
+		$item_data=array();
+	
+	
+		$array['title']=$content_item['bibtexKey']." - ".$content_item['title'];
+	
+		if(!empty($content_item['doi'])){
+	
+			$array['title'].='<ul class="nav navbar-right panel_toolbox">
+				<li>
+					<a title="Go to the page" href="'.$content_item['doi'].'" target="_blank" >
+				 		<img src="'.base_url().'cside/images/pdf.jpg"/>
+	
+					</a>
+				</li>
+	
+				</ul>';
+		}
+			
+	
+		array_push($item_data, $array);
+	
+		$array['title']="<b>".lng('Abstract')." :</b> <br/><br/>".$content_item['abstract'];
+		array_push($item_data, $array);
+		$array['title']="<b>".lng('Preview')." :</b> <br/><br/>".$content_item['preview'];
+		array_push($item_data, $array);
+	
+		$array['title']="<b>".lng('Venue')." </b> ".$venue;
+		//array_push($item_data, $array);
+	
+		$array['title']="<b>".lng('Authors')." </b> ".$authors;
+		//array_push($item_data, $array);
+	
+			
+	
+		$data['item_data']=$item_data;
+	
+	
+		
+	
+	
+		/*
+		 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
+		 */
+		$data ['top_buttons']="";
+		
+	
+	
+	
+		$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'home' );
+	
+	
+	
+		/*
+		 * Titre de la page
+		 */
+		$data ['page_title'] = lng('Paper');
+	
+	
+		/*
+		 * La vue qui va s'afficher
+		 */
+		$data ['page'] = 'relis/display_paper_min';
+	
+	
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
+	
 	
 	
 	public function edit_assignment_mine($assignment_id){
@@ -4414,6 +4555,48 @@ class Manager extends CI_Controller {
 		
 	}
 	
+	public function qa_assignment_validation_set($data=""){
+		//d
+	
+		//$sql="SELECT * from paper  where paper_active = 1 AND screening_status='Included' ";
+	
+		$papers_for_qa=$this->get_papers_for_qa_validation();
+	
+		//	print_test($papers_for_qa);
+	
+		$data['paper_list']=$papers_for_qa['papers_to_assign_display'];
+	
+	
+		$user_table_config=get_table_configuration('users');
+			
+		$users=$this->DBConnection_mdl->get_list($user_table_config,'_',0,-1);
+		$_assign_user=array();
+		foreach ($users['list'] as $key => $value) {
+			if( (user_project($this->session->userdata('project_id')  ,$value['user_id'])) AND can_review_project($value['user_id']) ){
+	
+				$_assign_user[$value['user_id']]=$value['user_name'];
+			}
+		}
+		//	print_test($users);
+		$data['users']=$_assign_user;
+		$data['number_papers']=$papers_for_qa['count_papers_to_assign'];
+		$data['number_papers_assigned']=$papers_for_qa['count_papers_assigned'];
+		$data['percentage_of_papers']=get_appconfig_element('qa_validation_default_percentage');
+	
+	
+		$data ['page_title'] = lng('Assign papers for quality assessment validation ');
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'home' );
+	
+		$data ['page'] = 'relis/assign_papers_qa_validation';
+	
+		//	print_test($papers_assigned_array);
+		//print_test($data);
+		//exit;
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
 	
 	public function qa_assignment_set($data=""){
 		//d
@@ -4471,7 +4654,7 @@ class Manager extends CI_Controller {
 		
 		//all papers
 		$all_papers = $this->db_current->order_by('id', 'ASC')
-		->get_where('paper', array('paper_active'=>1,'screening_status'=>'Pending'))
+		->get_where('paper', array('paper_active'=>1,'screening_status'=>'Included'))
 		->result_array();
 		
 		
@@ -4491,7 +4674,41 @@ class Manager extends CI_Controller {
 		
 		return $result;
 	}
+	private function get_papers_for_qa_validation(){
+		//papers already assigned
+		$papers_assigned = $this->db_current->order_by('qa_validation_assignment_id', 'ASC')
+		->get_where('qa_validation_assignment', array('qa_validation_active'=>1))
+		->result_array();
+		$papers_assigned_array=array();
+		foreach ($papers_assigned as $key => $value) {
+			$papers_assigned_array[$value['paper_id']]=$value['assigned_to'];
+		}
+		
+		
+		//all papers
+	$sql="SELECT P.* FROM paper P,qa_assignment Q WHERE P.id=Q.paper_id AND Q.qa_status='Done' AND P.paper_active=1 AND Q.qa_assignment_active=1 ";
+		
+	$all_papers = $this->db_current->query($sql)->result_array();
+		
+		
+		$paper_to_assign=array();
+		$paper_to_assign_display[0]=array('Key','Title');
+		foreach ($all_papers as $key => $value) {
+			if(empty($papers_assigned_array[$value['id']])){//exclude papers already assigned
+				$paper_to_assign_display[$key+1]=array($value['bibtexKey'],$value['title']);
+				$paper_to_assign[$key]=$value['id'];
+			}
+		}
+
 	
+		$result['count_all_papers']=count($all_papers);
+		$result['count_papers_assigned']=count($papers_assigned_array);
+		$result['count_papers_to_assign']=count($paper_to_assign);// we remove the header
+		$result['papers_to_assign_display']=$paper_to_assign_display;
+		$result['papers_to_assign']=$paper_to_assign;
+		
+		return $result;
+	}
 	function qa_assignment_save(){
 	
 		$post_arr = $this->input->post ();
@@ -4602,100 +4819,345 @@ class Manager extends CI_Controller {
 		
 	}
 	
-	function qa_conduct_list($type="mine"){
+	function qa_validation_assignment_save(){
+	
+		$post_arr = $this->input->post ();
+		//print_test($post_arr); exit;
+		$users=array();
+		$i=1;
+		$percentage=intval($post_arr['percentage']);
+		if(empty( $percentage)){
 		
+			$data['err_msg'] = lng(' Please provide  "Percentage of papers" ');
+			$this->qa_assignment_validation_set($data);
+		
+		}elseif($percentage>100 OR $percentage<=0){
+			$data['err_msg'] = lng("Please provide a correct value of percentage");
+			$this->qa_assignment_validation_set($data);
+		}
+		else{
+	
+		// Get selected users
+		While ($i <= $post_arr['number_of_users']) {
+			if(!empty( $post_arr['user_'.$i])){
+				array_push($users,$post_arr['user_'.$i]);
+			}
+			$i++;
+		}
+			
+		//Verify if selected users is > of required reviews per paper
+		if(count($users) < 1){
+	
+			$data['err_msg'] = lng('Please select at least one user  ');
+			$this->qa_assignment_validation_set($data);
+	
+		}else{
+	
+	
+			$reviews_per_paper=1;
+	
+			$papers_all=$this->get_papers_for_qa_validation();
+				
+			$papers=$papers_all['papers_to_assign'];
+	
+			//		print_test($papers);
+			$papers_to_validate_nbr= round( count($papers) * $percentage/100);
+	
+			$operation_description="Assign  papers for qa";
+			//	print_test($papers);
+			shuffle($papers); // randomize the list
+			//		print_test($papers);exit;
+			//	print_test($papers);
+			$assign_papers= array();
+			$this->db2 = $this->load->database(project_db(), TRUE);
+			$operation_code=active_user_id()."_".time();
+			foreach ($papers as $key => $value) {
+				if($key<$papers_to_validate_nbr)	{
+						
+						
+					$assignment_save=array(
+							'paper_id'=>$value,
+							'assigned_to'=>'',
+							'assigned_by'=>active_user_id(),
+							'operation_code'=>$operation_code,
+							'assignment_mode'=>'auto',
+	
+	
+					);
+					$j=1;
+	
+					//the table to save assignments
+	
+					$table_name=get_table_configuration('qa_validation_assignment','current','table_name');
+						
+	
+					while($j<=$reviews_per_paper){
+	
+	
+	
+						$temp_user=($key % count($users)) + $j;
+	
+						if($temp_user >= count($users) )
+							$temp_user = $temp_user - count($users);
+	
+							$assignment_save['assigned_to']=$users[$temp_user];
+							//	print_test($assignment_save);
+								
+							$this->db2->insert($table_name,$assignment_save);
+	
+	
+							$j++;
+					}
+	
+				}
+			}
+			//exit;
+			//	print_test();
+	
+			$operation_arr=array('operation_code'=>$operation_code,
+					'operation_type'=>'assign_qa_validation',
+					'user_id'=>active_user_id(),
+					'operation_desc'=>$operation_description
+	
+			);
+	
+			//print_test($operation_arr);
+			$res2 = $this->manage_mdl->add_operation($operation_arr);
+	
+	
+			set_top_msg('Operation completed');
+			redirect('home');
+	
+		}
+		}
+	}
+	
+	function qa_conduct_list($type="mine",$id=0){
+		
+		
+		$data =$this->get_qa_result($type,$id);
+		//print_test($data);
+		if($type=='id' AND !empty($id)){
+			$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'relis/manager/qa_conduct_result' );
+		}else{
+			$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
+		
+		}
+		$this->session->set_userdata('after_save_redirect',"relis/manager/qa_conduct_list/$type/$id");
+		if($type=='excluded'){
+			$data['page_title']=lng("Quality assessment validation - papers excluded");
+		}else{
+			$data['page_title']=lng("Quality assessment validation");
+		}
+		
+		$data['page']='relis/quality_assessment';
+		
+		
+		$this->load->view('body',$data);
+	}
+	function qa_conduct_list_val($type="mine",$id=0){
+	
+	
+		$data =$this->get_qa_result($type,$id,'QA_Val',FALSE);
+		//print_test($data);
+		if($type=='id' AND !empty($id)){
+			$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'relis/manager/qa_conduct_result' );
+		}else{
+			$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
+	
+		}
+		$this->session->set_userdata('after_save_redirect',"relis/manager/qa_conduct_list_val/$type/$id");
+		if($type=='excluded'){
+			$data['page_title']=lng("Quality assessment validation - papers excluded");
+		}else{
+			$data['page_title']=lng("Quality assessment validation");
+		}
+	
+		$data['page']='relis/quality_assessment_validation';
+	
+	
+		$this->load->view('body',$data);
+	}
+	
+	function qa_conduct_detail($id=0){
+	
+	
+		$data =$this->get_qa_result('id',$id);
+		
+		$Included=true;
+		foreach ($data['qa_list'] as $key => $value) {
+			if($value['status']=='Excluded_QA')
+				$Included=false;
+		}
+	//	print_test($data);
+		$data ['top_buttons']="";
+		if($Included){
+			$data ['top_buttons'].=get_top_button ( 'all', "Exclude the paper", 'relis/manager/qa_exlusion/'.$id ,'Exclude'," fa-minus",'','btn-danger' )." ";
+				
+		}else{
+			$data ['top_buttons'].= get_top_button ( 'all', 'Cancel the exclusion', 'relis/manager/qa_exlusion/'.$id."/0" , 'Cancel the exclusion'," fa-undo",'','btn-dark')." "  ;
+			
+		}
+		
+		$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'relis/manager/qa_conduct_result' );
+		
+		$this->session->set_userdata('after_save_redirect',"relis/manager/qa_conduct_detail/$id");
+	
+		$data['page_title']=lng("Quality assessment");
+	
+		$data['page']='relis/quality_assessment';
+	
+	
+		$this->load->view('body',$data);
+	}
+	
+	function qa_conduct_result($type="all"){
+		
+		//$type="all";
+		$data =$this->get_qa_result($type);
+		$qa_cutt_off_score=get_appconfig_element('qa_cutt_off_score');
+		$data['qa_cutt_off_score']=$qa_cutt_off_score;
+		//print_test($data);
+		$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
+	
+		
+		if($type=='excluded'){
+			$data['page_title']=lng("Quality assessment - excluded papers ")." : ".lng('Cut-off score')." : $qa_cutt_off_score ";
+		}else{
+			$data['page_title']=lng("Result of quality assessment ")." - ".lng('Cut-off score')." : $qa_cutt_off_score ";
+		}
+		$data['page']='relis/quality_assessment_result';
+	
+		$this->load->view('body',$data);
+	}
+	
+	
+	private function get_qa_result($type="mine",$id=0,$category='QA',$add_Link=True){
+	//print_test($type);
 		//get qa results
 		$qa_result = $this->db_current->order_by('qa_id', 'ASC')
 		->get_where('qa_result', array('qa_active'=>1))
 		->result_array();
-		
+	
 		//Put result in searchable array
 		$array_qa_result=array();
 		foreach ($qa_result as $key_result => $v_result) {
 			$array_qa_result[$v_result['paper_id']][$v_result['question']][$v_result['response']]=1;
 		}
 		//print_test($qa_result);
-	//	print_test($array_qa_result);
+		//	print_test($array_qa_result);
 		//get_assignments
-		if($type=='all'){
-			$extra_condition="";
+		
+		if($type=='id' AND !empty($id)){
+			$extra_condition=" AND paper_id= '".$id."' ";
+		}elseif($type=='all'){
+			$extra_condition=" AND screening_status='Included' ";
+		}elseif($type=='excluded'){
+			$extra_condition=" AND screening_status='Excluded_QA' ";
 		}else{
-			$extra_condition=" AND assigned_to= '".active_user_id()."' ";
+			$extra_condition=" AND screening_status='Included'  AND assigned_to= '".active_user_id()."' ";
 		}
-		$sql="SELECT Q.*,P.title FROM qa_assignment Q,paper P where Q.paper_id=P.id AND qa_assignment_active=1 AND paper_active=1 $extra_condition ";
+		if($category=='QA_Val'){
+			$sql="SELECT Q.*,Q.	qa_validation_assignment_id as assignment_id,Q.validation as status,P.title FROM qa_validation_assignment Q,paper P where Q.paper_id=P.id AND 	qa_validation_active=1 AND paper_active=1 $extra_condition ";
+		}else{
+			$sql="SELECT Q.*,Q.qa_assignment_id as assignment_id,P.title,P.screening_status as status FROM qa_assignment Q,paper P where Q.paper_id=P.id AND qa_assignment_active=1 AND paper_active=1 $extra_condition ";
+		}
+		
 		$assignments =$this->db_current->query($sql)->result_array();
 		//print_test($assignments);
-		
+	
 		$qa_questions = $this->db_current->order_by('question_id', 'ASC')
 		->get_where('qa_questions', array('question_active'=>1))
 		->result_array();
-		
+	
 		$qa_responses = $this->db_current->order_by('score', 'DESC')
 		->get_where('qa_responses', array('response_active'=>1))
 		->result_array();
-		
+	
 		//print_test($assignments);
-	//	print_test($qa_questions);
-	//	print_test($qa_responses);
-		
+		//	print_test($qa_questions);
+		//	print_test($qa_responses);
+		$users= $this->manager_lib->get_reference_select_values('users;user_name',FALSE,False);
+	
+	
+	
 		$all_qa=array();
 		$all_qa_html=array();
-		
+		$paper_completed=0;
 		foreach ($assignments as $key_assign => $v_assign) {
-			$all_qa[$v_assign['qa_assignment_id']]=array(
+	
+				
+			$all_qa[$v_assign['assignment_id']]=array(
 					'paper_id'=>$v_assign['paper_id'],
 					'title'=>$v_assign['title'],
-					
+					'status'=>$v_assign['status'],
+					'user'=>!empty($users[$v_assign['assigned_to']])?$users[$v_assign['assigned_to']]:'',
+						
 			);
 			$questions=array();
 			$q_result_score=0;
+			$q_done=0;
+			$q_pending=0;
+				
+				
 			foreach ($qa_questions as $k_question => $v_question) {
 				$questions[$v_question['question_id']]=array(
 						'question'=>$v_question,
 				);
 				$responses=array();
 				$q_result=!empty($array_qa_result[$v_assign['paper_id']][$v_question['question_id']])?1:0;
-				
+				$question_asw=0;
 				foreach ($qa_responses as $k_response => $v_response) {
 					if(empty($array_qa_result[$v_assign['paper_id']][$v_question['question_id']][$v_response['response_id']])){//see if the response have been chosed for the question
 						$res=0;
-						$link="relis/manager/qa_conduct_save/$q_result/".$v_assign['paper_id'].'/'.$v_question['question_id'].'/'.$v_response['response_id'];
-						
+						if($add_Link)
+							$link="relis/manager/qa_conduct_save/$q_result/".$v_assign['paper_id'].'/'.$v_question['question_id'].'/'.$v_response['response_id'];
+						else 
+							$link="";
 					}else{
 						$res=1;
 						$link="";
 						$q_result_score+=$v_response['score'];
+						$question_asw=1;
+	
 					}
 					$responses[$v_response['response_id']]=array(
 							'response'=>$v_response,
 							'result'=>$res,
 							'link'=>$link,
 					);
-				
-				
+	
+	
 				}
 				$questions[$v_question['question_id']]['responses']=$responses;
 				$questions[$v_question['question_id']]['q_result']=$q_result;
-			
+				if($question_asw){
+					$q_completed=1;
+					$q_done++;
+				}else{
+					$q_completed=0;
+					$q_pending++;
+				}
+				$questions[$v_question['question_id']]['completed']=$q_completed;
+					
 			}
-			
-			$all_qa[$v_assign['qa_assignment_id']]['q_result_score']=$q_result_score;;
-			$all_qa[$v_assign['qa_assignment_id']]['questions']=$questions;
-			
-			
+				
+			$all_qa[$v_assign['assignment_id']]['q_result_score']=$q_result_score;;
+			$all_qa[$v_assign['assignment_id']]['questions']=$questions;
+			$paper_done=0;
+			if(empty($q_pending)){
+				$paper_done=1;
+				$paper_completed++;
+			}
+			$all_qa[$v_assign['assignment_id']]['paper_done']=$paper_done;
+				
 		}
+	
 		
-		//print_test($all_qa);
 		$data ['qa_list']=$all_qa;
-		
-		$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
-		
-		$data['page_title']=lng("Quality assessment");
-		
-		$data['page']='relis/validation_result';
-		$data['page']='relis/quality_assessment';
-		
-		$this->load->view('body',$data);
+		$data ['paper_completed']=$paper_completed;
+	
+		return $data;
 	}
 	
 	function qa_conduct_save($update,$paper_id,$question,$response){
@@ -4714,10 +5176,77 @@ class Manager extends CI_Controller {
 			$this->db_current->update('qa_result',$qa_result,array('paper_id'=>$paper_id,'question'=>$question));
 		}
 		
-		//redirect('relis/manager/qa_conduct_list.html#paper_'.$paper_id);
+		$after_after_save_redirect=$this->session->userdata('after_save_redirect');
 		
-		header("Location: ".base_url().'relis/manager/qa_conduct_list.html#paper_'.$paper_id);
+		if(!empty($after_after_save_redirect)){
+			$this->session->set_userdata('after_save_redirect','');
+			
+		}else{
+			$after_after_save_redirect="relis/manager/qa_conduct_list";
+		}
+		
+		//update assignment
+		if($this->qa_done_for_paper($paper_id)){
+			$this->db_current->update('qa_assignment',array('qa_status'=>'Done'),array('paper_id'=>$paper_id));
+		}else{
+			//$this->db_current->update('qa_assignment',array('qa_status'=>'Pending'),array('paper_id'=>$paper_id));
+		}
+		header("Location: ".base_url().$after_after_save_redirect.'.html#paper_'.$paper_id);
 		die();
 		
+	}
+	
+	
+	
+	//Verify if all questions have been answered for the paper
+	private function qa_done_for_paper($paper_id){
+		
+	$sql="SELECT COUNT(*) AS nbr FROM
+		qa_questions Q LEFT JOIN qa_result R ON(Q.question_id=R.question AND R.qa_active=1 AND R.paper_id=$paper_id)
+		WHERE Q.question_active=1 AND paper_id IS NULL  ";
+		
+	$result =$this->db_current->query($sql)->row_array();
+	//print_test($result);
+	if(empty($result['nbr'])){
+		return TRUE;					//all questions have been responded
+	}else{
+		return FALSE;
+	}
+		
+	}
+	
+	
+function qa_exlusion($paper_id,$op=1){
+	
+		if($op==1){
+			$this->db_current->update('paper',array('screening_status'=>'Excluded_QA'),array('id'=>$paper_id));
+		}else{
+			$this->db_current->update('paper',array('screening_status'=>'Included'),array('id'=>$paper_id));
+		}
+		
+		$after_after_save_redirect="relis/manager/qa_conduct_result";
+		redirect($after_after_save_redirect);
+	
+	}
+	
+	function qa_validate($paper_id,$op=1){
+	
+		if($op==1){
+			$this->db_current->update('qa_validation_assignment',array('validation'=>'Correct'),array('paper_id'=>$paper_id));
+		}else{
+			$this->db_current->update('qa_validation_assignment',array('validation'=>'Not Correct'),array('paper_id'=>$paper_id));
+		}
+	
+		if(!empty($after_after_save_redirect)){
+			$this->session->set_userdata('after_save_redirect','');
+				
+		}else{
+			$after_after_save_redirect="relis/manager/qa_conduct_list_val";
+		}
+		
+		
+		header("Location: ".base_url().$after_after_save_redirect.'.html#paper_'.$paper_id);
+		die();
+	
 	}
 }

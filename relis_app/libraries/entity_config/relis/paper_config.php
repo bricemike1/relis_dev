@@ -146,6 +146,7 @@ function get_papers() {
 					'In review' => 'In review',
 					'Included' => 'Included',
 					'Excluded' => 'Excluded',
+					'Excluded_QA' => 'Excluded in QA',
 					'In conflict' => 'In conflict',
 					'Resolved included' => 'Resolved included',
 					'Resolved excluded' => 'Resolved excluded'				

@@ -400,8 +400,11 @@ class Install extends CI_Controller {
 		//Read installation configuration
 		$res_install_config= $this->entity_configuration_lib->get_install_config();
 	//	print_test($res_install_config);
-		
+		$project_short_name=$res_install_config['project_short_name'];
 		//cleaning old installation
+		if(!empty($res_install_config['class_action']) AND $res_install_config['class_action']!='override' ){
+			array_push($success_array, 'Classification no override');
+		}else{
 		$this->clean_previous_installation();
 	
 	
@@ -487,7 +490,7 @@ class Install extends CI_Controller {
 		
 		
 		
-		$project_short_name=$res_install_config['project_short_name'];
+	
 		
 		$sql_update_config="UPDATE config SET project_title ='".$project_title."',project_description='".$project_title."',run_setup=0 WHERE config_id =1 ";
 	
@@ -505,7 +508,23 @@ class Install extends CI_Controller {
 		array_push($success_array, 'Project updated');
 		
 		//update screening_values
-		
+		}
+
+		//add screening_values if available
+			
+		if(!empty($res_install_config['screening']) AND !(!empty($res_install_config['screen_action']) AND $res_install_config['screen_action']!='override')){
+			$this->update_screening_values($res_install_config['screening'],$project_short_name);
+				
+			array_push($success_array, 'Screening configuration added');
+		}
+			
+		//adding Qality assessment values
+	//	print_test($res_install_config);
+		if(!empty($res_install_config['qa'])  AND !(!empty($res_install_config['qa_action']) AND $res_install_config['qa_action']!='override')){
+			$this->update_qa_values($res_install_config['qa'],$project_short_name);
+				
+			array_push($success_array, 'Quality assessment configuration added');
+		}
 		$this->project_install_result($error_array,$success_array,'update_project');
 		
 		//echo "<h2>Installation done</h3>";
@@ -708,7 +727,13 @@ class Install extends CI_Controller {
 					array_push($success_array, 'Screening configuration added');
 			}
 			
-			
+			//adding Qality assessment values
+				
+			if(!empty($res_install_config['qa'])){
+					$this->update_qa_values($res_install_config['qa'],$project_short_name);
+					
+					array_push($success_array, 'Quality assessment configuration added');
+			}
 			
 			//$sql_update_config="UPDATE config SET project_title ='".$project_title."',project_description='Project description goes here',run_setup=0 WHERE config_id =1 ";
 			$creator=1;
@@ -1449,7 +1474,7 @@ class Install extends CI_Controller {
 		$config['screening_reviewer_number']=!empty($screening['review_per_paper'])?$screening['review_per_paper']:"2";	
 		$config['screening_screening_conflict_resolution']=!empty($screening['conflict_resolution'])?$screening['conflict_resolution']:"Unanimity";
 		$config['screening_conflict_type']=!empty($screening['conflict_type'])?$screening['conflict_type']:"IncludeExclude";
-		$config['validation_default_percentage']=!empty($screening['validation_percentage'])?$screening['validation_percentage']:"20cc";
+		$config['validation_default_percentage']=!empty($screening['validation_percentage'])?$screening['validation_percentage']:"20";
 		$config['screening_validator_assignment_type']=!empty($screening['validation_assigment_mode'])?$screening['validation_assigment_mode']:"Normal";
 		$config['screening_on']=1;
 	
@@ -1522,6 +1547,66 @@ class Install extends CI_Controller {
 		}
 		
 		
+	}
+	
+	
+	private function update_qa_values($qa,$target_db='current'){
+		$target_db=($target_db=='current')?project_db():$target_db;
+		$this->db3 = $this->load->database($target_db, TRUE);
+
+		$config['qa_cutt_off_score']=!empty($qa['cutt_off_score'])?$qa['cutt_off_score']:"2";
+		$config['qa_on']=1;
+	
+	
+	
+		$result=$this->db3->update ('config',$config,"config_id=1");
+	
+	
+	
+		//questions
+		if(!empty($qa['questions'])){
+			$all_phases=array();
+		$i=1;
+		$result=$this->db3->update ('qa_questions',array('question_active'=>0));
+			foreach ($qa['questions'] as $key => $value) {
+				$conf_phase['question']=$value['title'];
+				
+	
+				array_push($all_phases, $conf_phase);
+				$i++;
+	
+	
+			}
+				
+			
+			$result=$this->db3->insert_batch('qa_questions', $all_phases);
+		
+		}
+	
+	
+		// Add resposes
+	
+		if(!empty($qa['responses'])){
+			$all_responses=array();
+			$i=1;
+			$result=$this->db3->update ('qa_responses',array('response_active'=>0));
+			$conf_phase=array();
+			foreach ($qa['responses'] as $key => $value) {
+				$conf_phase['response']=$value['title'];
+				$conf_phase['score']=$value['score'];
+		
+		
+				array_push($all_responses, $conf_phase);
+				$i++;
+		
+		
+			}
+		
+				
+			$result=$this->db3->insert_batch('qa_responses', $all_responses);
+		
+		}
+	
 	}
 	
 }

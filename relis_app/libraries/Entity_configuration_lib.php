@@ -109,10 +109,15 @@ public function get_table_configuration($_table,$target_db='current')
 				require_once("entity_config/relis/qa_result_configuration.php");
 				$table_configurations['qa_result']=get_qa_result();
 				break;	
-				case 'qa_assignment':
-					require_once("entity_config/relis/qa_assignment_configuration.php");
-					$table_configurations['qa_assignment']=get_qa_assignment();
-					break;
+			case 'qa_assignment':
+				require_once("entity_config/relis/qa_assignment_configuration.php");
+				$table_configurations['qa_assignment']=get_qa_assignment();
+				break;
+			case 'qa_validation_assignment':
+				require_once("entity_config/relis/qa_validation_assignment_configuration.php");
+				$table_configurations['qa_validation_assignment']=get_qa_validation_assignment();
+				break;	
+				
 				// relis project
 			
 						
@@ -255,7 +260,7 @@ public function get_table_configuration($_table,$target_db='current')
 			
 			$result=$this->clean_install_config($res);
 		}
-		
+		//print_test($result); exit;
 		return $result;
 		
 	}
@@ -284,7 +289,10 @@ public function get_table_configuration($_table,$target_db='current')
 	
 	private function clean_install_config($install_config){
 		//cleaning reference tables
-	
+		if(!empty($install_config['report'])){
+			
+			$install_config['config']['classification']['report']=$install_config['report'];
+		}
 		$reference_tab=array();
 		if(!empty($install_config['reference_tables'])){
 			foreach ($install_config['reference_tables'] as $key_ref => $ref_values) {

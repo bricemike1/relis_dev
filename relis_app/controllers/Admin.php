@@ -75,7 +75,10 @@ class Admin extends CI_Controller {
 			$configurations=array('users','usergroup','project','user_project','logs','str_mng');
 			$data['left_menu_admin']=True;
 		}else{
-			$configurations=array('config','exclusioncrieria','papers_sources','search_strategy','author','venue','papers','paper_author','screen_phase','screening','screen_decison','str_mng','operations','qa_questions','qa_responses','qa_result','qa_assignment');
+			$configurations=array('config','exclusioncrieria','papers_sources',
+					'search_strategy','author','venue','papers','paper_author',
+					'screen_phase','screening','screen_decison','str_mng','operations'
+					,'qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment');
 		}
 		
 		 foreach ($configurations as $key => $value_config) {

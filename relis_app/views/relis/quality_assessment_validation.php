@@ -49,23 +49,45 @@
            //   print_test($qa_list)  ;
               $i=1;
                 foreach ($qa_list as $k_assign => $v_assign) {
+                	//print_test($v_assign);
+                	$completed=empty($v_assign['paper_done'])?'':"<button type='button' class='btn btn-round btn-success '> <i class='fa fa-check'></i> </button>";
+                	 
+                	$validate_ok_button=create_button ( 'Correct', 'relis/manager/qa_validate/'.$v_assign['paper_id'],'Correct',' btn-success');
+                	$validate_nok_button=create_button ( 'Not correct', 'relis/manager/qa_validate/'.$v_assign['paper_id'].'/0','Not correct',' btn-danger');
+                	
+                	
+                	if(empty($v_assign['status'])){//not validate yet
+                		$valid_but=	$validate_ok_button." ".$validate_nok_button;
+                		$result="";
+                	}else{
+                		if($v_assign['status']=='Correct'){
+                			$valid_but=$validate_nok_button;
+                			$result="<button type='button' class='btn btn-round btn-success '> <i class='fa fa-check'></i> </button>";
+                		}else{
+                			$valid_but=$validate_ok_button;
+                			$result="<button type='button' class='btn btn-round btn-danger '> <i class='fa fa-times'></i> </button>";
+                		}
+                	}
                 	
                 	$score="<span style='margin-right:10px'> <button type='button' class='btn btn-round btn-info '> ".$v_assign['q_result_score']." </button></span>";
                 	$completed=empty($v_assign['paper_done'])?'':"<button type='button' class='btn btn-round btn-success '> <i class='fa fa-check'></i> </button>";
                 	
                 	echo"<a name='paper_".$v_assign['paper_id']."'></a>";
-                	echo box_header(anchor('relis/manager/display_paper_min/'.$v_assign['paper_id'],'<u>'.$v_assign['title'].'</u>'.$score.' '.$completed),'<i>'.$v_assign['user'].'</i>',12,12,12);
+                	//$paper_title="<div>".." $valid_but</div>";
+                	echo box_header(anchor('relis/manager/display_paper_min/'.$v_assign['paper_id'],'<u>'.$v_assign['title'].'</u>'.$score).' '.$result,'<div style="text-align:right">'.$valid_but.'</div>',12,12,12);
                 	$questions=array( );
                 	foreach ($v_assign['questions'] as $key_q => $q) {
-                	
+                		
                 		$responses="";
                 		foreach ($q['responses'] as $key_response => $response) {
                 			$but="";
                 			if(empty($response['result'])){
                 				$but=create_button ( $response['response']['response'], $response['link'],$response['response']['response'],' btn-default');
                 			}else{
-                				$but=create_button ( $response['response']['response'], '',$response['response']['response']);
                 				
+                				
+                					$but=create_button ( $response['response']['response'], '',$response['response']['response'],' btn-dark');
+                			
                 			}
                 			
                 		

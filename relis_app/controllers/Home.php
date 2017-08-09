@@ -25,6 +25,10 @@ class Home extends CI_Controller {
 			redirect('home/screening');
 		}
 		
+		if($this->session->userdata('working_perspective')=='qa'){
+			redirect('home/qa');
+		}
+		
 		$left_menu = $this->manager_lib->get_left_menu();
 		
 	
@@ -154,7 +158,7 @@ class Home extends CI_Controller {
 			$general_screening_completion=$this->get_user_completion(0,active_screening_phase(),'Screening');
 			//print_test($general_screening_completion);
 			if(!empty($general_screening_completion['all_papers'])){
-				$data['general_screening_completion']['title']="General screening completion";
+				$data['general_screening_completion']['title']="Overall screening assignment  completion";
 				$data['general_screening_completion']['all_papers']=array('value'=>$general_screening_completion['all_papers'],
 						'title'=>'All',
 						'url'=>'op/entity_list/list_assignments'
@@ -234,14 +238,14 @@ class Home extends CI_Controller {
 			
 			$action_but=array();
 			if(can_manage_project())
-			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for screening', 'relis/manager/assignment_screen','Assign papers for screening','fa-mail-forward','',' btn-info action_butt ' ,False);
+			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for screening', 'relis/manager/assignment_screen','Assign papers','fa-mail-forward','',' btn-info action_butt ' ,False);
 			
 			if(can_review_project())
-			$action_but['screen']=get_top_button ( 'all', 'Screen papers', 'relis/manager/screen_paper','Screen papers','fa-toggle-right','',' btn-info action_butt ' ,False);
+			$action_but['screen']=get_top_button ( 'all', 'Screen papers', 'relis/manager/screen_paper','Screen','fa-search','',' btn-info action_butt ' ,False);
 			
 			if(can_manage_project() OR get_appconfig_element('screening_result_on') ){
-				$action_but['screen_result']=get_top_button ( 'all', 'Screening completion', 'relis/manager/screen_completion','Screening completion','fa-tasks','',' btn-info action_butt ' ,False);
-				$action_but['screen_completion']=get_top_button ( 'all', 'Screening result', 'relis/manager/screen_result','Screening result','fa-th','',' btn-info action_butt ' ,False);
+				$action_but['screen_result']=get_top_button ( 'all', 'Screening completion', 'relis/manager/screen_completion','Completion','fa-tasks','',' btn-info action_butt ' ,False);
+				$action_but['screen_completion']=get_top_button ( 'all', 'Screening result', 'relis/manager/screen_result','Result','fa-th','',' btn-info action_butt ' ,False);
 			}
 			
 			$data['action_but_screen']=$action_but;
@@ -249,11 +253,11 @@ class Home extends CI_Controller {
 			$action_but=array();
 			if(get_appconfig_element('screening_validation_on') ){
 				if(can_validate_project()){
-					$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/validate_screen_set','Assign papers for validation','fa-mail-forward','',' btn-primary action_butt ' ,False);
-					$action_but['screen']=get_top_button ( 'all', 'Validate screening', 'relis/manager/screen_paper_validation','Validate screening','fa-toggle-right','',' btn-primary action_butt ' ,False);
+					$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/validate_screen_set','Assign papers','fa-mail-forward','',' btn-primary action_butt ' ,False);
+					$action_but['screen']=get_top_button ( 'all', 'Validate screening', 'relis/manager/screen_paper_validation','Validate','fa-check-square-o','',' btn-primary action_butt ' ,False);
 				}
-				$action_but['screen_result']=get_top_button ( 'all', 'Validation completion', 'relis/manager/screen_completion/validate','Validation completion','fa-tasks','',' btn-primary action_butt ' ,False);
-				$action_but['screen_completion']=get_top_button ( 'all', 'Validation result', 'relis/manager/screen_validation_result','Validation result','fa-th','',' btn-primary action_butt ' ,False);
+				$action_but['screen_result']=get_top_button ( 'all', 'Validation completion', 'relis/manager/screen_completion/validate','Completion','fa-tasks','',' btn-primary action_butt ' ,False);
+				$action_but['screen_completion']=get_top_button ( 'all', 'Validation result', 'relis/manager/screen_validation_result','Result','fa-th','',' btn-primary action_butt ' ,False);
 					
 				$data['action_but_validate']=$action_but;
 			
@@ -273,6 +277,33 @@ class Home extends CI_Controller {
 			$this->load->view('body',$data);
 	
 		
+	}
+	
+	public function qa()//quality assessment
+	{
+		//update_paper_status_all();
+		//$this->session->set_userdata('working_perspective','screen');
+	
+	
+	
+		if(!($this->session->userdata ( 'project_db' ))){
+	
+			redirect('manager/projects_list');
+		}
+	
+		if($this->session->userdata('working_perspective')=='class'){
+			redirect('home');
+		}
+		
+		$data['configuration']=get_project_config($this->session->userdata ( 'project_db' ));
+				/*
+				 * Chargement de la vue qui va s'afficher
+				 *
+				 */
+				$data['page']='relis/h_qa';
+				$this->load->view('body',$data);
+	
+	
 	}
 	
 	function get_user_completion($user_id,$screening_phase,$phase_type='Screening'){
@@ -356,7 +387,7 @@ class Home extends CI_Controller {
 					$open_but="";
 				}
 				$temp=array(
-						'num'=>$i,
+				//		'num'=>$i,
 						
 						'Title'=>"Screening : ".$phase['phase_title'],
 						'State'=>$phase['phase_state'],
@@ -379,15 +410,15 @@ class Home extends CI_Controller {
 			$close_but="";
 			if(get_appconfig_element('qa_open')){
 				$select_but=get_top_button ( 'all', 'Go to QA', 'manager/set_perspective/qa','Go to','fa-send','',' btn-info ' ,False);
-				$close_but=get_top_button ( 'all', 'Lock the phase', 'manager/activate_classification/0','Close','fa-lock','',' btn-danger ' ,False);
+				$close_but=get_top_button ( 'all', 'Lock the phase', 'manager/activate_qa/0','Close','fa-lock','',' btn-danger ' ,False);
 				$qa_state="Open";
 			}else{
-				$open_but=get_top_button ( 'all', 'Unlock the phase', 'manager/activate_classification','Open','fa-unlock','',' btn-success ' ,False);
+				$open_but=get_top_button ( 'all', 'Unlock the phase', 'manager/activate_qa','Open','fa-unlock','',' btn-success ' ,False);
 				$qa_state="Closed";
 			}
 			
 			$qa=array(
-					'num'=>$i,
+			//		'num'=>$i,
 					'Title'=>'Quality assessment',
 					'State'=>$qa_state,
 					//'Final phase'=>'',
@@ -431,7 +462,7 @@ class Home extends CI_Controller {
 		}
 		
 		$class=array(
-				'num'=>$i,
+			//	'num'=>$i,
 				'Title'=>'Classification',
 				'State'=>$class_state,
 				//'Final phase'=>'',
@@ -448,7 +479,7 @@ class Home extends CI_Controller {
 		
 		if(!empty($phases_list)){
 		//	array_unshift($phases_list, array('#','Title','State','Screening final phase','My completion','General completion'));
-			array_unshift($phases_list, array('#','Title','State','My completion','General completion'));
+			array_unshift($phases_list, array(lng('Title'),lng('State'),lng('My completion'),lng('Overall  completion')));
 		}
 		
 	//	print_test($phases_list);
@@ -612,6 +643,27 @@ class Home extends CI_Controller {
 	 */
 	public function test_values(){
 		
+		$i=1;
+		
+		for($i=1;$i<=1;$i++){
+			/*
+			 * Préparation des valeurs qui sont générés de façon aléatoire
+			 */
+			$fields=array(
+					
+					'number_citation'=>rand(2 ,206)
+					
+		
+			);
+		
+			print_test($fields);
+		
+			/*
+			 * update des données
+			 */
+			//$headersaved = $this->db_current->update ( 'classification', $fields,array('class_paper_id'=>$i) );
+			//print_test($headersaved);
+		}
 		
 		$i=1;
 		
@@ -674,7 +726,7 @@ class Home extends CI_Controller {
 		
 		$i=1;
 		
-		for($i=41;$i<=50;$i++){
+		for($i=1;$i<=1;$i++){
 			/*
 			 * Préparation des valeurs qui sont générés de façon aléatoire
 			 */
@@ -689,7 +741,7 @@ class Home extends CI_Controller {
 		
 				);
 		
-				print_test($fields);
+				//print_test($fields);
 		
 				/*
 				 * Insertion des données

@@ -280,9 +280,46 @@ function get_configuration() {
 				'input_select_source'=>'yes_no',
 				'input_select_values'=>'',
 		);
-		
+		$fields['qa_validation_on']=array(
+				'field_title'=>'Quality assessment validation enabled',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'1',
+				'default_value'=>'0',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'',
+		);
+		$fields['qa_validation_default_percentage']=array(
+	   			'field_title'=>'QA validation default percentage',
+	   			'field_type'=>'int',	   			
+	   			'field_value'=>'20',
+	   			'default_value'=>'20',
+	   			'field_size'=>3,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' mandatory '
+	   	);
+		$fields['class_validation_on']=array(
+				'field_title'=>'Classification validation enabled',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'1',
+				'default_value'=>'0',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'',
+		);
+		$fields['class_validation_default_percentage']=array(
+	   			'field_title'=>'Classification validation default percentage',
+	   			'field_type'=>'int',	   			
+	   			'field_value'=>'20',
+	   			'default_value'=>'20',
+	   			'field_size'=>3,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' mandatory '
+	   	);
 		$fields['qa_cutt_off_score']=array(
-	   			'field_title'=>'Quality assessment cutt off score',
+	   			'field_title'=>'Quality assessment cut-off score',
 	   			'field_type'=>'real',	   			
 	   			'field_value'=>'20',
 	   			'default_value'=>'1.5',
@@ -447,6 +484,8 @@ function get_configuration() {
 	   					'qa_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'), 
 	   					
 	   						
 	   			),
@@ -458,6 +497,43 @@ function get_configuration() {
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
 	   							'url'=>'op/edit_element/edit_config_qa/~current_element~',
+	   					),
+	   					'back'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'',
+	   							'url'=>'home',
+	   					),
+	   	
+	   	
+	   	
+	   			),
+	   	);
+		
+		$operations['config_class']=array(
+	   			'operation_type'=>'Detail',
+	   			'operation_title'=>'Information for  Classification',
+	   			'operation_description'=>'Classification configuration',
+	   			'page_title'=>'Classification configuration',
+	   			'data_source'=>'get_detail_config',
+	   			'generate_stored_procedure'=>False,
+	   				
+	   			'fields'=>array(
+	   					
+	   					'classification_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'class_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'class_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'), 
+	   					
+	   						
+	   			),
+	   	
+	   	
+	   			'top_links'=>array(
+	   					'edit'=>array(
+	   							'label'=>'',
+	   							'title'=>'Edit',
+	   							'icon'=>'edit',
+	   							'url'=>'op/edit_element/edit_config_class/~current_element~',
 	   					),
 	   					'back'=>array(
 	   							'label'=>'',
@@ -645,7 +721,6 @@ function get_configuration() {
 	   			),
 	   				
 	   	);
-		
 		$operations['edit_config_qa']=array(
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit QA configurations',
@@ -656,7 +731,7 @@ function get_configuration() {
 	   	
 	   			'redirect_after_save'=>'op/display_element/config_qa/1',
 	   			'data_source'=>'get_detail_config',
-	   			'db_save_model'=>'update_config_da',
+	   			'db_save_model'=>'update_config_qa',
 	   	
 	   			'generate_stored_procedure'=>True,
 	   				
@@ -664,7 +739,45 @@ function get_configuration() {
 	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
 	   					'qa_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'), 
+	   					'qa_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'qa_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+						
+	   					  				
+	   			),
+	   	
+	   			'top_links'=>array(
+	   						
+	   					'back'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'close',
+	   							'url'=>'home',
+	   					)
+	   	
+	   			),
+	   				
+	   	);
+		$operations['edit_config_class']=array(
+	   			'operation_type'=>'Edit',
+	   			'operation_title'=>'Edit classification configurations',
+	   			'operation_description'=>'Edit classification configurations',
+	   			'page_title'=>'Edit classification configurations ',
+	   			'save_function'=>'op/save_element',
+	   			'page_template'=>'general/frm_entity',
+	   	
+	   			'redirect_after_save'=>'op/display_element/config_qa/1',
+	   			'data_source'=>'get_detail_config',
+	   			'db_save_model'=>'update_config_class',
+	   			'db_save_model'=>'update_config_class',
+	   	
+	   			'generate_stored_procedure'=>True,
+	   				
+	   			'fields'=>array(
+	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'classification_on'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   					'class_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'class_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						
 	   					  				
 	   			),

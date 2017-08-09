@@ -55,6 +55,16 @@ function get_operations_configuration() {
 			'tab_ref'=>'config',
 			'operation_id'=>'config_qa'
 	);
+	$operations['edit_config_class']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'config',
+			'operation_id'=>'edit_config_class'
+	);
+	$operations['config_class']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'config',
+			'operation_id'=>'config_class'
+	);
 	return $operations;
 	
 	

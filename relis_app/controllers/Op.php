@@ -59,9 +59,12 @@ class Op extends CI_Controller {
 		$table_id=$ref_table_config['table_id'];
 	
 		
-		if(!empty($ref_table_config['operations'][$ref_table_operation]['table_display_style']) 
-					AND ($ref_table_config['operations'][$ref_table_operation]['table_display_style']=='dynamic_table') ){
+		if(!empty($ref_table_config['operations'][$ref_table_operation]['table_display_style'])) {
+					if ($ref_table_config['operations'][$ref_table_operation]['table_display_style']=='dynamic_table' ){
 						$dynamic_table=1;
+					}else{
+						$dynamic_table=0;
+					}
 		}
 			
 		/*
@@ -313,7 +316,8 @@ class Op extends CI_Controller {
 				array_push($arr_buttons, array(
 						'url'=> $value_l['url'].$value [$table_id],
 						'label'=>$value_l['label'],
-						'title'=>$value_l['title']
+						'title'=>$value_l['title'],
+						'btn_type'=>!empty($value_l['btn_type'])?$value_l['btn_type']:'btn-info'
 							
 				)	);
 			}
@@ -431,6 +435,561 @@ class Op extends CI_Controller {
 			 * Chargement de la vue avec les données préparés dans le controleur
 			 */
 			$this->load->view('body',$data);
+	}
+	
+	public function entity_list_graph($operation_name,$val = "_",$page = 0,$graph='all'){
+		
+		
+		$dynamic_table=1;
+		$op=check_operation($operation_name,'List');
+	
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+	
+		
+	
+			/*
+			 * Vérification si il y a une condition de recherche
+			 */
+			$val = urldecode ( urldecode ( $val ) );
+			$filter = array ();
+			if (isset ( $_POST ['search_all'] )) {
+				$filter = $this->input->post ();
+	
+				unset ( $filter ['search_all'] );
+	
+				$val = "_";
+				if (isset ( $filter ['valeur'] ) and ! empty ( $filter ['valeur'] )) {
+					$val = $filter ['valeur'];
+					$val = urlencode ( urlencode ( $val ) );
+				}
+	
+				/*
+				 * mis à jours de l'url en ajoutant la valeur recherché dans le lien puis rechargement de l'url
+				 */
+				$url = "op/entity_list/" . $operation_name ."/". $val ."/0/".$graph;
+	
+				redirect ( $url );
+			}
+	
+			/*
+			 * Récupération de la configuration(structure) de la table à afficher
+			 */
+			$ref_table_config=get_table_configuration($ref_table);
+	
+			//print_test($ref_table_config['report']);
+			$table_id=$ref_table_config['table_id'];
+	
+	//	exit;
+			/*
+			 * Appel du model pour récupérer la liste à aficher dans la Base de donnés
+			 */
+			$rec_per_page=($dynamic_table)?-1:0;
+	
+	
+			$ref_table_config['current_operation']=$ref_table_operation;
+	
+			$data=$this->DBConnection_mdl->get_list_mdl($ref_table_config,$val,$page,$rec_per_page);
+	
+	
+			//print_test($data);
+	
+			/*
+			 * récupération des correspondances des clés externes pour l'affichage  suivant la structure de la table
+			 */
+			$graph_config=array(
+					'9'=>array(
+							'type'=>'compare',
+							'title'=>'Domain per year',
+							'values'=>array(
+									'field'=>'domain',
+									'style'=>'select',
+									'input_select_values'=>'ref_domain;ref_value',
+									'operation'=>'count'
+							),
+							'reference'=>array(
+									'field'=>'year',
+									'style'=>'free',
+									
+									'operation'=>'count'
+							),
+					),
+					'0'=>array(
+							'type'=>'simple',
+							'title'=>'Source language',
+							'values'=>array(
+									'field'=>'source_language',
+									'style'=>'select',
+									
+							),
+					),
+					'7'=>array(
+							'type'=>'simple',
+							'title'=>'Year',
+							'values'=>array(
+									'field'=>'year',
+									'style'=>'free',
+									
+									'operation'=>'count'
+							),
+					),
+					'8'=>array(
+							'type'=>'simple',
+							'title'=>'Domain',
+							'values'=>array(
+									'field'=>'domain',
+									'style'=>'select',
+									'input_select_values'=>'ref_domain;ref_value',
+									'operation'=>'count'
+							),
+					),
+					
+					'2'=>array(
+							'type'=>'simple',
+							'title'=>'Transformation language',
+							'values'=>array(
+									'field'=>'trans_language',
+									'style'=>'select',
+									'input_select_values'=>'ref_transformation_language;ref_value',
+									'input_select_values_multi'=>'trans_language;trans_language',
+									'operation'=>'count'
+							),
+					),
+					'19'=>array(
+							'type'=>'compare',
+							'title'=>'Transformation language',
+							'values'=>array(
+									'field'=>'trans_language',
+									'style'=>'select',
+									'input_select_values'=>'ref_transformation_language;ref_value',
+									'input_select_values_multi'=>'trans_language;trans_language',
+									'operation'=>'count'
+							),
+							'reference'=>array(
+									'field'=>'year',
+									'style'=>'free',
+										
+									'operation'=>'count'
+							),
+					),
+				
+			);
+			
+			$graph_config=array(
+					'9'=>array(
+							'type'=>'compare',
+							'title'=>'Domain per year',
+							'id'=>'domain_year',
+							'values'=>array(
+									'field'=>'domain',
+									'style'=>'select',
+									'input_select_values'=>'ref_domain;ref_value',
+									'title'=>'Domain',
+									'operation'=>'count'
+							),
+							'reference'=>array(
+									'field'=>'year',
+									'style'=>'free',
+									'title'=>'Year',
+										
+									'operation'=>'count'
+							),
+							'referencea'=>array(
+									'field'=>'source_language',
+									'style'=>'free',
+									'title'=>'Source lang',
+									'style'=>'select',
+							
+							),
+					),
+					'2'=>array(
+							'type'=>'simple',
+							'id'=>'graph_trans',
+							'title'=>'Transformation language',
+							'link'=>False,
+							'values'=>array(
+									'field'=>'trans_language',
+									'style'=>'select',
+									'input_select_values'=>'ref_transformation_language;ref_value',
+									'input_select_values_multi'=>'trans_language;trans_language',
+									'operation'=>'count'
+							),
+							),
+					'7'=>array(
+							'type'=>'simple',
+							'id'=>'graph_year',
+							'title'=>'Year',
+							'link'=>True,
+							'values'=>array(
+									'field'=>'year',
+									'style'=>'free',
+										
+									'operation'=>'count'
+							),
+					),
+					'8'=>array(
+							'type'=>'simple',
+							'id'=>'graph_domain',
+							'title'=>'Domain',
+							'link'=>True,
+							'values'=>array(
+									'field'=>'domain',
+									'style'=>'select',
+									'input_select_values'=>'ref_domain;ref_value',
+									'operation'=>'count'
+							),
+					),
+					'2'=>array(
+							'type'=>'simple',
+							'id'=>'graph_source_lang',
+							'link'=>True,
+							'title'=>'Source language',
+							'values'=>array(
+									'field'=>'source_language',
+									'style'=>'select',
+										
+							),
+					),
+			
+			);
+			
+			if(!empty($ref_table_config['report'])){
+				
+				$graph_config=$ref_table_config['report'];
+			}
+			
+			$fields_list_graph=array(); 
+			$fields_list_graph_all=array(); 
+			foreach ($graph_config as $key => $value) {
+				
+				if(!empty($value['values']['field']) AND $value['values']['style']=='select'){
+					$fields_list_graph[$value['values']['field']]=$value['values'];
+				}
+				$fields_list_graph_all[$value['values']['field']]=$value['values'];
+				
+				if(!empty($value['reference']['field']) AND $value['reference']['style']=='select'){
+					$fields_list_graph[$value['reference']['field']]=$value['reference'];
+				}
+				
+				if(!empty($value['reference']['field'])){
+					$fields_list_graph_all[$value['reference']['field']]=$value['reference'];
+				}
+			}
+			//$fields_list=array('domain'=>'domain','source_language'=>'source_language');
+			
+			//print_test($fields_list_graph);
+			
+			
+			$dropoboxes=array();
+			foreach ($fields_list_graph as $k_field => $v) {
+			//foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k_field => $v) {
+				if(!empty($ref_table_config['fields'][$k_field])){
+					$field_det=$ref_table_config['fields'][$k_field];
+					if(!empty($field_det['input_type']) AND $field_det['input_type']=='select' ){
+	
+	
+						if($field_det['input_select_source']=='array'){
+							//print_test($v);
+							$dropoboxes[$k_field]=$field_det['input_select_values'];
+						}elseif($field_det['input_select_source']=='table'){
+							$input_select_values=!empty($v['input_select_values'])?$v['input_select_values']:$field_det['input_select_values'];
+							$dropoboxes[$k_field]= $this->manager_lib->get_reference_select_values($input_select_values,False);
+							//	print_test($v);
+						}elseif($field_det['input_select_source']=='yes_no'){
+							$dropoboxes[$k_field]=array('0'=>"No",
+									'1'=>"Yes"
+							);
+						}
+					}
+				}
+			}
+	
+	
+	//	print_test($dropoboxes);
+		
+			/*
+			 * Préparation de la liste à afficher sur base du contenu et  stucture de la table
+			 */
+	
+			/**
+			 * @var array $field_list va contenir les champs à afficher
+			 */
+		
+			$field_list=array();
+			$field_list_header=array();
+			foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k => $v) {
+
+				if(!empty($ref_table_config['fields'][$k])){
+							
+					array_push($field_list, $k);
+	
+					$field_header=!empty($v['field_title'])?$v['field_title']:$ref_table_config['fields'][$k]['field_title'];
+	
+					array_push($field_list_header, $field_header);
+						
+						
+				}
+			}
+			//print_test($link_field_list);
+			$i=1;
+			$list_to_display=array();
+			
+			$T_result=array();
+	
+			foreach ($data['list'] as $key => $value) {
+				
+				
+				//Current_problem
+				foreach ($graph_config as $key_graph => $value_graph) {
+					//print_test($value_graph);
+					$title_graph=$value_graph['id'];
+					if($value_graph['type']=='simple'){
+						$v_field=$value_graph['values']['field'];
+						
+						if(isset($value[$v_field])){
+						
+							
+							$T_result[$title_graph][$value[$v_field]]=!empty($T_result[$title_graph][$value[$v_field]])?$T_result[$title_graph][$value[$v_field]]+1:1;
+						}else{
+							$element_array[$v_field]="";
+								
+							if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR
+							(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
+							
+								if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
+								{
+									if(!empty($value_graph['values']['input_select_values_multi'])){
+											
+										$input_select_values_multi=$value_graph['values']['input_select_values_multi'];
+									}else{
+											
+										$input_select_values_multi=$ref_table_config['fields'][$v_field]['input_select_values'];
+									}
+									$M_values=$this->manager_lib->get_element_multi_values($input_select_values_multi,$ref_table_config['fields'][$v_field]['input_select_key_field'],$data ['list'] [$key] [$table_id],1);
+										
+							
+									foreach ($M_values as $key_M => $value_M) {
+										
+										$T_result[$title_graph][$value_M]=!empty($T_result[$title_graph][$value_M])?$T_result[$title_graph][$value_M]+1:1;
+											
+									}
+								}
+							
+							}
+							
+						}
+						
+					}elseif($value_graph['type']=='compare'){// for compare the referemce must be single value
+					
+						$v_field=$value_graph['values']['field'];
+						$ref_field=$value_graph['reference']['field'];
+						
+						if(isset($value[$ref_field])){
+							
+							$reference_value=$value[$ref_field];
+							
+							if(isset($value[$v_field])){
+							
+								
+								$T_result[$title_graph][$reference_value][$value[$v_field]]=!empty($T_result[$title_graph][$reference_value][$value[$v_field]])?$T_result[$title_graph][$reference_value][$value[$v_field]]+1:1;
+							}else{
+								
+							
+								if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR
+										(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
+												
+											if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
+											{
+												if(!empty($value_graph['values']['input_select_values_multi'])){
+														
+													$input_select_values_multi=$value_graph['values']['input_select_values_multi'];
+												}else{
+														
+													$input_select_values_multi=$ref_table_config['fields'][$v_field]['input_select_values'];
+												}
+												$M_values=$this->manager_lib->get_element_multi_values($input_select_values_multi,$ref_table_config['fields'][$v_field]['input_select_key_field'],$data ['list'] [$key] [$table_id],1);
+							
+												//	$element_array[$v_field]=$M_values;
+												foreach ($M_values as $key_M => $value_M) {
+							
+													$T_result[$reference_value][$value_M]=!empty($T_result[$reference_value][$value_M])?$T_result[$reference_value][$value_M]+1:1;
+														
+												}
+											}
+												
+								}
+									
+							}
+							
+						}
+					}
+					
+				}
+				
+				
+				
+				
+				//test display all elements
+				$element_array=array();
+				
+				foreach ($fields_list_graph_all as $key_field=> $zv_field) {
+					$v_field=$zv_field['field'];
+					//print_test($v_field);
+					if(isset($value[$v_field])){
+						
+						$element_array[$v_field]=$value[$v_field];
+						
+					}else{
+							
+							
+							
+						$element_array[$v_field]="";
+							
+						if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR
+								(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
+										
+									if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
+									{
+										if(!empty($zv_field['input_select_values_multi'])){
+											
+											$input_select_values_multi=$zv_field['input_select_values_multi'];
+										}else{
+											
+											$input_select_values_multi=$ref_table_config['fields'][$v_field]['input_select_values'];
+										}
+										$M_values=$this->manager_lib->get_element_multi_values($input_select_values_multi,$ref_table_config['fields'][$v_field]['input_select_key_field'],$data ['list'] [$key] [$table_id],1);
+									
+										$element_array[$v_field]=$M_values;
+									}
+	
+						}
+	
+							
+					}
+	
+					
+	
+				}
+						
+					array_push($list_to_display,$element_array);						
+					$i++;
+			}
+		//print_test($T_result);	
+			
+			//Clean graph
+	//exit;
+	$result=array();
+	$Tzresult=array();
+			foreach ($graph_config as $key => $value) {
+				//print_test($value);
+				if(!empty($T_result[$value['id']])){
+					if($value['type']=='simple'){
+					
+						$data=array();
+						//ksort($T_result[$value['id']]);
+						ksort($T_result[$value['id']]);
+						foreach ($T_result[$value['id']] as $k => $v_data) {
+							$data[$k]['field']=$k;
+							$data[$k]['nombre']=$v_data;
+							$data[$k]['title']=!empty($dropoboxes[$value['values']['field']][$k])?$dropoboxes[$value['values']['field']][$k]:$k;
+						}
+						$result[$value['id']]=array(
+							'id'=>$value['id'],	
+							'title'=>$value['title'],	
+							'link'=>!empty($value['link'])?True:False,	
+							'type'=>$value['type'],	
+							//'type'=>'zzzz',	
+							'field'=>$value['values']['field'],	
+							'data'=>$data,	
+							'chart'=>$value['chart'],	
+						);
+					
+				}else{
+					ksort($T_result[$value['id']]);
+					//print_test($T_result[$value['id']]);
+					$p_data=array();
+					foreach ($T_result[$value['id']] as $k => $v_data) {
+						
+						ksort($v_data);
+						
+						$data_n=array();
+							foreach ($v_data as $kn => $vn_data) {
+								$data_n[$kn]['field']=$kn;
+								$data_n[$kn]['nombre']=$vn_data;
+								$data_n[$kn]['title']=!empty($dropoboxes[$value['values']['field']][$kn])?$dropoboxes[$value['values']['field']][$kn]:$k;
+							}
+						print_test($data_n);	
+						
+						$p_data[$k]['field']=$k;
+						$p_data[$k]['title']=!empty($dropoboxes[$value['reference']['field']][$k])?$dropoboxes[$value['reference']['field']][$k]:$k;
+						
+						$p_data[$k]['data']=$data_n;
+					}
+					$result[$value['id']]=array(
+							'id'=>$value['id'],
+							'title'=>$value['title'],
+							'link'=>!empty($value['link'])?True:False,
+							'reference_title'=>$value['reference']['title'],
+							'values_title'=>$value['values']['title'],
+							'type'=>$value['type'],
+							//'type'=>'zzzz',
+							'field'=>$value['values']['field'],
+							'p_data'=>$p_data,
+							'chart'=>$value['chart'],
+							
+					);
+					
+					//print_test($result[$value['id']]);
+				}
+				
+				}
+			}
+	
+	//print_test($result);
+	
+	//exit;
+
+		 $data ['graph_result']=$result;
+	
+	
+			/*
+			 * Ajout de l'entête de la liste
+			 */
+		
+	
+	
+	
+			/*
+			 * Création des boutons qui vont s'afficher en haut de la page (top_buttons)
+			 */
+	
+			$data ['top_buttons']="";
+
+			if(!empty($ref_table_config['operations'][$ref_table_operation]['top_links']))
+				$data ['top_buttons']=$this->create_top_buttons($ref_table_config['operations'][$ref_table_operation]['top_links']);
+				/*
+				 * Titre de la page
+				 */
+				
+				$data['page_title']=lng('Result');
+				
+				/*
+				 * Configuration pour l'affichage des lien de navigation
+				 */
+	
+				$data ['valeur']=($val=="_")?"":$val;
+	
+	
+				/*
+				 * La vue qui va s'afficher
+				 */
+	
+				$data['has_graph']='yes';
+					
+					
+				
+				$data['page']='relis/result_list_graph';
+				$this->load->view('body',$data);
 	}
 	
 	
