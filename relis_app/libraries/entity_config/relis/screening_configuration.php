@@ -339,7 +339,7 @@ function get_screening() {
 	   			'list_links'=>array(
 	   					'view'=>array(
 	   							'label'=>'View',
-	   							'title'=>'Disaly element',
+	   							'title'=>'Display element',
 	   							'icon'=>'folder',
 	   							'url'=>'op/display_element/display_assignment/',
 	   					),

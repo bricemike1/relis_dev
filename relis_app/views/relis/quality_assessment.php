@@ -89,6 +89,9 @@
                 }	
 		
 		          
+                }else{
+                	echo "<p>No records found !</p>";
+                	
                 }
                 ?>  
             	

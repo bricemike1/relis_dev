@@ -1196,8 +1196,8 @@ class Install extends CI_Controller {
 		
 	
 		if($config=='init'){
-			$old_configs=array('assignation','exclusion','papers');
-			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations','qa_questions','qa_responses','qa_result','qa_assignment');
+			$old_configs=array('exclusion','papers');
+			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
 			//$configs=get_relis_common_configs();
@@ -1400,7 +1400,7 @@ class Install extends CI_Controller {
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
 		
 		if($config=='init'){
-			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations','qa_questions','qa_responses','qa_result','qa_assignment');
+			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation');
 			}else{
 			$configs=array($config);
 		

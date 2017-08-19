@@ -16,7 +16,7 @@ class Op extends CI_Controller {
 	 * 			$val : valeur de recherche si une recherche a été faite sur la table en cours
 	 * 			$page: la page affiché : ulilisé dans la navigation
 	 */
-	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=0){
+	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=1){
 			
 		$op=check_operation($operation_name,'List');
 
@@ -918,7 +918,7 @@ class Op extends CI_Controller {
 								$data_n[$kn]['nombre']=$vn_data;
 								$data_n[$kn]['title']=!empty($dropoboxes[$value['values']['field']][$kn])?$dropoboxes[$value['values']['field']][$kn]:$k;
 							}
-						print_test($data_n);	
+						
 						
 						$p_data[$k]['field']=$k;
 						$p_data[$k]['title']=!empty($dropoboxes[$value['reference']['field']][$k])?$dropoboxes[$value['reference']['field']][$k]:$k;
@@ -2014,7 +2014,7 @@ class Op extends CI_Controller {
 		$post_arr = $this->input->post ();
 		
 		
-		//print_test($post_arr);
+		//print_test($post_arr); exit;
 		/*
 		 * Récupération de la configuration (structure ) de la table qui est concerné
 		 */

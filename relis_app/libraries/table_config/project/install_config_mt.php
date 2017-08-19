@@ -957,6 +957,20 @@ $result[ 'qa' ]=$qa;
 
 //REPORTING
 $report=array();
+
+$report['trans_language']['type']='simple';
+$report['trans_language']['title']='Trans language';
+$report['trans_language']['id']='trans_language';
+$report['trans_language']['link']='false';
+$report['trans_language']['values']['field']='trans_language';
+$report['trans_language']['values']['style']='select';
+$report['trans_language']['values']['title']='Trans language';
+$charts=array();
+array_push($charts, "pie");
+//array_push($charts, "line");
+$report['trans_language']['chart']=$charts;
+
+
 $report['domain']['type']='simple';
 $report['domain']['title']='Domain';
 $report['domain']['id']='domain';
@@ -968,6 +982,7 @@ $charts=array();
 array_push($charts, "pie");
 //array_push($charts, "line");
 $report['domain']['chart']=$charts;
+
 $report['year']['type']='simple';
 $report['year']['title']='Year';
 $report['year']['id']='year';

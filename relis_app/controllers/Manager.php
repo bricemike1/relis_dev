@@ -1686,6 +1686,7 @@ class Manager extends CI_Controller {
 	
 	
 	public function projects_list(){
+		//phpinfo();
 		$this->session->set_userdata('working_perspective','class');
 		$config="project";
 		$this->session->set_userdata('project_db',FALSE);

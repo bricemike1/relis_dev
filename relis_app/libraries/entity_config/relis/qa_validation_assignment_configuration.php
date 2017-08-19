@@ -79,9 +79,18 @@ function get_qa_validation_assignment() {
 	   			)
 	   	);
 	   	$fields['validation_time']=array(
-	   			'field_title'=>'validation time',
-	   			'field_type'=>'time',
+	   			'field_title'=>'Validation time',
+	   			'field_type'=>'text',
 				'field_size'=>20,
+				'input_type'=>'text',
+	   			
+	   	);
+	   	
+		$fields['validation_note']=array(
+	   			'field_title'=>'Validation note',
+	   			'field_type'=>'text',
+	   			'field_size'=>1000,
+	   			'input_type'=>'textarea',
 	   			
 	   	);
 	   	
@@ -173,6 +182,44 @@ function get_qa_validation_assignment() {
 					'paper_id'=>array('mandatory'=>'','field_state'=>'disabled'),
 					'assigned_to'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'validation'=>array('mandatory'=>'','field_state'=>'hidden'),
+							
+				),
+		
+				'top_links'=>array(
+							
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'close',
+										'url'=>'home',
+									)
+				
+				),
+					
+		);
+		
+		$operations['qa_not_valid']=array(
+				'operation_type'=>'Edit',
+				'operation_title'=>'QA not valid',
+				'operation_description'=>'QA not valid',
+				'page_title'=>'Quality assessment not valid ',
+				'save_function'=>'op/save_element',
+				'page_template'=>'general/frm_entity',
+				
+				'redirect_after_save'=>'relis/manager/qa_conduct_list_val',
+				'data_source'=>'get_detail_qa_validation_assignment',
+				'db_save_model'=>'update_qa_validation',
+				
+		
+				'generate_stored_procedure'=>True,
+					
+				'fields'=>array(
+					
+					'qa_validation_assignment_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+					'paper_id'=>array('mandatory'=>'mandatory','field_state'=>'disabled'),
+					'validation_note'=>array('mandatory'=>'mandatory','field_state'=>'enabled','field_title'=>'What is not correct with the classification'),
+					'validation_time'=>array('mandatory'=>'mandatory','field_state'=>'hidden','field_value'=>bm_current_time()),
+					'validation'=>array('mandatory'=>'mandatory','field_state'=>'hidden','field_value'=>'Not Correct'),
 							
 				),
 		
@@ -296,18 +343,20 @@ function get_qa_validation_assignment() {
 				'table_display_style'=>'dynamic_table',
 				
 				'data_source'=>'get_list_qa_validation_assignment',
-				'generate_stored_procedure'=>True,
+				'generate_stored_procedure'=>FALSE,
 					
 				'fields'=>array(
 					'qa_validation_assignment_id'=>array(),
 					'paper_id'=>array(
 					'link'=>array(
-								'url'=>'op/display_element/detail_qa_validation_assignment/',
-								'id_field'=>'qa_validation_assignment_id',
+								'url'=>'relis/manager/qa_conduct_list_val/id/',
+							
+								'id_field'=>'paper_id',
 								'trim'=>'50'
 							)),
 					'assigned_to'=>array(),
 					'validation'=>array(),
+					'validation_note'=>array(),
 					'Validation_time'=>array(),
 							
 				),
@@ -315,22 +364,12 @@ function get_qa_validation_assignment() {
 		
 				'list_links'=>array(
 					
-						'edit'=>array(
-									'label'=>'Edit',
-									'title'=>'Edit',
-									'icon'=>'edit',
-									'url'=>'op/edit_element/edit_qa_validation/',
-								)
+						
 												
 				),
 				
 				'top_links'=>array(
-							'add'=>array(
-										'label'=>'',
-										'title'=>'Add new',
-										'icon'=>'add',
-										'url'=>'op/add_element/add_qa_validation_assignment',
-									),
+						
 							'close'=>array(
 										'label'=>'',
 										'title'=>'Close',

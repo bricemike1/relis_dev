@@ -123,7 +123,11 @@ function get_operations_qa() {
 			'tab_ref'=>'qa_assignment',
 			'operation_id'=>'remove_qa_assignment'
 	);
-	
+	$operations['list_qa_validation']=array(
+			'type'=>'List',
+			'tab_ref'=>'qa_validation_assignment',
+			'operation_id'=>'list_qa_validation'
+	);
 	$operations['list_qa_validation_assignment']=array(
 			'type'=>'List',
 			'tab_ref'=>'qa_validation_assignment',
@@ -134,6 +138,12 @@ function get_operations_qa() {
 			'tab_ref'=>'qa_validation_assignment',
 			'operation_id'=>'remove_qa_validation_assignment'
 	);
+	$operations['qa_not_valid']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'qa_validation_assignment',
+			'operation_id'=>'qa_not_valid'
+	);
+	
 	return $operations;
 	
 	

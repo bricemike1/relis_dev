@@ -40,7 +40,32 @@
           
           
           <br />
-         
+          <div class="row">
+            
+            <?php 
+            if(!empty($qa_completion))
+            add_completion_gauge($qa_completion,'id_qa_completion');
+            
+             if(!empty($qa_completion_val))
+            add_completion_gauge($qa_completion_val,'id_validation_completion');
+           
+            
+            ?>
+                 
+       <!--  </div>
+         <div class="row">
+         -->     
+            <?php 
+            if(!empty($gen_qa_completion))
+            add_completion_gauge($gen_qa_completion,'id_gen_screen_completion');
+            
+             if(!empty($gen_qa_completion_val))
+            add_completion_gauge($gen_qa_completion_val,'id_gen_validation_completion');
+           
+            
+            ?>
+                 
+         </div>
         </div>
         
         <!-- /page content -->

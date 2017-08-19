@@ -270,8 +270,12 @@ function get_config_user() {
 				'generate_stored_procedure'=>True,
 					
 				'fields'=>array(
-						'user_id'=>array(),
-						'user_name'=>array('trim'=>5),
+						//'user_id'=>array(),
+						'user_name'=>array('link'=>array(
+								'url'=>'op/display_element/detail_user/',
+								'id_field'=>'user_id',
+								'trim'=>'0'
+							)),
 						'user_username'=>array(),
 						'user_mail'=>array(),
 						'user_usergroup'=>array(),
@@ -298,7 +302,7 @@ function get_config_user() {
 				),
 				*/
 				'list_links'=>array(
-						'view'=>array(
+					/*	'view'=>array(
 									'label'=>'View',
 									'title'=>'Disaly element',
 									'icon'=>'folder',
@@ -310,11 +314,12 @@ function get_config_user() {
 									'icon'=>'edit',
 									'url'=>'op/edit_element/edit_user/',
 								),
-						'delete'=>array(
+						
+								*/
+								'delete'=>array(
 									'label'=>'Delete',
 									'title'=>'Delete the user',
-									'url'=>'op/delete_element/remove_user/'
-								)
+									'url'=>'op/delete_element/remove_user/')
 												
 				),
 				

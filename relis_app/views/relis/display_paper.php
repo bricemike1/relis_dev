@@ -168,28 +168,7 @@
 								}
 								echo "</table>"."<br/><br/>";
 								
-								/* 
-								foreach ($data_classifications as $key => $classification) {
-									//print_test($classification);
-									
-									
-							
-									echo "<table class='table table-striped'>";
-									if(isset($remove_classification_button[$key])){
-										echo "<tr><th colspan='2'><ul class='nav navbar-right panel_toolbox'>".$remove_classification_button[$key]."</th><tr></ul>";
-											
-									}
-									foreach($classification as $k=>$v){
-										echo "<tr>";
-										echo "<th style='width:20%'>".$v['title']."</th><td>".$v['val']."</td>";
-										echo "<tr>";
-										 
-									}
-									echo "</table>"."<br/><br/>";
-							
-								}
 								
-								*/
 							}
 							?>
 							
@@ -198,7 +177,9 @@
 					</div>
 				</div>
 				
-				
+				<?php 
+				if(!empty($op_type) AND $op_type=='class'){
+				?>
 				
 				<div class="row">
 					<div class="col-md-12 col-sm-12 col-xs-12">
@@ -206,7 +187,7 @@
 							<div class="x_title">
 							<h2>
 							<?php 
-							echo lng('Assignations');
+							echo lng('Assignments');
 							if(!empty($data_assignations)){
 								 
 								echo "(".count($data_assignations).")";
@@ -267,7 +248,10 @@
                 
                 
                 
-                <?php }?>
+                <?php
+				}
+				
+				}?>
                 
                 
                   </div>

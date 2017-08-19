@@ -99,6 +99,8 @@ class Home extends CI_Controller {
 	
 	public function screening()
 	{
+		
+	//	
 		//update_paper_status_all();
 		//$this->session->set_userdata('working_perspective','screen');
 		
@@ -117,7 +119,7 @@ class Home extends CI_Controller {
 				redirect('home/screening_select');
 		}
 			
-		
+		//$this->calculate_kappa();
 		$data['screening_phase_info']=active_screening_phase_info();
 		
 		//print_test($screening_phase_info);
@@ -279,12 +281,109 @@ class Home extends CI_Controller {
 		
 	}
 	
+
+	
 	public function qa()//quality assessment
 	{
 		//update_paper_status_all();
 		//$this->session->set_userdata('working_perspective','screen');
 	
-	
+		$completion=$this->manager_lib->get_qa_completion('QA');
+		
+		$general_completion=$completion['general_completion'];
+		$user_completion=$completion['user_completion'];
+		$active_user_id=active_user_id();
+		if(!empty($user_completion[$active_user_id]['all'])){
+			
+			$data['qa_completion']['title']="My completion";
+			$data['qa_completion']['all_papers']=array('value'=>$user_completion[$active_user_id]['all'],
+					'title'=>'All',
+					'url'=>'relis/manager/qa_conduct_list'
+			);
+			$data['qa_completion']['pending_papers']=array('value'=>!empty($user_completion[$active_user_id]['pending'])?$user_completion[$active_user_id]['pending']:0,
+					'title'=>'Pending',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/pending'
+			);
+			$data['qa_completion']['done_papers']=array('value'=>!empty($user_completion[$active_user_id]['done'])?$user_completion[$active_user_id]['done']:0,
+					'title'=>'Done',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/done'
+			);
+			
+		
+			$data['qa_completion']['gauge_all']=$user_completion[$active_user_id]['all'];
+			$data['qa_completion']['gauge_done']=($user_completion[$active_user_id]['done'])?$user_completion[$active_user_id]['done']:0;
+		}
+		
+		if(!empty($general_completion['all'])){
+				
+			$data['gen_qa_completion']['title']="Overall completion";
+			$data['gen_qa_completion']['all_papers']=array('value'=>$general_completion['all'],
+					'title'=>'All',
+					'url'=>'relis/manager/qa_conduct_list'
+			);
+			$data['gen_qa_completion']['pending_papers']=array('value'=>!empty($general_completion['pending'])?$general_completion['pending']:0,
+					'title'=>'Pending',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/pending'
+			);
+			$data['gen_qa_completion']['done_papers']=array('value'=>!empty($general_completion['done'])?$general_completion['done']:0,
+					'title'=>'Done',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/done'
+			);
+				
+		
+			$data['gen_qa_completion']['gauge_all']=$general_completion['all'];
+			$data['gen_qa_completion']['gauge_done']=($general_completion['done'])?$general_completion['done']:0;
+		}
+		
+		
+		
+		$completion_val=$this->manager_lib->get_qa_completion('QA_Val');
+		
+		$general_completion_val=$completion_val['general_completion'];
+		$user_completion_val=$completion_val['user_completion'];
+		
+		
+		if(!empty($user_completion_val[$active_user_id]['all'])){
+				
+			$data['qa_completion_val']['title']="My validation completion";
+			$data['qa_completion_val']['all_papers']=array('value'=>$user_completion_val[$active_user_id]['all'],
+					'title'=>'All',
+					'url'=>'relis/manager/qa_conduct_list_val'
+			);
+			$data['qa_completion_val']['pending_papers']=array('value'=>!empty($user_completion_val[$active_user_id]['pending'])?$user_completion_val[$active_user_id]['pending']:0,
+					'title'=>'Pending',
+					'url'=>'relis/manager/qa_conduct_list_val/mine/0/pending'
+			);
+			$data['qa_completion_val']['done_papers']=array('value'=>!empty($user_completion_val[$active_user_id]['done'])?$user_completion_val[$active_user_id]['done']:0,
+					'title'=>'Done',
+					'url'=>'relis/manager/qa_conduct_list_val/mine/0/done'
+			);
+				
+		
+			$data['qa_completion_val']['gauge_all']=$user_completion_val[$active_user_id]['all'];
+			$data['qa_completion_val']['gauge_done']=($user_completion_val[$active_user_id]['done'])?$user_completion_val[$active_user_id]['done']:0;
+		}
+		
+		if(!empty($general_completion_val['all'])){
+		
+			$data['gen_qa_completion_val']['title']="Overall validation completion";
+			$data['gen_qa_completion_val']['all_papers']=array('value'=>$general_completion_val['all'],
+					'title'=>'All',
+					'url'=>'relis/manager/qa_conduct_list'
+			);
+			$data['gen_qa_completion_val']['pending_papers']=array('value'=>!empty($general_completion_val['pending'])?$general_completion_val['pending']:0,
+					'title'=>'Pending',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/pending'
+			);
+			$data['gen_qa_completion_val']['done_papers']=array('value'=>!empty($general_completion_val['done'])?$general_completion_val['done']:0,
+					'title'=>'Done',
+					'url'=>'relis/manager/qa_conduct_list/mine/0/done'
+			);
+		
+		
+			$data['gen_qa_completion_val']['gauge_all']=$general_completion_val['all'];
+			$data['gen_qa_completion_val']['gauge_done']=($general_completion_val['done'])?$general_completion_val['done']:0;
+		}
 	
 		if(!($this->session->userdata ( 'project_db' ))){
 	
@@ -404,7 +503,30 @@ class Home extends CI_Controller {
 		
 		//quality assessment
 		
+		
 		if(get_appconfig_element('qa_on')){
+			
+			$active_user_id=active_user_id();
+			$completion=$this->manager_lib->get_qa_completion('QA');
+			
+			//print_test($completion);
+			
+			$general_completion=$completion['general_completion'];
+			$user_completion=$completion['user_completion'];
+			if(!empty($general_completion['all'])){
+				$done=(!empty($general_completion['done']))?$general_completion['done']:0;
+				$gen_qa_perc=!empty($general_completion['all'])?round(($done*100 / $general_completion['all']),2)." %":'-';
+			}else{
+				$gen_qa_perc="-";
+			}
+			
+			if(!empty($user_completion[$active_user_id]['all'])){
+				$done=(!empty($user_completion[$active_user_id]['done']))?$user_completion[$active_user_id]['done']:0;
+				$usr_qa_perc=!empty($user_completion[$active_user_id]['all'])?round(($done*100 / $user_completion[$active_user_id]['all']),2)." %":'-';
+			}else{
+				$usr_qa_perc="-";
+			}
+			
 			$select_but="";
 			$open_but="";
 			$close_but="";
@@ -422,8 +544,8 @@ class Home extends CI_Controller {
 					'Title'=>'Quality assessment',
 					'State'=>$qa_state,
 					//'Final phase'=>'',
-					'User_completion'=>'',
-					'Gen_completion'=>'',
+					'User_completion'=>$usr_qa_perc,
+					'Gen_completion'=>$gen_qa_perc,
 					'action'=>$open_but.$close_but.$select_but,
 			);
 			array_push($phases_list, $qa);
@@ -1459,5 +1581,130 @@ class Home extends CI_Controller {
 			
 			print_test($nuser);
 			
+		}
+		
+		
+		
+		public function get_screen_for_kappa(){
+			
+			
+			$screening_phase_info=active_screening_phase_info();
+			$current_phase=active_screening_phase();
+		//	print_test($screening_phase_info);
+			
+			$sql="select paper_id,user_id,screening_decision	
+					FROM screening_paper 
+					WHERE  assignment_mode='auto' AND  screening_status='done' AND screening_phase = $current_phase AND screening_active=1";
+			echo $sql;
+			$result=$this->db_current->query($sql)->result_array();
+			
+		//	print_test($result);
+			$result_kappa=array();
+			foreach ($result as $key => $value) {
+				if(!isset($result_kappa[$value['paper_id']])){
+					$result_kappa[$value['paper_id']]=array(
+							'Included'=>0,
+							'Excluded'=>0,
+					);
+				}
+				
+				if(!empty($value['screening_decision']) AND ($value['screening_decision']=='Included' OR $value['screening_decision']=='Excluded')){
+					$result_kappa[$value['paper_id']][$value['screening_decision']]+=1;
+				}
+				
+			}
+			
+			//print_test($result_kappa);
+			$result_kappa_clean=array();
+			foreach ($result_kappa as $k => $v) {
+				array_push($result_kappa_clean, array($v['Included'],$v['Excluded']));
+			}
+			
+			//print_test($result_kappa_clean);
+			
+			return $result_kappa_clean;
+		}
+		
+		
+		
+		public function calculate_kappa(){
+		
+			
+			$matrice=array(
+					0=>array(2,0),
+					1=>array(1,1),
+					2=>array(0,2)
+					
+			);
+			
+			$matrice=array(
+					0=>array(0,0,0,0,14),
+					1=>array(0,2,6,4,2),
+					2=>array(0,0,3,5,6),
+					3=>array(0,3,9,2,0),
+					4=>array(2,2,8,1,1),
+					5=>array(7,7,0,0,0),
+					6=>array(3,2,6,3,0),
+					7=>array(2,5,3,2,2),
+					8=>array(6,5,2,1,0),
+					9=>array(6,5,2,1,0)
+						
+			);
+			
+		$matrice= $this->get_screen_for_kappa();
+		
+		print_test($matrice);
+			
+			$N=count($matrice);
+			$k=count($matrice[0]);
+			$n=0;
+			foreach ($matrice[0] as $key => $value) {
+				$n+=$value;
+			}
+			
+			
+			print_test($N);
+			print_test($n);
+			print_test($k);
+			
+			$p=array();
+			
+			for ($j = 0; $j < $k; $j++) {
+				$p[$j]=0.0;
+				for ($i = 0; $i < $N; $i++) {
+					$p[$j]=$p[$j]+$matrice[$i][$j];
+				}
+				
+				$p[$j]=$p[$j]/($N*$n);
+			}
+			
+			print_test($p);
+			
+			
+			$P=array();
+			for ($j = 0; $j < $N; $j++) {
+				$P[$j]=0.0;
+				for ($i = 0; $i < $k; $i++) {
+					$P[$j]=$P[$j] + ($matrice[$j][$i] * $matrice[$j][$i] );
+				}
+			
+				$P[$j]=($P[$j]-$n) / ($n*($n-1));
+			}
+			
+			print_test($P);
+			
+			$Pbar = array_sum ($P) / $N;
+			
+			print_test($Pbar);
+			$PbarE=0.0;
+			foreach ($p as $key => $value) {
+				$PbarE+= $value*$value;
+			}
+			
+			print_test($PbarE);
+			
+			$kappa=($Pbar - $PbarE)/(1-$PbarE);
+			
+			print_test($kappa);
 		}
 }

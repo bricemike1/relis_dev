@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `config` (
 
 
 INSERT INTO `config` (`config_id`, `config_type`, `editor_url`, `editor_generated_path`, `csv_field_separator`, `csv_field_separator_export`, `screening_screening_conflict_resolution`, `screening_conflict_type`, `import_papers_on`, `assign_papers_on`, `screening_validation_on`, `screening_result_on`, `source_papers_on`, `search_strategy_on`,`key_paper_prefix`,`key_paper_serial`, `config_active`) VALUES
-(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/relis_workspace', ';', ',', 'Unanimity', 'IncludeExclude', 1, 1, 1,  1, 1, 1,'Paper_',1, 1);;;;
+(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/dslforge_workspace', ';', ',', 'Unanimity', 'IncludeExclude', 1, 1, 1,  1, 1, 1,'Paper_',1, 1);;;;
 
 DROP TABLE IF EXISTS `exclusion`;;;;
 CREATE TABLE IF NOT EXISTS `exclusion` (

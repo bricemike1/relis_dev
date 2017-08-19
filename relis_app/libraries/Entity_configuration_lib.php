@@ -117,7 +117,10 @@ public function get_table_configuration($_table,$target_db='current')
 				require_once("entity_config/relis/qa_validation_assignment_configuration.php");
 				$table_configurations['qa_validation_assignment']=get_qa_validation_assignment();
 				break;	
-				
+			case 'assignation':
+				require_once("entity_config/relis/class_assignment_configuration.php");
+				$table_configurations['assignation']=get_class_assignment();
+				break;
 				// relis project
 			
 						
@@ -126,10 +129,7 @@ public function get_table_configuration($_table,$target_db='current')
 					$table_configurations['exclusion']=get_exclusion();
 					break;
 				
-				case 'assignation':
-					require_once("entity_config/relis/assignation_config.php");
-					$table_configurations['assignation']=get_assignation();
-					break;
+				
 					
 				/*case 'assignment_screen':
 					require_once("entity_config/relis/assignment_screen_config.php");

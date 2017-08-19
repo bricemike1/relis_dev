@@ -63,7 +63,9 @@
                     		$value['field_value']=$v_field['field_value'];
                     		$operation_field_value=$v_field['field_value'];
                     	}
-                    	 
+                    	if(!empty($v_field['field_title'])){
+                    		$value['field_title']=$v_field['field_title'];
+                    	}
                     		
 						$value['field_title']=lng($value['field_title']);
 						
