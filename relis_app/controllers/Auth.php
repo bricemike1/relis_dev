@@ -97,6 +97,8 @@ class Auth extends CI_Controller {
 				//used for redirection after saving data
 				$this->session->set_userdata('after_save_redirect','');
 				$this->session->set_userdata('current_screen_phase','');
+				$this->session->set_userdata('debug_paper_code','init');
+				$this->session->set_userdata('debug_paper_url','init');
 				//$this->session->set_userdata('project_db','mt');
 				//$this->session->set_userdata('project_db','stm');
 				

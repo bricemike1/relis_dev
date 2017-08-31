@@ -33,6 +33,11 @@ public function get_table_configuration($_table,$target_db='current')
 				$table_configurations['user_project']=get_user_project();
 				break;	
 				
+						
+			case 'config_admin':
+				require_once("entity_config/config_admin_configuration.php");
+				$table_configurations['config_admin']=get_admin_configuration();
+				break;	
 				
 			case 'config':
 					require_once("entity_config/config_configuration.php");
@@ -122,14 +127,17 @@ public function get_table_configuration($_table,$target_db='current')
 				$table_configurations['assignation']=get_class_assignment();
 				break;
 				// relis project
-			
+				case 'debug':
+					require_once("entity_config/debug_configuration.php");
+					$table_configurations['debug']=get_config_debug();
+					break;
 						
 				case 'exclusion':
 					require_once("entity_config/relis/exclusion_config.php");
 					$table_configurations['exclusion']=get_exclusion();
 					break;
 				
-				
+			
 					
 				/*case 'assignment_screen':
 					require_once("entity_config/relis/assignment_screen_config.php");

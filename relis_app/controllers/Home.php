@@ -428,7 +428,7 @@ class Home extends CI_Controller {
 	
 	public function screening_select()
 	{
-		
+		//debug_comment_diaplay();
 		
 		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
 												->get_where('screen_phase', array('screen_phase_active'=>1))

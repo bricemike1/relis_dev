@@ -31,7 +31,7 @@
                   
                   <div class="x_content" style="min-height:400px ">
                   
-                 <iframe src="http://127.0.0.1:8080/relis/texteditor" frameborder="1" width="100%" height="1000px;">
+                 <iframe src="<?php echo $editor_url?>" frameborder="1" width="100%" height="1000px;">
     alternative content for browsers which do not support iframe.
 </iframe>
                   

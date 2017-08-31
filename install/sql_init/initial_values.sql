@@ -28,6 +28,20 @@ CREATE TABLE IF NOT EXISTS `config` (
 INSERT INTO `config` (`config_id`, `config_type`, `project_title`, `project_description`, `default_lang`, `creator`, `run_setup`, `rec_per_page`, `config_active`) VALUES
 (1, 'default', 'Admin', 'Admin project', 'en', 1, 0, 30, 1)$$
 
+DROP TABLE IF EXISTS `config_admin`$$
+CREATE TABLE IF NOT EXISTS `config_admin` (
+  `config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `config_type` varchar(100) NOT NULL,
+  `editor_url` varchar(100) NOT NULL,
+  `editor_generated_path` varchar(100) NOT NULL,
+  `track_comment_on` int(2) NOT NULL DEFAULT '0',
+  `config_active` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`config_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1$$
+
+INSERT INTO `config_admin` (`config_id`, `config_type`, `editor_url`, `editor_generated_path`, `track_comment_on`, `config_active`) VALUES
+(1, '', 'http://127.0.0.1:8080/relis/texteditor', 'C:\\dslforge_workspace', 0, 1)$$
+
 
 
 DROP TABLE IF EXISTS `log`$$
@@ -548,5 +562,23 @@ BEGIN
 START TRANSACTION;
 UPDATE  userproject SET userproject_id = _userproject_id , project_id = _project_id , user_role = _user_role
 WHERE (userproject_id = _element_id);
+COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_detail_config_admin`$$
+CREATE PROCEDURE `get_detail_config_admin`(IN _row_id INT)
+BEGIN
+START TRANSACTION;
+SELECT * FROM config_admin
+WHERE config_id= _row_id;
+COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `update_config_admin`$$
+CREATE PROCEDURE `update_config_admin`(_element_id INT , _config_id INT , _editor_url  VARCHAR(105) , _editor_generated_path  VARCHAR(105) , _track_comment_on INT)
+BEGIN
+START TRANSACTION;
+UPDATE  config_admin SET config_id = _config_id , editor_url = _editor_url , editor_generated_path = _editor_generated_path , track_comment_on = _track_comment_on
+WHERE (config_id = _element_id);
 COMMIT;
 END$$

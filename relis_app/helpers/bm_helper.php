@@ -680,6 +680,32 @@ function get_appconfig_element($element="all",$source="db"){
 	
 }
 
+function get_adminconfig_element($element="all",$source="db"){
+	$ci = get_instance ();
+
+	$config=$ci->DBConnection_mdl->get_row_details('config_admin','1');
+
+	if(!empty($config[$element])){
+		return $config[$element];
+	}else{
+		return "0";
+	}
+
+}
+
+function debug_coment_active(){
+	$ci = get_instance ();
+
+	$config=$ci->DBConnection_mdl->get_row_details('config_admin','1');
+
+	if(!empty($config['track_comment_on'])){
+		return $config['track_comment_on'];
+	}else{
+		return "0";
+	}
+
+}
+
 function set_appconfig_element($element_label,$value,$source="db"){
 	$ci = get_instance ();
 
@@ -711,9 +737,9 @@ function get_project_config($project_label){
 function admin_config($config,$config_name=True,$type='config'){
 	
 	if($type=='table'){
-		$admin_configs=array('users','usergroup','log','projects','userproject');
+		$admin_configs=array('users','usergroup','log','projects','userproject','config_admin');
 	}else{
-		$admin_configs=array('users','usergroup','logs','project','user_project');
+		$admin_configs=array('users','usergroup','logs','project','user_project','config_admin');
 	}
 	
 	
@@ -724,7 +750,7 @@ function admin_config($config,$config_name=True,$type='config'){
 		$cfg=$config['config_label'];
 		
 	}
-	if($config=='str_mng' AND project_db() =='default'  ){
+	if(($config=='str_mng' OR $config=='debug'  ) AND project_db() =='default'  ){
 		
 		return TRUE;
 	}else{
@@ -1613,3 +1639,110 @@ function user_project($project_id , $user=0,$user_role=""){
 		return get_appconfig_element('screening_validator_assignment_type');
 	
 	}
+	
+	function debug_comment_button(){
+		$ci = get_instance() ;
+		$dir=$ci->router->fetch_directory();
+		$class=$ci->router->fetch_class();
+		$method=$ci->router->fetch_method();
+	
+		if($method=='entity_list'
+				OR	$method=='display_element'
+				OR	$method=='add_element'
+				OR	$method=='add_element_child'
+				OR	$method=='add_element_drilldown'
+				OR	$method=='edit_element'
+				OR	$method=='edit_drilldown'
+				OR	$method=='delete_element'
+				OR	$method=='delete_drilldown'
+				){
+						
+					$method.='_'.$ci->uri->segment(3);
+		}
+		$url=current_url();
+	
+		$paper_code=slug($dir.$class.$method);
+		$ci->session->set_userdata('debug_paper_code',$paper_code);
+		$ci->session->set_userdata('debug_paper_url',$url);
+	
+	
+		$add_button='<a  class="btn btn-xs btn-warning" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"
+									data-modal_link="op/add_element_modal/add_debug"
+									data-modal_title=" Debub comment" ><i class="fa fa-plus"></i>Add comment</a>';
+	
+		return $add_button;
+	
+	
+	}
+	
+	
+	function debug_comment_display(){
+		$ci = get_instance() ;
+		$dir=$ci->router->fetch_directory();
+		$class=$ci->router->fetch_class();
+		
+		$method=$ci->router->fetch_method();
+		
+		if($method=='entity_list' 
+			 OR	$method=='display_element'
+			 OR	$method=='add_element'
+			 OR	$method=='add_element_child'
+			 OR	$method=='add_element_drilldown'
+			 OR	$method=='edit_element'
+			 OR	$method=='edit_drilldown'
+			 OR	$method=='delete_element'
+			 OR	$method=='delete_drilldown'
+				){
+			
+			$method.='_'.$ci->uri->segment(3);
+		}
+		$url=current_url();
+		
+		$paper_code=slug($dir.$class.$method);
+		$ci->session->set_userdata('debug_paper_code',$paper_code);
+		$ci->session->set_userdata('debug_paper_url',$url);
+		
+		
+		$add_button='<a  class="btn btn-xs btn-info" data-toggle="modal" data-target="#relisformModal" data-operation_type="2"
+									data-modal_link="op/add_element_modal/add_debug"
+									data-modal_title=" Debub comment" ><i class="fa fa-plus"></i>Add</a>';
+		
+	//	echo "<div>".$add_button."</div>";
+		
+		
+		$sql="select debug_id,title,comment,creation_time,status from debug where page_code like '$paper_code' AND debug_active=1 ";
+		
+		$res=$ci->db_current->query($sql)->result_array();
+		
+		
+		
+		foreach ($res as $key => $value) {
+			$res[$key]['link']=anchor('op/display_element/detail_debug/'.$value['debug_id'],'<u><b>Display</b></u>');
+			unset($res[$key]['debug_id']);
+		}
+		
+		if(!empty($res)){
+			
+			array_unshift($res, array('Title','Comment','Time','Status',''));
+			//print_test($res);
+			
+			$tmpl = array (
+					'table_open'  => '<table class="table table-striped table-hover">',
+					'table_close'  => '</table>'
+			);
+			
+			$ci->table->set_template($tmpl);
+			echo " <br/> <hr/> <h3>Debug comments</h3>";
+			echo $ci->table->generate($res);
+			
+			
+		}
+		
+	
+	}
+	
+	function get_debug_info($element){
+		$ci = get_instance() ;
+		return $ci->session->userdata($element);
+	}
+	

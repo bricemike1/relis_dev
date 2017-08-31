@@ -29,7 +29,11 @@ class Install extends CI_Controller {
 	
 		if($type == 'admin'){
 			$data['left_menu_admin']=True;
+			$data['editor_url']=get_adminconfig_element('editor_url');
+		}else{
+			$data['editor_url']=get_appconfig_element('editor_url');
 		}
+	
 		/*
 		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 		 */
@@ -54,10 +58,11 @@ class Install extends CI_Controller {
 	public function install_form_editor(){
 		
 		
+		//$dir=$this->config->item('editor_generated_path');
+		//$editor_url=$this->config->item('editor_url');
 		
-		
-		$dir=$this->config->item('editor_generated_path');
-		$editor_url=$this->config->item('editor_url');
+		$dir=get_appconfig_element('editor_generated_path');		
+		$editor_url=get_appconfig_element('editor_url');
 		
 		
 		$Tprojects=array();
@@ -149,6 +154,9 @@ class Install extends CI_Controller {
 		 * @var string  $editor_url  the url adress of ReLiS Editor: 
 		 */
 		$editor_url=$this->config->item('editor_url');
+		
+		$dir=get_adminconfig_element('editor_generated_path');
+		$editor_url=get_adminconfig_element('editor_url');
 		
 		
 		$Tprojects=array();
@@ -1197,7 +1205,9 @@ class Install extends CI_Controller {
 	
 		if($config=='init'){
 			$old_configs=array('exclusion','papers');
-			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','str_mng','config','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation');
+			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
+					,'paper_author','venue','screen_phase','screening','screen_decison','str_mng'
+					,'config','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation','debug');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
 			//$configs=get_relis_common_configs();
@@ -1400,7 +1410,9 @@ class Install extends CI_Controller {
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
 		
 		if($config=='init'){
-			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author','paper_author','venue','screen_phase','screening','screen_decison','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation');
+			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
+					,'paper_author','venue','screen_phase','screening','screen_decison'
+					,'operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation','debug');
 			}else{
 			$configs=array($config);
 		

@@ -65,6 +65,18 @@ function get_operations_configuration() {
 			'tab_ref'=>'config',
 			'operation_id'=>'config_class'
 	);
+	
+	
+	$operations['edit_admin_config']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'config_admin',
+			'operation_id'=>'edit_admin_config'
+	);
+	$operations['admin_config']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'config_admin',
+			'operation_id'=>'admin_config'
+	);
 	return $operations;
 	
 	

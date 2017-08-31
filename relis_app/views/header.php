@@ -135,6 +135,8 @@
                   </span>                  
                 </li >
 			 	<?php 
+			 	if(debug_coment_active())
+			 		echo "<li>".debug_comment_button().'</li>';
 				if($this->session->userdata('project_title')){
 				?>
 					<li>

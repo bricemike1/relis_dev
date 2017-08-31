@@ -1110,6 +1110,13 @@ class Op extends CI_Controller {
 	 * 			$operation: type de l'opération ajout (new) ou modification(edit)
 	 * 			$display_type: indique comment le formulaire va être afficher normal ou modal(pop- up)
 	 */
+	
+	
+	public function add_element_modal($operation_name, $data = "", $operation ='new',$display_type="normal",$op_type="Add") {
+		
+		$this->add_element($operation_name, $data , $operation ,'modal',$op_type);
+	}
+	
 	public function add_element($operation_name, $data = "", $operation ='new',$display_type="normal",$op_type="Add") {
 		
 		$op=check_operation($operation_name,$op_type);

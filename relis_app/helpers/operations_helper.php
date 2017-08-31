@@ -86,6 +86,9 @@ function check_operation($operation,$type="List") {
 	include_once('operations/op_classification.php');
 	$operations=array_merge($operations,get_operations_classification());
 	
+	include_once('operations/op_debug.php');
+	$operations=array_merge($operations,get_operations_debug());
+	
 	if(project_db() != 'default')
 	{	include_once('operations/op_generated.php');
 		$operations=array_merge($operations,get_operations_generated());

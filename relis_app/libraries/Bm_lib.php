@@ -48,6 +48,11 @@ class Bm_lib
 	//$time=time();
 	//$this->CI->session->set_userdata('request_time',  time());
 	
+		//print_test($this->CI->router->fetch_directory());
+		//print_test($this->CI->router->fetch_class());
+		//print_test($this->CI->uri->segment(2));
+		//print_test(current_url());
+	
 	}
 		
 	/*

@@ -1688,8 +1688,15 @@ class Manager extends CI_Controller {
 	public function projects_list(){
 		//phpinfo();
 		$this->session->set_userdata('working_perspective','class');
+		
+		
+	//	$this->session->set_userdata('project_db',$projet_label);
+		$this->session->set_userdata('project_id',FALSE);
+		$this->session->set_userdata('project_title','');
+		
+		
 		$config="project";
-		$this->session->set_userdata('project_db',FALSE);
+		$this->session->set_userdata('project_db','default');
 		$ref_table_config=get_table_configuration($config);
 		
 		$ref_table_config['current_operation']='list_projects';
@@ -1718,7 +1725,7 @@ class Manager extends CI_Controller {
 		//print_test($data['projects']['list']);
 		
 		if(has_usergroup(1) OR has_usergroup(2))
-		$data ['add_project_button'] = get_top_button ( 'all', 'Add new project', 'install/new_project','Add new project','fa-plus','',' btn-primary ',false );
+		$data ['add_project_button'] = get_top_button ( 'all', 'Add new project', 'install/new_project_editor','Add new project','fa-plus','',' btn-primary ',false );
 			
 		$data['page']='general/projects_list';
 		

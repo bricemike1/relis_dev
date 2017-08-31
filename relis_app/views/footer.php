@@ -1,7 +1,16 @@
 <!-- footer content -->
 
  <!-- Large modal -->
-               
+       <footer>
+        <?php 
+        if(debug_coment_active())
+        debug_comment_display();
+        ?>
+          <div class="pull-right">
+          <?php echo lng('ReLiS - Revue Littéraire Systématique');?>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
                   <div class="modal fade bs-example-modal-lg" id="relisformModal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
@@ -69,12 +78,7 @@
                   </script>
 
 
-        <footer>
-          <div class="pull-right">
-          <?php echo lng('ReLiS - Revue Littéraire Systématique');?>
-          </div>
-          <div class="clearfix"></div>
-        </footer>
+        
         <!-- /footer content -->
       </div>
     </div>

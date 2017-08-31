@@ -3862,6 +3862,8 @@ class Manager extends CI_Controller {
 	
 	
 	public function screen_result($type=1){
+		
+		
 		$users=$this->manager_lib->get_reference_select_values('users;user_name');
 		$exclusion_crit=$this->manager_lib->get_reference_select_values('exclusioncrieria;ref_value');
 		//print_test($users);
@@ -4052,7 +4054,7 @@ class Manager extends CI_Controller {
 		
 		}
 		$kappa=$this->calculate_kappa();
-	
+		$kappa_meaning='-';
 		
 	//	print_test($kappa_meaning);
 		$k_display="";
@@ -4063,8 +4065,9 @@ class Manager extends CI_Controller {
 		
 		$data['result_per_criteria']=$result_per_criteria;
 	
-		
-		$data ['page_title'] = lng('Screening Results').$k_display;
+		$data['kappa']=$kappa;
+		$data['kappa_meaning']=$kappa_meaning;
+		$data ['page_title'] = lng('Screening Results');//.$k_display;
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 		$data['left_menu_perspective']='left_menu_screening';
 		$data['project_perspective']='screening';
@@ -5761,10 +5764,13 @@ function qa_exlusion($paper_id,$op=1){
 		}
 			
 			
-	//	print_test($N);
-	//	print_test($n);
-	//	print_test($k);
-			
+		//print_test($N);
+		//print_test($n);
+		//print_test($k);
+		
+		if($n==1){
+			$kappa='one user';
+		}else{
 		$p=array();
 			
 		for ($j = 0; $j < $k; $j++) {
@@ -5799,12 +5805,16 @@ function qa_exlusion($paper_id,$op=1){
 			$PbarE+= $value*$value;
 		}
 			
-	//	print_test($PbarE);
+		//print_test($PbarE);
+		
+		//added to avoid division by zero
+		if($PbarE==1)
+			$PbarE=2;
 			
 		$kappa=($Pbar - $PbarE)/(1-$PbarE);
 			
 		$kappa=round($kappa,2);
-		
+		}
 		return  $kappa;
 		}
 	//	print_test($kappa);
@@ -5812,14 +5822,15 @@ function qa_exlusion($paper_id,$op=1){
 	
  public function kappa_meaning($kappa){
  	$interpretation = '';
- 	if ($kappa < 0)$interpretation = 'poor';
+ 	if ($kappa < 0)$interpretation = 'Poor';
  	elseif( 0.01 <= $kappa AND $kappa <= 0.2)
- 	$interpretation = 'slight';
- 	elseif( 0.21 <= $kappa AND $kappa <= 0.4) $interpretation = 'fair';
- 	elseif( 0.41 <= $kappa AND $kappa <= 0.6) $interpretation = 'moderate';
- 	elseif( 0.61 <= $kappa AND $kappa <= 0.8) $interpretation = 'substantial';
- 	elseif( 0.81 <= $kappa AND $kappa < 1) $interpretation = 'almost perfect';
- 	elseif( $kappa >= 1) $interpretation = 'perfect';
+ 	$interpretation = 'Slight';
+ 	elseif( 0.21 <= $kappa AND $kappa <= 0.4) $interpretation = 'Fair';
+ 	elseif( 0.41 <= $kappa AND $kappa <= 0.6) $interpretation = 'Moderate';
+ 	elseif( 0.61 <= $kappa AND $kappa <= 0.8) $interpretation = 'Substantial';
+ 	elseif( 0.81 <= $kappa AND $kappa < 1) $interpretation = 'Almost perfect';
+ 	elseif( $kappa >= 1) $interpretation = 'Perfect';
+ 	elseif( $kappa == 'one user') $interpretation = 'Just one paricipant';
  	else $interpretation= 'something went wrong...';
  	
  	

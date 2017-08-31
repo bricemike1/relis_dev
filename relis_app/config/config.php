@@ -301,10 +301,17 @@ $config['common_relis_configs'] = array('assignation','author','config','exclusi
 $config['project_specific_config_folder']="relis_app/libraries/table_config/project/";
 
 // The prefix that will have the new databases for projects  installed
-$config['project_db_prefix'] = "relis_dev_new2_";
+$config['project_db_prefix'] = "relis_dev_correct_";
 
 // Added configuration
 
+
+$config['project_db_host'] = "localhost";
+ 	$config['project_db_user'] = "root";
+ 	$config['project_db_pass'] = "";
+ 
+
+$config['base_url'] = "http://localhost/relis/relis_dev";
 
 $config['project_db_host'] = "localhost";
  	$config['project_db_user'] = "root";

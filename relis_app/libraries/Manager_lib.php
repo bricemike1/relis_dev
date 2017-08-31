@@ -1333,6 +1333,8 @@ class Manager_lib
 				
 			$menu['settings']['menu']['install_form_editor']=array('label'=>'Update Installation','url'=>'install/install_form_editor','icon'=>'refresh');
 			$menu['settings']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
+			if(debug_coment_active())
+			$menu['settings']['menu']['debug']=array('label'=>'Debug comment','url'=>'op/entity_list/list_debug','icon'=>'cogs');
 			
 		}
 			
@@ -1365,8 +1367,17 @@ class Manager_lib
 		$menu['general']['menu']['logs']=array('label'=>'Logs','url'=>'op/entity_list/list_logs','icon'=>'sliders');
 		
 		$menu['general']['menu']['str_mng']=array('label'=>'String mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
+		
+		$menu['general']['menu']['configuration']=array('label'=>'Configuration','url'=>'op/display_element/admin_config/1','icon'=>'cog');
+		
 		$menu['general']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
+		
+		
+		
 		}
+		
+		if(debug_coment_active())
+			$menu['general']['menu']['debug']=array('label'=>'Debug comment','url'=>'op/entity_list/list_debug','icon'=>'cogs');
 		
 		return $menu;
 	}
