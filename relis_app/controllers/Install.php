@@ -1207,7 +1207,7 @@ class Install extends CI_Controller {
 			$old_configs=array('exclusion','papers');
 			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
 					,'paper_author','venue','screen_phase','screening','screen_decison','str_mng'
-					,'config','operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation','debug');
+					,'config','operations','qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug');
 			
 			//$configs=array('assignation','author','class_scheme','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue');
 			//$configs=get_relis_common_configs();
@@ -1412,7 +1412,7 @@ class Install extends CI_Controller {
 		if($config=='init'){
 			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
 					,'paper_author','venue','screen_phase','screening','screen_decison'
-					,'operations','qa_questions','qa_responses','qa_result','qa_assignment','assignation','debug');
+					,'operations','qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug');
 			}else{
 			$configs=array($config);
 		
@@ -1435,7 +1435,7 @@ class Install extends CI_Controller {
 	
 	private function populate_common_tables_views($target_db='current'){
 		$target_db=($target_db=='current')?project_db():$target_db;
-		$configs=array('papers');
+		$configs=array('papers','assignation');
 		foreach ($configs as $key => $value) {
 			$table_configuration=get_table_configuration($value);
 			if(!empty($table_configuration['table_views'])){

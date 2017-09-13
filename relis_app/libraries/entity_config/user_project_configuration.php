@@ -67,7 +67,7 @@ function get_user_project() {
 			'input_select_source'=>'array',
 			'input_select_values'=>array('Reviewer' => 'Reviewer',
 					'Validator' => 'Validator',
-					'Project admin' => 'Project admin',
+					'Project admin' => 'Project manager',
 					'Guest' => 'Guest'			
 			),
 			

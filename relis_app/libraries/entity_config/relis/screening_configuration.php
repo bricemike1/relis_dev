@@ -217,8 +217,12 @@ function get_screening() {
 	   			'generate_stored_procedure'=>True,
 	   		  
 	   			'fields'=>array(
-	   					'screening_id'=>array(),
-	   					'paper_id'=>array(),
+	   					//'screening_id'=>array(),
+	   					'paper_id'=>array('link'=>array(
+								'url'=>'op/display_element/display_assignment/',
+								'id_field'=>'screening_id',
+								'trim'=>'80'
+							)),
 	   					'user_id'=>array(),
 	   					//'assignment_note'=>array(),
 	   					//'assignment_type'=>array(),
@@ -249,7 +253,7 @@ function get_screening() {
 	   			),
 	   	
 	   			'list_links'=>array(
-	   					'view'=>array(
+	   					/*'view'=>array(
 	   							'label'=>'View',
 	   							'title'=>'Display element',
 	   							'icon'=>'folder',
@@ -260,10 +264,10 @@ function get_screening() {
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
 	   							'url'=>'op/edit_element/edit_assignment/',
-	   					),
+	   					),*/
 	   					'delete'=>array(
-	   							'label'=>'Delete',
-	   							'title'=>'Delete assignment',
+	   							'label'=>'Cancel',
+	   							'title'=>'Cancel assignment',
 	   							'url'=>'op/delete_element/remove_assignment/'
 	   					)
 	   	
@@ -284,6 +288,7 @@ function get_screening() {
 			$operations['list_assignments_validation']=$operations['list_assignments'];
 			$operations['list_assignments_validation']['page_title']='Assignments for validation';
 			$operations['list_assignments_validation']['conditions']['assignment_role']['value']='Validation';
+			$operations['list_assignments_validation']['list_links']['delete']['url']='op/delete_element/remove_assignment_val/';
 			
 			
 		
@@ -299,8 +304,12 @@ function get_screening() {
 	   			'generate_stored_procedure'=>True,
 	   		  
 	   			'fields'=>array(
-	   					'screening_id'=>array(),
-	   					'paper_id'=>array(),
+	   					//'screening_id'=>array(),
+	   					'paper_id'=>array('link'=>array(
+								'url'=>'op/display_element/display_assignment/',
+								'id_field'=>'screening_id',
+								'trim'=>'80'
+							)),
 	   					'user_id'=>array(),
 	   					//'assignment_note'=>array(),
 	   					//'assignment_type'=>array(),
@@ -337,7 +346,7 @@ function get_screening() {
 	   			),
 	   	
 	   			'list_links'=>array(
-	   					'view'=>array(
+	   				/*	'view'=>array(
 	   							'label'=>'View',
 	   							'title'=>'Display element',
 	   							'icon'=>'folder',
@@ -353,7 +362,7 @@ function get_screening() {
 	   							'label'=>'Delete',
 	   							'title'=>'Delete assignment',
 	   							'url'=>'op/delete_element/remove_assignment/'
-	   					)
+	   					)*/
 	   	
 	   			),
 	   	
@@ -387,8 +396,12 @@ function get_screening() {
 	   			'generate_stored_procedure'=>True,
 	   	
 	   			'fields'=>array(
-	   					'screening_id'=>array(),
-	   					'paper_id'=>array(),
+	   					//'screening_id'=>array(),
+	   					'paper_id'=>array('link'=>array(
+								'url'=>'op/display_element/display_screening/',
+								'id_field'=>'screening_id',
+								'trim'=>'80'
+							)),
 	   					'user_id'=>array(),
 	   					'screening_decision'=>array(),
 	   					'exclusion_criteria'=>array(),
@@ -422,12 +435,12 @@ function get_screening() {
 	   			),
 	   		  
 	   			'list_links'=>array(
-	   					'view'=>array(
+	   					/*'view'=>array(
 	   							'label'=>'View',
 	   							'title'=>'Disaly element',
 	   							'icon'=>'folder',
 	   							'url'=>'op/display_element/display_screening/',
-	   					),
+	   					),*/
 	   					'edit'=>array(
 	   							'label'=>'Edit',
 	   							'title'=>'Edit',
@@ -476,8 +489,12 @@ function get_screening() {
 	   			'generate_stored_procedure'=>True,
 	   	
 	   			'fields'=>array(
-	   					'screening_id'=>array(),
-	   					'paper_id'=>array(),
+	   					//'screening_id'=>array(),
+	   					'paper_id'=>array('link'=>array(
+								'url'=>'op/display_element/display_screening/',
+								'id_field'=>'screening_id',
+								'trim'=>'80'
+							)),
 	   					'user_id'=>array(),
 	   					'screening_decision'=>array(),
 	   					'exclusion_criteria'=>array(),
@@ -517,12 +534,12 @@ function get_screening() {
 	   			),
 	   		  
 	   			'list_links'=>array(
-	   					'view'=>array(
+	   					/*'view'=>array(
 	   							'label'=>'View',
 	   							'title'=>'Disaly element',
 	   							'icon'=>'folder',
 	   							'url'=>'op/display_element/display_screening/',
-	   					),
+	   					),*/
 	   					'edit'=>array(
 	   							'label'=>'Edit',
 	   							'title'=>'Edit',
@@ -803,6 +820,17 @@ function get_screening() {
 	   			'operation_title'=>'Remove assignment',
 	   			'operation_description'=>'Remove a project',
 	   			'redirect_after_delete'=>'op/entity_list/list_assignments',
+	   			'db_delete_model'=>'remove_screen',
+	   			'generate_stored_procedure'=>True,
+	   				
+	   	
+	   	);
+		
+		$operations['remove_assignment_val']=array(
+	   			'operation_type'=>'Remove',
+	   			'operation_title'=>'Remove assignment',
+	   			'operation_description'=>'Remove a assignment',
+	   			'redirect_after_delete'=>'op/entity_list/list_assignments_validation',
 	   			'db_delete_model'=>'remove_screen',
 	   			'generate_stored_procedure'=>True,
 	   				

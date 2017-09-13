@@ -100,9 +100,9 @@ CREATE TABLE IF NOT EXISTS `usergroup` (
 
 
 INSERT INTO `usergroup` (`usergroup_id`, `usergroup_name`, `usergroup_description`, `usergroup_active`) VALUES
-(1, 'Super Admin', 'Super Admin', 1),
-(2, 'Project Admin', 'Project Admin', 1),
-(3, 'Reviewer', 'Reviewer', 1)$$
+(1, 'Administrator', 'Administrator', 1),
+(2, 'Project Manager', 'Project Manager', 1),
+(3, 'Standard', 'Standard', 1)$$
 
 
 DROP TABLE IF EXISTS `userproject`$$

@@ -878,6 +878,29 @@ function user_project($project_id , $user=0,$user_role=""){
 	
 	}
 	
+	function get_user_role( $user=0, $project_id=0){
+		$ci = get_instance ();
+	
+		if($user==0){
+			$user=$ci->session->userdata('user_id');
+		}
+	
+		if($project_id==0){
+			$project_id=$ci->session->userdata('project_id');
+		}
+	
+		$sql="select userproject_id,user_role from userproject where user_id=$user AND  project_id=$project_id  AND    	userproject_active=1 ";
+		//echo $sql; exit;
+		$user_res = $ci->db->query($sql)->row_array();
+		//print_test($user_res);
+		if(!empty($user_res)){
+			return $user_res['user_role'];
+		}else{
+			return '';
+		}
+	
+	}
+	
 	function can_review_project($user=0, $project_id=0){
 		
 		if( has_user_role('Reviewer',$user,$project_id) OR has_user_role('Validator',$user,$project_id) OR  has_user_role('Project admin',$user,$project_id)  OR has_usergroup(1,$user))
@@ -1744,5 +1767,10 @@ function user_project($project_id , $user=0,$user_role=""){
 	function get_debug_info($element){
 		$ci = get_instance() ;
 		return $ci->session->userdata($element);
+	}
+	
+	//default caraters to display on list
+	function trim_nbr_car(){
+		return 80 ;
 	}
 	

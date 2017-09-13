@@ -16,32 +16,18 @@
 
     <!-- Custom Theme Style -->
     <link href="<?php echo site_url();?>cside/css/custom.css" rel="stylesheet">
-    <link href="<?php echo site_url();?>cside/css/my_styles.css" rel="stylesheet">
   </head>
 
   <body style="background:#F7F7F7;">
-  <div style="width:90% ; margin:auto; padding-top: 20px;">
-	<div class="row">
-	<div class=" col-md-12 col-sm-12 col-xs-12 login_content">
-  <h1>ReLiS</h1>
-  </div>
-  </div>
-  <div class="row">
-	<div class="login_description col-md-7 col-sm-7 col-xs-12">
-  <p >
-  <b>ReLiS</b> stands for <i>"Revue Littéraire Systématique"</i> which is French for <i>"Systematic Literature Review"</i>. When a researcher wants to address a research problem, he starts by looking at what already exists in the scientific literature (published papers) on the topic. ReLiS is a tool that helps him considerably reduce the effort to analyze the corpus of papers, typically varying between hunderds and thousands depending on the research topic. ReLiS allows the user to follow a systematic process and automate the review process as much as possible .
-  
-  </p>
-  </div>
-      
-  <div id="wrapper" class="col-md-5 col-sm-5 col-xs-12">
-  
-        <div id="login" class=" form my_login">
-        
+    <div class="">
+      <a class="hiddenanchor" id="toregister"></a>
+      <a class="hiddenanchor" id="tologin"></a>
+
+      <div id="wrapper">
+        <div id="login" class=" form">
           <section class="login_content">
-          
             <form action="<?php echo base_url()?>auth/check_form" method="POST">
-             
+              <h1>ReLiS</h1><br/>
               <h2><?php echo lng_min('Log in')?></h2>
 			  <?php
                     	if(validation_errors() OR isset($err_msg) OR ($this->session->userdata('page_msg_err')) )
@@ -70,34 +56,19 @@
                 
               </div>
               <div class="clearfix"></div>
-              
+              <div class="separator">
+
+                
+                <div class="clearfix"></div>
+                <br />
+                <div>
+                  
+                </div>
+              </div>
             </form>
           </section>
         </div>
-         
       </div>
-      <div class="clearfix"></div>
-        <div class="separator"> </div>
-      </div>
-      <div class="row">
-		
-		<div class="col-md-4 col-sm-4 col-xs-12">
-			<a href="http://geodes.iro.umontreal.ca" target="_BLANK" title="GEODES Software Engineering Research Group">
-			<img src="<?php echo site_url();?>cside/images/geodes.png" />
-			</a>
-		</div>
-		<div class="col-md-4 col-sm-4 col-xs-12">
-			<a href="http://diro.umontreal.ca" target="_BLANK" title="Department of Computer Science and Operations Research">
-			<img src="<?php echo site_url();?>cside/images/diro.jpg" />
-			</a>
-		</div>
-		<div class="col-md-4 col-sm-4 col-xs-12">
-			<a href="http://umontreal.ca" target="_BLANK" title="Université de Montréal">
-			<img src="<?php echo site_url();?>cside/images/logoudem.gif" />
-			</a>
-		</div>
-      </div>
-      </div>
-
+    </div>
   </body>
 </html>

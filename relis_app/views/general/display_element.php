@@ -60,7 +60,7 @@
 		                    }
 		                    
 		                    echo "</table></td>";
-		                  	echo "<tr>";
+		                  	echo "</tr>";
 	                    }
 	                    
 	                    

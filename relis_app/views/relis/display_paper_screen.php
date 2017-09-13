@@ -89,11 +89,11 @@
 								echo "<table class='table table-striped'>";
 								echo "<tr>";
 								echo "<th >".lng(' User')."</th>";
-								echo "<th >".lng(' Category')."</th>";
+								echo "<th >".lng(' Phase')."</th>";
 								echo "<th>".lng('Assignment type')."</th>";
 								echo "<th >".lng('Decision')."</th>";
 								echo "<th >".lng('Criteria')."</th>";
-								echo "<th >".lng('Time')."</th>";
+								echo "<th >".lng('Timestamp')."</th>";
 								if(!empty($screen_edit_link)){
 									echo "<th ></th>";
 								}

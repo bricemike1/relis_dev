@@ -82,6 +82,16 @@ function get_operations_screening() {
 			'tab_ref'=>'screening',
 			'operation_id'=>'add_reviewer'
 	);
+	$operations['remove_assignment']=array(
+			'type'=>'Remove',
+			'tab_ref'=>'screening',
+			'operation_id'=>'remove_assignment'
+	);
+	$operations['remove_assignment_val']=array(
+			'type'=>'Remove',
+			'tab_ref'=>'screening',
+			'operation_id'=>'remove_assignment_val'
+	);
 	//screenings
 	$operations['list_screenings']=array(
 			'type'=>'List',

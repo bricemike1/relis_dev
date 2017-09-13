@@ -3,7 +3,7 @@ function get_operations_classification() {
 	
 	//Assignments
 	
-	$operations['list_assignments']=array(
+	$operations['list_assignments_class']=array(
 			'type'=>'List',
 			'tab_ref'=>'assignation',
 			'operation_id'=>'list_assignments'
@@ -13,6 +13,36 @@ function get_operations_classification() {
 			'type'=>'List',
 			'tab_ref'=>'assignation',
 			'operation_id'=>'list_class_assignment'
+	);
+	
+	$operations['list_class_assignment_done']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_assignment_done'
+	);
+	
+	$operations['list_class_assignment_pending']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_assignment_pending'
+	);
+	
+	$operations['list_class_assignment_done_mine']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_assignment_done_mine'
+	);
+	
+	$operations['list_class_assignment_pending_mine']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_assignment_pending_mine'
+	);
+	
+	$operations['list_class_assignment_mine']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_assignment_mine'
 	);
 	
 	$operations['list_class_assignment_val']=array(
@@ -25,6 +55,12 @@ function get_operations_classification() {
 			'type'=>'List',
 			'tab_ref'=>'assignation',
 			'operation_id'=>'list_class_validation'
+	);
+	
+	$operations['list_class_validation_mine']=array(
+			'type'=>'List',
+			'tab_ref'=>'assignation',
+			'operation_id'=>'list_class_validation_mine'
 	);
 	
 	$operations['add_class_assignment']=array(

@@ -62,8 +62,12 @@ function get_reference($table,$title,$config_id) {
 			'generate_stored_procedure'=>True,
 	
 			'fields'=>array(
-					'ref_id'=>array(),
-					'ref_value'=>array(),
+				//	'ref_id'=>array(),
+					'ref_value'=>array('link'=>array(
+								'url'=>'op/edit_element/edit_'.$config_id.'/',
+								'id_field'=>'ref_id',
+								'trim'=>'0'
+							)),
 					'ref_desc'=>array()		   	
 	
 			),
@@ -72,18 +76,13 @@ function get_reference($table,$title,$config_id) {
 			 
 			 
 			'list_links'=>array(
-					'view'=>array(
-							'label'=>'View',
-							'title'=>'Disaly element',
-							'icon'=>'folder',
-							'url'=>'op/view_element/detail_'.$config_id.'/',
-					),
+					/*
 					'edit'=>array(
 							'label'=>'Edit',
 							'title'=>'Edit',
 							'icon'=>'edit',
 							'url'=>'op/edit_element/edit_'.$config_id.'/',
-								),
+								),*/
 					'delete'=>array(
 							'label'=>'Delete',
 							'title'=>'Delete the user',

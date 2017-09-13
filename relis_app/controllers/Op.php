@@ -19,7 +19,7 @@ class Op extends CI_Controller {
 	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=1){
 			
 		$op=check_operation($operation_name,'List');
-
+	//	print_test($op); 
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
 		
@@ -656,7 +656,9 @@ class Op extends CI_Controller {
 			if(!empty($ref_table_config['report'])){
 				
 				$graph_config=$ref_table_config['report'];
-			}
+			
+			
+			
 			
 			$fields_list_graph=array(); 
 			$fields_list_graph_all=array(); 
@@ -948,7 +950,9 @@ class Op extends CI_Controller {
 	//print_test($result);
 	
 	//exit;
-
+	}else{
+		$result=array();
+	}
 		 $data ['graph_result']=$result;
 	
 	
@@ -1081,7 +1085,9 @@ class Op extends CI_Controller {
 			/*
 			 * La vue qui va s'afficher
 			 */	
-		//	print_test($data);
+			
+			$data['table_config']=$table_config;
+			//print_test($data);
 				$data ['page'] = 'general/display_element';
 				if(!empty($table_config['operations'][$ref_table_operation]['page_template'] )){
 						
@@ -2028,6 +2034,9 @@ class Op extends CI_Controller {
 		$table_config= get_table_configuration($post_arr['table_config']);
 		$current_operation=$post_arr['current_operation'];
 		
+		//print_test($post_arr); 
+		
+		//print_test($table_config); exit;
 		if(!empty($post_arr[$table_config['table_id']])){
 			$data['current_element']=$post_arr[$table_config['table_id']];
 			//print_test($data);
@@ -2074,14 +2083,37 @@ class Op extends CI_Controller {
 	
 				$this->form_validation->set_rules ( $key,'"'. $field_info['field_title'].'"', $validation );
 	
+				
+				if(isset($value['pattern']) AND $value['pattern']=='valid_email'){
+					if(!empty($post_arr[$key])){
+						$this->form_validation->set_rules($key, $field_info['field_title'], 'trim|valid_email');
+				
+					}
+				}
+				
+				if(!empty($field_info['category_type']) AND $field_info['category_type']=='FreeCategory'
+						AND !empty($field_info['field_type']) AND $field_info['field_type']=='int'){
+					
+							
+					if(!empty($post_arr[$key])){
+					
+						$this->form_validation->set_rules($key, $field_info['field_title'], 'trim|integer');
+				
+					}
+				}
+				
+				if(!empty($field_info['category_type']) AND $field_info['category_type']=='FreeCategory'
+						AND !empty($field_info['field_type']) AND $field_info['field_type']=='real'){
+							if(!empty($post_arr[$key])){
+							
+								$this->form_validation->set_rules($key, $field_info['field_title'], 'callback_numeric_wcomma');
+				
+							}
+				}
+				
 			}
 			
-			if(isset($value['pattern']) AND $value['pattern']=='valid_email'){
-				if(!empty($post_arr[$key])){
-					$this->form_validation->set_rules($key, $field_info['field_title'], 'trim|valid_email');
-						
-				}
-			}
+			
 			
 			if((isset($field_info['multi-select']) AND isset($field_info['multi-select'])=='Yes')){//multi- select
 				if(!empty($post_arr[$key])){
@@ -2233,66 +2265,7 @@ class Op extends CI_Controller {
 					$this->add_element_drilldown ($current_operation,$post_arr ['parent_id'],$data,$post_arr['operation_type'] ,$submit_mode ,'EditChild_validation');
 				}
 				
-				/*
-				if($post_arr ['operation_source']=='parent' )
-				{
-	
-					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
-						$this->add_element_child_modal ($post_arr ['table_config'], $post_arr ['child_field'],$post_arr ['table_config_parent'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
-	
-					}else{
-							
-						$this->add_element_child ($post_arr ['table_config'], $post_arr ['child_field'],$post_arr ['table_config_parent'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
-	
-					}
-	
-				}elseif($post_arr ['operation_source']=='drilldown' )
-					
-				{
-	
-	
-					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
-							
-						$this->add_ref_drilldown_modal ($post_arr ['table_config'], $post_arr ['table_config_parent'], $post_arr ['parent_field'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );}
-						else{
-	
-							$this->add_ref_drilldown ($post_arr ['table_config'], $post_arr ['table_config_parent'], $post_arr ['parent_field'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
-						}
-	
-	
-				}elseif($post_arr ['operation_source']=='paper' )
-				{
-					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
-							
-						$this->session->set_userdata('redirect_values',$data);
-							
-						redirect("relis/manager/new_classification_modal/$parent_id/sess_redirect/".$post_arr['operation_type']);
-							
-						//$this->add_classification_modal ($parent_id,$data,$post_arr['operation_type'] );
-					
-					}
-						else{
-							
-							$this->session->set_userdata('redirect_values',$data);
-							
-							redirect("relis/manager/new_classification/$parent_id/sess_redirect/".$post_arr['operation_type']);
-							//$this->add_classification ($parent_id,$data,$post_arr['operation_type'] );
-						}
-							
-				}elseif($post_arr ['operation_source']=='exclusion' )
-				{
-					$this->new_exclusion ($parent_id,$data,$post_arr['operation_type'] );
-				}else{
-					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
-						$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'],'modal' );
-					}else{
-						$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'] );
-					}
-				}
 				
-				
-				
-			*/	
 				
 				
 				
@@ -2412,32 +2385,6 @@ class Op extends CI_Controller {
 					}
 				
 					
-					/*
-						
-					if($post_arr ['operation_source']=='parent' )
-					{
-						$this->add_element_child ($post_arr ['table_config'], $post_arr ['child_field'],$post_arr ['table_config_parent'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
-					}elseif($post_arr ['operation_source']=='drilldown' )
-					{
-						$this->add_element_drilldown ($post_arr ['table_config'], $post_arr ['table_config_parent'], $post_arr ['parent_field'],$post_arr ['parent_id'],$data,$post_arr['operation_type'] );
-	
-	
-	
-	
-					}elseif($post_arr ['operation_source']=='paper' )
-					{
-						$this->load->library('../controllers/relis/manager');
-						$this->manager->new_classification ($parent_id,$data,$post_arr['operation_type'] );
-					
-					}elseif($post_arr ['operation_source']=='exclusion' )
-					{
-						$this->new_exclusion ($parent_id,$data,$post_arr['operation_type'] );
-					}else{
-	
-						$this->add_element ($post_arr ['table_config'],$data,$post_arr['operation_type'] );
-					}
-					
-					*/
 	
 				}else{
 	
@@ -2500,11 +2447,14 @@ class Op extends CI_Controller {
 					 * Appel de la fonction dna le modèle pour suvegarder les données dans la BD
 					 */
 					$saved_res=$this->DBConnection_mdl->save_reference_mdl ( $post_arr,'get_id' );
-						
+					
+					$success_msg=!empty($table_config['operations'][$current_operation]['success_message'])?$table_config['operations'][$current_operation]['success_message']:'Success';
+					
+					
 					if ($saved_res) {
 	
 						echo ("Enregistrement reussit");
-						set_top_msg("Success");
+						set_top_msg($success_msg);
 	
 						if($operation_source=='exclusion'){
 							/*
@@ -2559,7 +2509,7 @@ class Op extends CI_Controller {
 						
 					//if($post_arr ['table_config'] =='config')
 						//update_paper_status_all();
-							
+					
 						
 					if($this->session->userdata('submit_mode') AND $this->session->userdata('submit_mode') =='modal' ){
 						/*
@@ -2605,7 +2555,23 @@ class Op extends CI_Controller {
 			}
 	}
 	
-	
+	function numeric_wcomma ($str)
+	{
+		//return preg_match('/^[0-9,]+$/', $str);
+		
+		if (preg_match('/^[0-9.]+$/', $str))
+		{
+			
+			return True;
+		}
+		else
+		{
+			
+			$this->form_validation->set_message('numeric_wcomma', 'The {field} field must contain a number ');
+				
+			return False;
+		}
+	}
 	/*
 	 * Fonction pour enregistrer les valeurs dans les champs multi-select
 	*/

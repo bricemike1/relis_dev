@@ -86,7 +86,7 @@ function get_config_usergroup() {
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List of usergroups',
 	   			'operation_description'=>'List usergroups',
-	   			'page_title'=>'List usergroups',
+	   			'page_title'=>'User Groups',
 	   	
 	   			//'page_template'=>'list',
 	   	

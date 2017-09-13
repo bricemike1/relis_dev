@@ -30,7 +30,7 @@ function get_project() {
 	   	
 	   	
 	   	$fields['project_label']=array(
-	   			'field_title'=>'Short name',
+	   			'field_title'=>'Project identifier',
 	   			'field_type'=>'text',
 	   			//'field_value'=>'normal',
 	   			'field_size'=>100,

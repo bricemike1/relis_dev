@@ -52,8 +52,7 @@ function get_logs() {
 				'mandatory'=>' mandatory '
 	   	);	
 		$fields['log_time']=array(
-	   			'field_title'=>'Time',
-	   			'field_title'=>'Time',
+	   			'field_title'=>'Timestamp',
 	   			'field_type'=>'time',
 	   			//'input_type'=>'text',
 				'default_value'=>'CURRENT_TIMESTAMP',
@@ -157,14 +156,23 @@ function get_logs() {
 				
 				),
 		);
-		
+		if(has_usergroup(1)){
+			$clear_logs=array(
+										'label'=>'Clear logs',
+										'title'=>'Clear logs',
+										'icon'=>'fa-eraser',
+										'url'=>'manager/clear_logs_validation',
+									);
+		}else{
+			$clear_logs=array();
+		}
 		$operations['list_logs']=array(
 				'operation_type'=>'List',
 				'operation_title'=>'List logs',
 				'operation_description'=>'List logs',
-				'page_title'=>'List of logs',
+				'page_title'=>'Logs',
 				
-				//'page_template'=>'list',
+				'table_display_style'=>'normal',
 				
 				'data_source'=>'get_list_logs',
 				'generate_stored_procedure'=>True,
@@ -182,7 +190,7 @@ function get_logs() {
 			
 				'list_links'=>array(
 						'view'=>array(
-									'label'=>'View',
+									'label'=>'Display',
 									'title'=>'Disaly element',
 									'icon'=>'folder',
 									'url'=>'op/display_element/detail_logs/',
@@ -190,14 +198,16 @@ function get_logs() {
 												
 				),
 				
+				
 				'top_links'=>array(
-							
+							'clear_logs'=>$clear_logs,
 							'close'=>array(
 										'label'=>'',
 										'title'=>'Close',
 										'icon'=>'add',
 										'url'=>'home',
-									)
+									),
+							
 				
 				),
 		);

@@ -179,7 +179,17 @@ function get_str_mng() {
 				
 				
 				'top_links'=>array(
-							
+						'edit'=>array(
+									'label'=>'',
+									'title'=>'Edit element',
+									'icon'=>'edit',
+									'url'=>'op/edit_element/edit_str_mng/~current_element~',
+								),
+						'delete'=>array(
+									'label'=>'',
+									'title'=>'Delete the user',
+									'url'=>'op/delete_element/remove_str_mng/~current_element~'
+								),	
 						'back'=>array(
 										'label'=>'',
 										'title'=>'Close',
@@ -215,16 +225,20 @@ function get_str_mng() {
 				'operation_type'=>'List',
 				'operation_title'=>'List ',
 				'operation_description'=>'List ',
-				'page_title'=>'List ',
+				'page_title'=>'Label mangement ',
 				
-				//'page_template'=>'list',
+				'table_display_style'=>'normal',
 				
 				'data_source'=>'get_list_str_mng',
 				'generate_stored_procedure'=>True,
 					
 				'fields'=>array(
 						'str_id'=>array(),
-						'str_label'=>array(),
+						'str_label'=>array('link'=>array(
+								'url'=>'op/display_element/detail_str_mng/',
+								'id_field'=>'str_id',
+								'trim'=>'0'
+							)),
 						'str_text'=>array(),
 						'str_lang'=>array(),
 							
@@ -233,7 +247,7 @@ function get_str_mng() {
 				'search_by'=>'str_label,str_text',
 			
 				'list_links'=>array(
-						'view'=>array(
+						/*'view'=>array(
 									'label'=>'View',
 									'title'=>'Disaly element',
 									'icon'=>'folder',
@@ -250,6 +264,7 @@ function get_str_mng() {
 									'title'=>'Delete the user',
 									'url'=>'op/delete_element/remove_str_mng/'
 								)
+						*/
 				),
 				'conditions'=>array('active_lang'=>array(
 												'field'=>'str_lang',

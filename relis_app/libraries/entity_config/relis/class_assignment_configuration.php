@@ -153,7 +153,38 @@ function get_class_assignment() {
 	   	
 		
 		
+		$table_views=array();
+	
+		$table_views['view_class_assignment_done']=array(
+					'name'=>'view_class_assignment_done',
+					'desc'=>'',
+					
+					'script'=>'SELECT DISTINCT(A.assigned_id) as A_id , A.* FROM assigned A INNER JOIN  view_paper_processed P ON (A.assigned_paper_id = P.id) WHERE A.assigned_active=1',
+					
+			);
 		
+		$table_views['view_class_assignment_pending']=array(
+					'name'=>'view_class_assignment_pending',
+					'desc'=>'',
+					
+					'script'=>'SELECT DISTINCT(A.assigned_id) as A_id , A.* FROM assigned A INNER JOIN  view_paper_pending P ON (A.assigned_paper_id = P.id) WHERE A.assigned_active=1',
+					
+			);
+		$table_views['view_class_validation_pending']=array(
+					'name'=>'view_class_validation_pending',
+					'desc'=>'',
+					
+					'script'=>"SELECT  * FROM assigned WHERE assignment_type='Validation' AND validation IS NULL AND assigned_active=1",
+					
+			);
+		$table_views['view_class_validation_done']=array(
+					'name'=>'view_class_validation_done',
+					'desc'=>'',
+					
+					'script'=>"SELECT  * FROM assigned WHERE assignment_type='Validation' AND validation IS NOT NULL AND assigned_active=1",
+					
+			);
+	$config['table_views']=$table_views;
 		
 		$operations['add_class_assignment']=array(
 			'operation_type'=>'Add',
@@ -317,17 +348,17 @@ function get_class_assignment() {
 				'generate_stored_procedure'=>True,
 					
 				'fields'=>array(
-					'assigned_id'=>array(),
+					//'assigned_id'=>array(),
 					'assigned_paper_id'=>array(
 					'link'=>array(
-								'url'=>'op/display_element/detail_class_assignment/',
-								'id_field'=>'assigned_id',
-								'trim'=>'50'
+								'url'=>'relis/manager/display_paper/',
+								'id_field'=>'assigned_paper_id',
+								'trim'=>'80'
 							)),
 					'assigned_user_id'=>array(),
 					'assigned_by'=>array(),
 					'assignment_time'=>array(),
-					'assigned_note'=>array(),
+					//'assigned_note'=>array(),
 							
 				),
 				'order_by'=>'assigned_id DESC ', 
@@ -340,28 +371,28 @@ function get_class_assignment() {
 											)
 	   			),
 				'list_links'=>array(
-					
+					/*
 						'edit'=>array(
 									'label'=>'Edit',
 									'title'=>'Edit',
 									'icon'=>'edit',
 									'url'=>'op/edit_element/edit_assignment_class/',
-								),
+								),*/
 						'delete'=>array(
-									'label'=>'Delete',
-									'title'=>'Delete ',
+									'label'=>'Cancel',
+									'title'=>'Cancel ',
 									'url'=>'op/delete_element/remove_class_assignment/'
 								)
 												
 				),
 				
 				'top_links'=>array(
-							'add'=>array(
+						/*	'add'=>array(
 										'label'=>'',
 										'title'=>'Add new',
 										'icon'=>'add',
 										'url'=>'op/add_element/add_class_assignment',
-									),
+									),*/
 							'close'=>array(
 										'label'=>'',
 										'title'=>'Close',
@@ -371,6 +402,83 @@ function get_class_assignment() {
 				
 				),
 		);
+		
+		$operations['list_class_assignment_done']=$operations['list_class_assignment'];
+		$operations['list_class_assignment_done']['page_title']='Assignments completed';
+		$operations['list_class_assignment_done']['table_name']='view_class_assignment_done';
+		$operations['list_class_assignment_done']['data_source']='get_list_class_assignment_done';
+		
+		$operations['list_class_assignment_pending']=$operations['list_class_assignment'];
+		$operations['list_class_assignment_pending']['page_title']='Assignments pending';
+		$operations['list_class_assignment_pending']['table_name']='view_class_assignment_pending';
+		$operations['list_class_assignment_pending']['data_source']='get_list_class_assignment_pending';
+		
+		$operations['list_class_assignment_mine']=array(
+				'operation_type'=>'List',
+				'operation_title'=>'My assignments for classification',
+				'operation_description'=>'Assignments for classification',
+				'page_title'=>'My assignments for classification',
+				'table_display_style'=>'dynamic_table',
+				
+				'data_source'=>'get_list_class_assignment_user',
+				'generate_stored_procedure'=>True,
+					
+				'fields'=>array(
+					//'assigned_id'=>array(),
+					'assigned_paper_id'=>array(
+					'link'=>array(
+								'url'=>'relis/manager/display_paper/',
+								'id_field'=>'assigned_paper_id',
+								'trim'=>'80'
+							)),
+					//'assigned_user_id'=>array(),
+					'assigned_by'=>array(),
+					'assignment_time'=>array(),
+					
+							
+				),
+				'order_by'=>'assigned_id DESC ', 
+				'conditions'=>array(
+					'assignment_type'=>array('field'=>'assignment_type',
+												'value'=>'Classification',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
+					'assigned_user_id'=>array('field'=>'assigned_user_id',
+												'value'=>active_user_id(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
+	   			),
+				'list_links'=>array(
+					
+												
+				),
+				
+				'top_links'=>array(
+						
+							'close'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									)
+				
+				),
+		);
+		
+		$operations['list_class_assignment_done_mine']=$operations['list_class_assignment_mine'];
+		$operations['list_class_assignment_done_mine']['page_title']='My assignments completed';
+		$operations['list_class_assignment_done_mine']['table_name']='view_class_assignment_done';
+		$operations['list_class_assignment_done_mine']['data_source']='get_list_class_assignment_done_user';
+		
+		$operations['list_class_assignment_pending_mine']=$operations['list_class_assignment_mine'];
+		$operations['list_class_assignment_pending_mine']['page_title']='My assignments pending';
+		$operations['list_class_assignment_pending_mine']['table_name']='view_class_assignment_pending';
+		$operations['list_class_assignment_pending_mine']['data_source']='get_list_class_assignment_pending_user';
+		
 		
 		$operations['list_class_assignment_val']=array(
 				'operation_type'=>'List',
@@ -388,7 +496,7 @@ function get_class_assignment() {
 					'link'=>array(
 								'url'=>'op/display_element/detail_class_assignment/',
 								'id_field'=>'assigned_id',
-								'trim'=>'50'
+								'trim'=>'80'
 							)),
 					'assigned_user_id'=>array(),
 					'assigned_by'=>array(),
@@ -455,7 +563,7 @@ function get_class_assignment() {
 					'link'=>array(
 								'url'=>'relis/manager/display_paper_validation/',
 								'id_field'=>'assigned_paper_id',
-								'trim'=>'50'
+								'trim'=>'80'
 							)),
 					'assigned_user_id'=>array(),
 					'validation'=>array(),
@@ -469,6 +577,66 @@ function get_class_assignment() {
 				'conditions'=>array(
 					'assignment_type'=>array('field'=>'assignment_type',
 												'value'=>'Validation',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											)
+	   			),
+				'list_links'=>array(
+					
+						
+												
+				),
+				
+				'top_links'=>array(
+							
+							'close'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									)
+				
+				),
+		);
+		
+		
+		$operations['list_class_validation_mine']=array(
+				'operation_type'=>'List',
+				'operation_title'=>'Classification validation',
+				'operation_description'=>'Classification validation',
+				'page_title'=>'My classification validation',
+				'table_display_style'=>'dynamic_table',
+				
+				'data_source'=>'get_list_class_assignment_user',
+				'generate_stored_procedure'=>False,
+					
+				'fields'=>array(
+					'assigned_id'=>array(),
+					'assigned_paper_id'=>array(
+					'link'=>array(
+								'url'=>'relis/manager/display_paper_validation/',
+								'id_field'=>'assigned_paper_id',
+								'trim'=>'80'
+							)),
+					'assigned_user_id'=>array(),
+					'validation'=>array(),
+					'validation_note'=>array(),
+					'validation_time'=>array(),
+					
+					
+							
+				),
+				'order_by'=>'assigned_id DESC ', 
+				'conditions'=>array(
+					'assignment_type'=>array('field'=>'assignment_type',
+												'value'=>'Validation',
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(20)'
+											),
+					'assigned_user_id'=>array('field'=>'assigned_user_id',
+												'value'=>active_user_id(),
 												'evaluation'=>'equal',
 												'add_on_generation'=>FALSE,
 												'parameter_type'=>'VARCHAR(20)'

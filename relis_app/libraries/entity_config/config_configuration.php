@@ -35,7 +35,7 @@ function get_configuration() {
 	   	);
 	   	
 	   	$fields['editor_url']=array(
-	   			'field_title'=>'Editor location(url)',
+	   			'field_title'=>'Editor URL',
 	   			'field_type'=>'text',	   			
 	   			'field_value'=>'default',
 	   			'field_size'=>100,
@@ -43,7 +43,7 @@ function get_configuration() {
 	   			'mandatory'=>' mandatory '
 	   	);
 	   	$fields['editor_generated_path']=array(
-	   			'field_title'=>'Editor workspace',
+	   			'field_title'=>'Editor workspace location',
 	   			'field_type'=>'text',	   			
 	   			'field_value'=>'default',
 	   			'field_size'=>100,
@@ -88,7 +88,7 @@ function get_configuration() {
 		);
 		
 		$fields['screening_conflict_type']=array(
-				'field_title'=>'Screening conflict type',
+				'field_title'=>'Conflict criteria',
 				'field_type'=>'text',
 				'field_value'=>'IncludeExclude',
 				'field_value'=>'IncludeExclude',
@@ -102,18 +102,18 @@ function get_configuration() {
 		);
 		
 		$fields['import_papers_on']=array(
-				'field_title'=>'import papers activated',
+				'field_title'=>'Import papers enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
-				'default_value'=>'0',
+				'default_value'=>'1',
 				'input_type'=>'select',
 				'input_select_source'=>'yes_no',
 				'input_select_values'=>'1',
 		);
 		
 		$fields['assign_papers_on']=array(
-				'field_title'=>'assign papers activated',
+				'field_title'=>'Paper assignment enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -135,7 +135,7 @@ function get_configuration() {
 		);
 		
 		$fields['screening_result_on']=array(
-				'field_title'=>'Screening result activated',
+				'field_title'=>'Screening result enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -169,7 +169,7 @@ function get_configuration() {
 		);
 		
 		$fields['source_papers_on']=array(
-				'field_title'=>'Add papers source',
+				'field_title'=>'Enable source field',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -182,7 +182,7 @@ function get_configuration() {
 		
 		
 		$fields['search_strategy_on']=array(
-				'field_title'=>'Add search strategy',
+				'field_title'=>'Enable search strategy field',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -213,7 +213,7 @@ function get_configuration() {
 	   	);
 		
 		$fields['validation_default_percentage']=array(
-	   			'field_title'=>'Validation default percentage',
+	   			'field_title'=>'Default percentage of papers to validate',
 	   			'field_type'=>'int',	   			
 	   			'field_value'=>'20',
 	   			'default_value'=>'20',
@@ -222,7 +222,7 @@ function get_configuration() {
 	   			'mandatory'=>' mandatory '
 	   	);
 		$fields['screening_reviewer_number']=array(
-	   			'field_title'=>'Reviews per paper',
+	   			'field_title'=>'Number of reviews per paper',
 	   			'field_type'=>'int',	   			
 	   			'field_value'=>'2',
 	   			'default_value'=>'2',
@@ -246,7 +246,7 @@ function get_configuration() {
 				
 		);
 	   	$fields['screening_validator_assignment_type']=array(
-				'field_title'=>'Validator assingment mode',
+				'field_title'=>'Validation mode',
 				'field_type'=>'text',
 				'field_value'=>'Normal',
 				'field_value'=>'Normal',
@@ -263,7 +263,7 @@ function get_configuration() {
 				'field_title'=>'Quality assessment enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
-	   			'field_value'=>'1',
+	   			'field_value'=>'0',
 				'default_value'=>'1',
 				'input_type'=>'select',
 				'input_select_source'=>'yes_no',
@@ -281,7 +281,7 @@ function get_configuration() {
 				'input_select_values'=>'',
 		);
 		$fields['qa_validation_on']=array(
-				'field_title'=>'Quality assessment validation enabled',
+				'field_title'=>'Validation enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -291,7 +291,7 @@ function get_configuration() {
 				'input_select_values'=>'',
 		);
 		$fields['qa_validation_default_percentage']=array(
-	   			'field_title'=>'QA validation default percentage',
+	   			'field_title'=>'Default percentage of papers to validate',
 	   			'field_type'=>'int',	   			
 	   			'field_value'=>'20',
 	   			'default_value'=>'20',
@@ -300,7 +300,7 @@ function get_configuration() {
 	   			'mandatory'=>' mandatory '
 	   	);
 		$fields['class_validation_on']=array(
-				'field_title'=>'Classification validation enabled',
+				'field_title'=>'Validation enabled',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
@@ -310,7 +310,7 @@ function get_configuration() {
 				'input_select_values'=>'',
 		);
 		$fields['class_validation_default_percentage']=array(
-	   			'field_title'=>'Classification validation default percentage',
+	   			'field_title'=>'Default percentage of papers to validate',
 	   			'field_type'=>'int',	   			
 	   			'field_value'=>'20',
 	   			'default_value'=>'20',
@@ -319,10 +319,10 @@ function get_configuration() {
 	   			'mandatory'=>' mandatory '
 	   	);
 		$fields['qa_cutt_off_score']=array(
-	   			'field_title'=>'Quality assessment cut-off score',
+	   			'field_title'=>'Cut-off score',
 	   			'field_type'=>'real',	   			
 	   			'field_value'=>'20',
-	   			'default_value'=>'1.5',
+	   			'default_value'=>'3.2',
 	   			'field_size'=>5,
 	   			'input_type'=>'text',
 	   			'mandatory'=>' mandatory '
@@ -341,32 +341,54 @@ function get_configuration() {
 	   			'operation_type'=>'Detail',
 	   			'operation_title'=>'Configurations values',
 	   			'operation_description'=>'Configurations values',
-	   			'page_title'=>'All configurations',
+	   			'page_title'=>'Settings',
 	   	
-	   			//'page_template'=>'general/display_element',
+	   			'page_template'=>'general/display_element_grouped',
 	   	
 	   			'data_source'=>'get_detail_config',
 	   			'generate_stored_procedure'=>True,
-	   				
+	   			'fields_groups'=>array(
+					'papers'=>array('title'=>'Papers','edit'=>'op/edit_element/edit_conf_papers/1'),
+					'screen'=>array('title'=>'Screening','edit'=>'op/edit_element/edit_config_screening/1'),
+					'qa'=>array('title'=>'Quality Assessment','edit'=>'op/edit_element/edit_config_qa/1'),
+					'class'=>array('title'=>'Classification','edit'=>'op/edit_element/edit_config_class/1'),
+					'dsl'=>array('title'=>'Project Config Editor','edit'=>'op/edit_element/edit_config_dsl/1'),
+				),	
 	   			'fields'=>array(
 	   					
-	   					//'config_type'=>array(),
-	   					'editor_url'=>array(),
-	   					'editor_generated_path'=>array(),
-	   					'csv_field_separator'=>array(),
-	   					'csv_field_separator_export'=>array(),
-	   					'screening_screening_conflict_resolution'=>array(),
-	   					'screening_conflict_type'=>array(),
-	   					'import_papers_on'=>array(),
-	   					'screening_on'=>array(),
-	   					'assign_papers_on'=>array(),
-	   					'screening_result_on'=>array(),
-	   					'screening_validation_on'=>array(),
-	   					'classification_on'=>array(),
-	   					'source_papers_on'=>array(),
-	   					'search_strategy_on'=>array(),
-	   					'key_paper_prefix'=>array(),
-	   					'key_paper_serial'=>array(),
+	   					
+	   					'import_papers_on'=>array('group'=>'papers'),
+	   					'csv_field_separator'=>array('group'=>'papers'),						
+	   					'csv_field_separator_export'=>array('group'=>'papers'),						
+	   					'key_paper_prefix'=>array('group'=>'papers'),
+	   					'key_paper_serial'=>array('group'=>'papers'),
+	   					'source_papers_on'=>array('group'=>'papers'),
+	   					'search_strategy_on'=>array('group'=>'papers'),
+						
+						
+	   					'screening_on'=>array('group'=>'screen'),
+	   					'screening_result_on'=>array('group'=>'screen'),
+	   					'assign_papers_on'=>array('group'=>'screen'),
+	   					'screening_reviewer_number'=>array('group'=>'screen'),
+	   					'screening_conflict_type'=>array('group'=>'screen'),
+	   					'screening_screening_conflict_resolution'=>array('group'=>'screen'),
+	   					'screening_validation_on'=>array('group'=>'screen'),
+	   					'screening_validator_assignment_type'=>array('group'=>'screen'),
+	   					'validation_default_percentage'=>array('group'=>'screen'),
+	   					
+						'qa_on'=>array('group'=>'qa'),
+						'qa_cutt_off_score'=>array('group'=>'qa'),
+						'qa_validation_on'=>array('group'=>'qa'),
+						'qa_validation_default_percentage'=>array('group'=>'qa'),
+						
+						'class_validation_on'=>array('group'=>'class'),
+						'class_validation_default_percentage'=>array('group'=>'class'),
+						
+						'editor_url'=>array('group'=>'dsl'),
+						'editor_generated_path'=>array('group'=>'dsl'),
+						
+						
+						
 	   					
 	   						
 	   			),
@@ -390,12 +412,14 @@ function get_configuration() {
 	   	
 	   			),
 	   	);
+		
+		
 	   	
 		$operations['config_papers']=array(
 	   			'operation_type'=>'Detail',
 	   			'operation_title'=>'Information for  papers',
-	   			'operation_description'=>'Configurations  for  papers',
-	   			'page_title'=>'Papers configurations',
+	   			'operation_description'=>'Settings  for  papers',
+	   			'page_title'=>'Settings - Papers',
 	   			'data_source'=>'get_detail_config',
 	   			'generate_stored_procedure'=>False,
 	   				
@@ -647,11 +671,11 @@ function get_configuration() {
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit configuration for papers',
 	   			'operation_description'=>'Edit configuration for papers',
-	   			'page_title'=>'Edit papers configurations ',
+	   			'page_title'=>'Edit papers settings ',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	
-	   			'redirect_after_save'=>'op/display_element/config_papers/1',
+	   			'redirect_after_save'=>'op/display_element/configurations/1',
 	   			'data_source'=>'get_detail_config',
 	   			'db_save_model'=>'update_config_paper',
 	   	
@@ -686,11 +710,11 @@ function get_configuration() {
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit screening configurations',
 	   			'operation_description'=>'Edit screening configurations',
-	   			'page_title'=>'Edit screening configurations ',
+	   			'page_title'=>'Edit screening settings ',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	
-	   			'redirect_after_save'=>'op/display_element/config_screening/1',
+	   			'redirect_after_save'=>'op/display_element/configurations/1',
 	   			'data_source'=>'get_detail_config',
 	   			'db_save_model'=>'update_config_screening',
 	   	
@@ -699,13 +723,14 @@ function get_configuration() {
 	   			'fields'=>array(
 	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
 	   					'screening_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'screening_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_result_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'assign_papers_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						'screening_reviewer_number'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_conflict_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_screening_conflict_resolution'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
+	   					'screening_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
 	   					'screening_validator_assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					  				
 	   			),
 	   	
@@ -725,11 +750,11 @@ function get_configuration() {
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit QA configurations',
 	   			'operation_description'=>'Edit QA configurations',
-	   			'page_title'=>'Edit Quality Assessment configurations ',
+	   			'page_title'=>'Edit Quality Assessment settings ',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	
-	   			'redirect_after_save'=>'op/display_element/config_qa/1',
+	   			'redirect_after_save'=>'op/display_element/configurations/1',
 	   			'data_source'=>'get_detail_config',
 	   			'db_save_model'=>'update_config_qa',
 	   	
@@ -738,7 +763,7 @@ function get_configuration() {
 	   			'fields'=>array(
 	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
 	   					'qa_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-	   					'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					//'qa_open'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'qa_cutt_off_score'=>array('mandatory'=>'mandatory','field_state'=>'enabled'), 
 	   					'qa_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'qa_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
@@ -762,11 +787,11 @@ function get_configuration() {
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit classification configurations',
 	   			'operation_description'=>'Edit classification configurations',
-	   			'page_title'=>'Edit classification configurations ',
+	   			'page_title'=>'Edit classification settings ',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	
-	   			'redirect_after_save'=>'op/display_element/config_qa/1',
+	   			'redirect_after_save'=>'op/display_element/configurations/1',
 	   			'data_source'=>'get_detail_config',
 	   			'db_save_model'=>'update_config_class',
 	   			'db_save_model'=>'update_config_class',
@@ -775,7 +800,7 @@ function get_configuration() {
 	   				
 	   			'fields'=>array(
 	   					'config_id'=>array('mandatory'=>'','field_state'=>'hidden'),
-	   					'classification_on'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   				//	'classification_on'=>array('mandatory'=>'','field_state'=>'enabled'),
 	   					'class_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'class_validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						
@@ -803,7 +828,7 @@ function get_configuration() {
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	
-	   			'redirect_after_save'=>'op/display_element/config_dsl/1',
+	   			'redirect_after_save'=>'op/display_element/configurations/1',
 	   			'data_source'=>'get_detail_config',
 	   			'db_save_model'=>'update_config_dsl',
 	   	

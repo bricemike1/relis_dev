@@ -296,7 +296,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'page_title'=>'Add a new paper',
 			'save_function'=>'op/save_element',
 			'page_template'=>'general/frm_entity',
-			'redirect_after_save'=>'op/entity_list/list_papers',
+			'redirect_after_save'=>'op/entity_list/list_all_papers',
 			'db_save_model'=>'add_paper',
 		  
 			'generate_stored_procedure'=>True,
@@ -346,7 +346,8 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'page_template'=>'general/frm_entity',
 		  
 			'redirect_after_save'=>'op/entity_list/list_papers',
-			'data_source'=>'get_detail_paper',
+			'redirect_after_save'=>'op/entity_list/list_all_papers',
+			'data_source'=>'get_detail_papers',
 			'db_save_model'=>'update_paper',
 			
 			//'display_reset_button'=>true,
@@ -465,7 +466,16 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			),
 	);
 	
-	
+	if(has_usergroup(1)){
+			$clear_papers=array(
+										'label'=>'Delete all',
+										'title'=>'Clear logs',
+										'icon'=>'Delete all',
+										'url'=>'manager/clear_papers_validation',
+									);
+		}else{
+			$clear_papers=array();
+		}
 	$operations['list_all_papers']=array(
 			'operation_type'=>'List',
 			'operation_title'=>'List papers',
@@ -501,13 +511,13 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 							'icon'=>'folder',
 							'url'=>'op/display_element/detail_paper/',
 							'url'=>'relis/manager/display_paper_screen/',
-					),
+					),*/
 					'edit'=>array(
 							'label'=>'Edit',
 							'title'=>'Edit',
 							'icon'=>'edit',
 							'url'=>'op/edit_element/edit_paper/',
-					),*/
+					),
 					'delete'=>array(
 							'label'=>'Delete',
 							'title'=>'Delete the user',
@@ -517,6 +527,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			),
 		  
 			'top_links'=>array(
+					'clear_logs'=>$clear_papers,
 					'add'=>array(
 							'label'=>'',
 							'title'=>'Add a new paper',
@@ -544,9 +555,10 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 																'add_on_generation'=>TRUE,
 																'parameter_type'=>'VARCHAR(20)'
 														));
-
+	unset($operations['list_pending_papers']['top_links']['clear_logs']);
 	unset($operations['list_pending_papers']['top_links']['add']);
 	unset($operations['list_pending_papers']['list_links']['delete']);
+	unset($operations['list_pending_papers']['list_links']['edit']);
 	
 	$operations['list_included_papers']=$operations['list_pending_papers'];
 	$operations['list_included_papers']['page_title']='Pending papers';
@@ -573,7 +585,11 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'fields'=>array(
 					'id'=>array(),
 					'bibtexKey'=>array(),
-					'title'=>array(),
+					'title'=>array('link'=>array(
+								'url'=>'relis/manager/display_paper_screen/',
+								'id_field'=>'id',
+								'trim'=>trim_nbr_car()
+							)),
 					'screening_status'=>array('field_title'=>'Decision'),
 					 
 			),
@@ -596,7 +612,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			*/
 			),
 			'list_links'=>array(
-					'view'=>array(
+				/*	'view'=>array(
 							'label'=>'View',
 							'title'=>'Disaly element',
 							'icon'=>'folder',
@@ -604,7 +620,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 							'url'=>'relis/manager/display_paper_screen/',
 					),
 					
-					 
+				*/	 
 			),
 		  
 			'top_links'=>array(
@@ -722,7 +738,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'operation_type'=>'Remove',
 			'operation_title'=>'Remove a paper',
 			'operation_description'=>'Remove an paper from the displayed list',
-			'redirect_after_delete'=>'op/entity_list/list_papers',
+			'redirect_after_delete'=>'op/entity_list/list_all_papers',
 			'db_delete_model'=>'remove_paper',
 			'generate_stored_procedure'=>True,
 		  

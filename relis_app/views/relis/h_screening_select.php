@@ -13,7 +13,7 @@
 
                 <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                   <div class="x_title">
-                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ." - Screening "?> </h3>
+                    <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ?> </h3>
                     <div class="clearfix"></div>
                   </div>
 
@@ -95,7 +95,7 @@
          	<div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel tile  overflow_hidden">
                 <div class="x_title">
-                  <h2><?php echo lng('Screening phases')?></h2>
+                  <h2><?php echo lng('Project phases')?></h2>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">

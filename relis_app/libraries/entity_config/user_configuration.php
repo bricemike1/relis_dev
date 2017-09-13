@@ -225,6 +225,7 @@ function get_config_user() {
 				'page_template'=>'general/frm_entity',
 				
 				'redirect_after_save'=>'op/entity_list/list_all_users',
+				'success_message'=>'Success: changes will be affected at next login ',
 				'data_source'=>'get_user_detail',
 				'db_save_model'=>'update_users',
 				

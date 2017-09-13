@@ -19,19 +19,12 @@
                     <div class="clearfix"></div>
                   </div>
 
-                  <div class="col-md-6 col-sm-6 col-xs-12">
-                    
-                      <p style="text-align: justify"><b><?php echo lng('Description')?>:</b><br/>
-                      <?php echo $configuration['project_description'] ?>
-                      </p>
-                      
-                   
-                  </div>
+                  
                   <?php
                   
-                  box_header('Actions');
+                  box_header('Actions','',12,12);
                   	if(!empty($action_but_screen)){
-                  		box_header('Screening');
+                  		box_header('Screening','',12,12);
                   ?>
                   
                     
@@ -39,7 +32,7 @@
                       <?php
                      
                       	foreach ($action_but_screen as $key => $button) {
-                      		echo $button."<br/><br/>";
+                      		echo $button."<div class='col-md-1 col-sm-1 col-xs-1'></div>";
                       	}
                       	
                      ?>
@@ -51,7 +44,7 @@
                 
                  <?php
                   	if(!empty($action_but_validate)){
-                  		box_header('Validation');
+                  		box_header('Validation','',12,12);
                   ?>
                   
                     
@@ -59,7 +52,7 @@
                       <?php
                      
                       	foreach ($action_but_validate as $key => $button) {
-                      		echo $button."<br/><br/>";
+                      		echo $button."<div class='col-md-1 col-sm-1 col-xs-1'></div>";
                       	}
                       	
                      ?>

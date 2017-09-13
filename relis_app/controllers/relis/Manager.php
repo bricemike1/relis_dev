@@ -197,8 +197,7 @@ class Manager extends CI_Controller {
 		
 		}
 		
-		
-		
+	
 			
 			
 		/*
@@ -280,8 +279,11 @@ class Manager extends CI_Controller {
 			$action_button="";
 			$arr_buttons=array();
 			$view_link_url="";
-			foreach ($list_links as $key_l => $value_l) {
 			
+			foreach ($list_links as $key_l => $value_l) {
+				if($value_l['type']=='view'){
+					$view_link_url=$value_l['url'].$value [$table_id];
+				}else{
 				if(!empty($value_l['icon']))
 					$value_l['label']= icon($value_l['icon']).' '.lng_min($value_l['label']);
 			
@@ -291,17 +293,16 @@ class Manager extends CI_Controller {
 							'title'=>$value_l['title']
 								
 					)	);
+				}	
 					
-					if($value_l['type']=='view')
-						$view_link_url=$value_l['url'].$value [$table_id];
 			}
 				
 				
 			$action_button=create_button_link_dropdown($arr_buttons,lng_min('Action'));
 			$element_array['links']=$action_button;
 			
-			if(isset($element_array['bibtexKey']) AND !empty($view_link_url)){
-				$element_array['bibtexKey']=anchor($view_link_url,"<u><b>".$element_array['bibtexKey']."</b></u>",'title="'.lng_min('Display element').'")');
+			if(isset($element_array['title']) AND !empty($view_link_url)){
+				$element_array['title']=anchor($view_link_url,"<u><b>".substr($element_array['title'],0,trim_nbr_car())."</b></u>",'title="'.lng_min('Display element').'")');
 			}
 			if(isset($element_array[$table_id])){
 				$element_array[$table_id]=$i + $page;
@@ -311,7 +312,7 @@ class Manager extends CI_Controller {
 			$i++;
 			
 			
-			
+		
 		}
 	
 		$data ['list']=$list_to_display;
@@ -356,9 +357,12 @@ class Manager extends CI_Controller {
 		/*
 		 * Titre de la page
 		 */
-		if($paper_cat== 'pending' OR $paper_cat== 'processed'  ){
+		if($paper_cat== 'pending'   ){
 				
-			$data['page_title']=$ref_table_config['reference_title'].' - '.$paper_cat;
+			$data['page_title']=$ref_table_config['reference_title'].' - Pending';
+				
+		}elseif($paper_cat== "processed" ){
+			$data['page_title']=$ref_table_config['reference_title'].' - Classified';
 				
 		}elseif($paper_cat== "assigned_me" ){
 			$data['page_title']=$ref_table_config['reference_title'].' - Assigned to me';
@@ -1730,6 +1734,7 @@ class Manager extends CI_Controller {
 		//echo $classification_status;
 		//exit;
 		$i=1;
+		$imported=0;
 		foreach ($data_array as $key => $value) {
 			if($key >= ($paper_start_from -1 )) {
 				
@@ -1765,7 +1770,7 @@ class Manager extends CI_Controller {
 				
 				//echo "$sql <br/><br/>";
 				$res_sql = $this->manage_mdl->run_query($sql,False,project_db());
-				
+				$imported++;
 				//print_test($res_sql);
 				$i++;
 			}
@@ -1785,6 +1790,10 @@ class Manager extends CI_Controller {
 		);
 		$res2 = $this->manage_mdl->add_operation($operation_arr);
 		
+		if(!empty($imported))
+		{
+			set_top_msg(" $imported papers imported successfully");
+		}
 		
 		//print_test($res2);
 		redirect('home/screening');
@@ -2418,14 +2427,15 @@ class Manager extends CI_Controller {
 			
 			
 			$sql="SELECT decison_id,screening_decision as paper_status,P.* from screen_decison S			
-			LEFT JOIN paper P ON(S.paper_id=P.id AND P.paper_active=1 )
-			WHERE screening_phase='$source'	AND  decision_active=1 $condition
+			LEFT JOIN paper P ON(S.paper_id=P.id  )
+			WHERE screening_phase='$source'	AND  decision_active=1 AND P.paper_active=1 $condition
 					";
 				
 			//rechercher dans screen et la decision dans screen decision
 		}
 		
 		$all_papers=$this->db_current->query($sql)->result_array();
+		
 		$result['all_papers']=$all_papers;
 	
 		// get papers already assigned in current phase
@@ -4067,7 +4077,7 @@ class Manager extends CI_Controller {
 	
 		$data['kappa']=$kappa;
 		$data['kappa_meaning']=$kappa_meaning;
-		$data ['page_title'] = lng('Screening Results');//.$k_display;
+		$data ['page_title'] = lng('Screening Statistics');//.$k_display;
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 		$data['left_menu_perspective']='left_menu_screening';
 		$data['project_perspective']='screening';
@@ -4497,7 +4507,7 @@ class Manager extends CI_Controller {
 		$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
 		
 		$data['result_page_title']=lng("General validation score")." -  $match_percentage  % :  $nbr_matched ".lng("matches out of")." $nbr_all ";
-		$data['page_title']=lng("Validation result");
+		$data['page_title']=lng("Validation Statistics");
 		
 		$data['page']='relis/validation_result';
 		
@@ -4748,7 +4758,7 @@ class Manager extends CI_Controller {
 	
 		//all papers
 		$all_papers = $this->db_current->order_by('id', 'ASC')
-		->get_where('paper', array('paper_active'=>1,'screening_status'=>'Included','classification_status'=>'To classify','paper_excluded'=>'0'))
+		->get_where('paper', array('paper_active'=>1,'classification_status'=>'To classify','paper_excluded'=>'0'))
 		->result_array();
 	
 	
@@ -4852,7 +4862,7 @@ class Manager extends CI_Controller {
 		//all papers
 		//all papers
 		$all_papers = $this->db_current->order_by('id', 'ASC')
-		->get_where('view_paper_processed`', array('paper_active'=>1,'screening_status'=>'Included'))
+		->get_where('view_paper_processed`', array('paper_active'=>1))
 		->result_array();
 		
 		
@@ -5335,9 +5345,9 @@ class Manager extends CI_Controller {
 		}
 		$this->session->set_userdata('after_save_redirect',"relis/manager/qa_conduct_list/$type/$id/$status");
 		if($type=='excluded'){
-			$data['page_title']=lng("Quality assessment validation - papers excluded");
+			$data['page_title']=lng("Quality assessment  - papers excluded");
 		}else{
-			$data['page_title']=lng("Quality assessment validation").(($status=='pending'||$status=='done')?" - $status":'');
+			$data['page_title']=lng("Quality assessment ").(($status=='pending'||$status=='done')?" - $status":'');
 		}
 		
 		$data['page']='relis/quality_assessment';

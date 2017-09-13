@@ -24,11 +24,11 @@ function string_anchor($link,$text,$trim_size=0,$title=True){
 }
 
 
-function box_header($title="",$content="",$w1=6,$w2=6,$w6=12){
+function box_header($title="",$content="",$w1=6,$w2=6,$w6=12,$button=""){
 	echo  '<div class="col-md-'.$w1.' col-sm-'.$w2.' col-xs-'.$w1.'">
               <div class="x_panel tile  overflow_hidden">
                 <div class="x_title">
-                  <h2>'.$title.'</h2>
+                  <h2>'.$title.'</h2>'.$button.'
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">'.$content;
@@ -63,14 +63,14 @@ function add_completion_gauge($data=array(),$div_id='foo_test',$box_size=6){
 	             
                 <!-- top tiles -->
           <div class="row tile_count centre">
-            <div class="<?php echo $count_class;?> tile_stats_count">
-              <span class="count_top"><i class="fa fa-list"></i> <?php echo $data['all_papers']['title']?></span>
+            <div class="<?php echo $count_class;?> tile_stats_count " style="color: black;">
+              <span class="count_top"><i class="fa fa-list "></i> <?php echo $data['all_papers']['title']?></span>
             
                <?php
                if(!empty($data['all_papers']['url'])){
-               		echo anchor($data['all_papers']['url'],' <div class="count ">'.nombre($data['all_papers']['value']).'</div>');
+               		echo anchor($data['all_papers']['url'],' <div class="count " style="color: black;">'.nombre($data['all_papers']['value']).'</div>');
                }else{
-               		echo '<div class="count ">'.nombre($data['all_papers']['value']).'</div>';
+               		echo '<div class="count " style="color: black;">'.nombre($data['all_papers']['value']).'</div>';
                }
                ?>
              
@@ -141,6 +141,9 @@ function add_completion_gauge($data=array(),$div_id='foo_test',$box_size=6){
 	
 	<?php 
 	box_footer();
+	
+	//TO DISPLAY NEEDDEL
+	$gauge_done=!empty($data['gauge_done'])?$data['gauge_done']:0.000000000001;
 	?>
 	<!-- gauge.js -->
     <script>
@@ -164,7 +167,7 @@ function add_completion_gauge($data=array(),$div_id='foo_test',$box_size=6){
 
       gauge.maxValue = <?php echo $data['gauge_all'] ?>;
       gauge.animationSpeed = 32;
-      gauge.set(<?php echo $data['gauge_done'] ?>);
+      gauge.set(<?php echo $gauge_done ?>);
     //  gauge.setTextField(document.getElementById("gauge-text"));
     </script>
     <!-- /gauge.js -->

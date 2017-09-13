@@ -90,7 +90,7 @@ class Auth extends CI_Controller {
 				$this->session->set_userdata($user);
 				$this->session->set_userdata('page_msg_err','');
 				$this->session->set_userdata('last_url',"");
-				$this->session->set_userdata('msg'," Connexion réussie.");
+				$this->session->set_userdata('msg'," Logged in successfully");
 				$this->session->set_userdata('submit_mode','normal');
 				$this->session->set_userdata('language_edit_mode','no');
 				$this->session->set_userdata('language_edit_mode','class');
@@ -109,7 +109,7 @@ class Auth extends CI_Controller {
 					$default_lang='en';
 				
 				$this->session->set_userdata('active_language',$default_lang);
-				set_log('Connexion','User connected');
+				set_log('Connection','User connected');
 				redirect('home');
 					
 			}
@@ -137,6 +137,7 @@ class Auth extends CI_Controller {
 		
 	}
 	
+	//To delete
 	public function add_screen_size($height=0,$width=0,$loadTime=0)
 	{
 	
@@ -151,6 +152,7 @@ class Auth extends CI_Controller {
 	
 	}
 	
+	//To delete
 	public function add_screen_size_load()
 	{
 	

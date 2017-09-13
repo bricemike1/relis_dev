@@ -402,6 +402,17 @@ public function get_table_configuration($_table,$target_db='current')
 				
 				
 			}
+			//print_test($install_config);
+			//add cliquable link on paper title
+			if(isset($install_config['config']['classification']['operations']['list_classification']['fields']['class_paper_id'])){
+				
+				$install_config['config']['classification']['operations']['list_classification']['fields']['class_paper_id']=array(
+						'link'=>array(
+								'url'=>'op/display_element/detail_classification/',
+								'id_field'=>'class_id',
+								'trim'=>trim_nbr_car(),));
+				$install_config['config']['classification']['operations']['list_classification']['list_links']=array();
+			}
 			
 	 	
 		return $install_config;

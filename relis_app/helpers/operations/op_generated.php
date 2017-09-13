@@ -56,6 +56,42 @@ function get_operations_generated() {
 				'operation_id'=>'remove_'.$config
 		);
 	}
+	
+	foreach ( $generated_reference_tables as $key => $config) {
+	
+		$operations['list_'.$config]=array(
+				'type'=>'List',
+				'tab_ref'=>$config,
+				'operation_id'=>'list_'.$config
+		);
+	
+		$operations['edit_'.$config]=array(
+				'type'=>'Edit',
+				'tab_ref'=>$config,
+				'operation_id'=>'edit_'.$config
+		);
+		
+	
+	
+		$operations['add_'.$config]=array(
+				'type'=>'Add',
+				'tab_ref'=>$config,
+				'operation_id'=>'add_'.$config
+		);
+	
+		
+		$operations['detail_'.$config]=array(
+				'type'=>'Detail',
+				'tab_ref'=>$config,
+				'operation_id'=>'detail_'.$config
+		);
+	
+		$operations['remove_'.$config]=array(
+				'type'=>'Remove',
+				'tab_ref'=>$config,
+				'operation_id'=>'remove_'.$config
+		);
+	}
 
 	$operations['new_classification']=array(
 			'type'=>'AddChild',

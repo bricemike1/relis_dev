@@ -165,6 +165,8 @@ class Manage_mdl extends CI_Model
 				$res = $this->db3->update ( $table_name, $content, array (
 						$table_id =>$id
 				) );
+				
+				
 			}
 			if($type=='get_id'){
 				return $id;

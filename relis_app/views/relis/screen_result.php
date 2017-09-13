@@ -100,7 +100,7 @@
            
        
            
-           echo box_header("Exclusions criteria");
+           echo box_header("Statistics on Exclusion Criteria");
            $tmpl = array (
            		'table_open'  => '<table class="table table-striped table-hover">',
            		'table_close'  => '</table>'

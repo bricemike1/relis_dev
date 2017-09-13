@@ -2306,4 +2306,68 @@ class Manager extends CI_Controller {
 			redirect ('home/screening_select');
 	
 	}
+	function clear_logs_validation(){
+	
+		$data ['page'] = 'install/frm_install_result';
+		$data['left_menu_admin']=True;
+	
+		$data['array_warning']=array('You want to clear All logs : The opération cannot be undone !');
+		$data['array_success']=array();
+		$data ['next_operation_button']="";
+	
+	
+	
+		$data ['page_title'] = lng('Clear logs ');
+	
+	
+		
+		$data ['next_operation_button'] =" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue uninstall', 'manager/clear_logs','Continue to clear','','',' btn-success ',FALSE );
+		$data ['next_operation_button'] .= get_top_button ( 'all', 'Cancel', 'op/entity_list/list_logs','Cancel','','',' btn-danger ',FALSE );
+	
+		$this->load->view ( 'body', $data );
+	
+	
+	}
+	public function clear_logs(){
+	
+		$sql="UPDATE log SET log_active=0 where log_active=1 ";
+		$res=$this->db->query($sql);
+		set_top_msg('Logs cleaned');
+		redirect ('op/entity_list/list_logs');
+		
+	}
+	
+	function clear_papers_validation(){
+	
+		$data ['page'] = 'install/frm_install_result';
+		$data['left_menu_admin']=True;
+	
+		$data['array_warning']=array('You want to delete All papers : The opération cannot be undone !');
+		$data['array_success']=array();
+		$data ['next_operation_button']="";
+	
+	
+	
+		$data ['page_title'] = lng('Clear logs ');
+	
+	
+		$data ['next_operation_button'] =" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue uninstall', 'manager/clear_papers','Continue to delete','','',' btn-success ',FALSE );
+		$data ['next_operation_button'] .= get_top_button ( 'all', 'Cancel', 'op/entity_list/list_all_papers','Cancel','','',' btn-danger ',FALSE );
+		
+	
+		$this->load->view ( 'body', $data );
+	
+	
+	}
+	public function clear_papers(){
+	
+		$sql="UPDATE paper SET paper_active=0 where paper_active=1 ";
+		$res=$this->db_current->query($sql);
+		set_top_msg('All papers deleted');
+		redirect ('op/entity_list/list_all_papers');
+	
+	}
+	
+	
+	
 }

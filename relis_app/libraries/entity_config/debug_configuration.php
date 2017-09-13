@@ -218,7 +218,10 @@ function get_config_debug() {
 								'trim'=>'0'
 							)),
 						//'title'=>array(),
-						'page_url'=>array(),
+						'page_url'=>array('link'=>array(
+								'url'=>'',
+								'id_field'=>'page_url',
+								'trim'=>'0')),
 						'created_by'=>array(),
 						'creation_time'=>array(),
 						'status'=>array()
