@@ -27,7 +27,7 @@ function get_qa_responses() {
 	   	
 	   	
 	   	$fields['response']=array(
-	   			'field_title'=>'Response',
+	   			'field_title'=>'Answers',
 	   			'field_type'=>'text', 			
 				'field_size'=>200, 	   			
 				'input_type'=>'text', 
@@ -68,9 +68,8 @@ function get_qa_responses() {
 	
 		$operations['add_qa_responses']=array(
 			'operation_type'=>'Add',
-			'operation_title'=>'Add a new response',	
-			'operation_description'=>'Add a new response',	
-			'page_title'=>'Add a new response for quality assessment',			
+			
+			'page_title'=>'Add a new answers for quality assessment',			
 			'save_function'=>'op/save_element',
 			'page_template'=>'general/frm_entity',
 			'redirect_after_save'=>'op/entity_list/list_qa_responses',
@@ -101,7 +100,7 @@ function get_qa_responses() {
 				'operation_type'=>'Edit',
 				'operation_title'=>'Edit response',
 				'operation_description'=>'Edit response',
-				'page_title'=>'Edit response for quality assessment ',
+				'page_title'=>'Edit answers for quality assessment ',
 				'save_function'=>'op/save_element',
 				'page_template'=>'general/frm_entity',
 				
@@ -136,7 +135,7 @@ function get_qa_responses() {
 				'operation_type'=>'List',
 				'operation_title'=>'List responses',
 				'operation_description'=>'List responses',
-				'page_title'=>'List of responses for quality assessment',
+				'page_title'=>'Answers for quality assessment',
 				
 				
 				'data_source'=>'get_list_qa_responses',
@@ -186,9 +185,7 @@ function get_qa_responses() {
 		
 		$operations['detail_qa_responses']=array(
 				'operation_type'=>'Detail',
-				'operation_title'=>'Detail of a response',
-				'operation_description'=>'Detail of a response',
-				'page_title'=>'Response ',
+				'page_title'=>'Answers ',
 				
 				
 				

@@ -3487,7 +3487,7 @@ class Manager extends CI_Controller {
 		
 		
 		$data['completion_screen']=$assign_per_user;
-		
+		print_test($data['completion_screen']);
 		
 		
 		
@@ -3511,6 +3511,148 @@ class Manager extends CI_Controller {
 		$this->load->view ( 'body', $data );
 	}
 	
+	
+	
+	
+	public function qa_completion($type='qa'){
+	
+		if($type=='validate'){
+			$completion=$this->manager_lib->get_qa_completion('QA_Val');
+		
+		}else{
+			$completion=$this->manager_lib->get_qa_completion('QA');
+		}
+		
+		
+		$users=$this->manager_lib->get_reference_select_values('users;user_name');
+		$per_user_completion=array();
+		
+		if(!empty($completion['user_completion'])){
+			
+			foreach ($completion['user_completion'] as $key => $value) {
+				if(!empty($value['all'])){
+					$per_user_completion[$key]['total_papers']=$value['all'];
+					$per_user_completion[$key]['papers_screened']=!empty($value['done'])?$value['done']:0;
+					$per_user_completion[$key]['completion']=(int)($per_user_completion[$key]['papers_screened'] *100 / $per_user_completion[$key]['total_papers'] );
+					$per_user_completion[$key]['user']=$users[$key];
+				
+				}
+			}
+			$total_papers=$completion['general_completion']['all'];
+			$papers_screened=!empty($completion['general_completion']['done'])?$completion['general_completion']['done']:0;
+			
+			$per_user_completion['total']=array(
+					'total_papers'=>$total_papers,
+					'papers_screened'=>$papers_screened,
+					'completion'=>!empty($total_papers)?(int)($papers_screened *100 / $total_papers ):0,
+					'user'=>'<b>Total</b>',
+			);
+			
+		}
+	
+	
+		
+	
+		$data['completion_screen']=$per_user_completion;
+	
+	
+	
+	
+	
+	
+		$data ['page_title']=($type=='validate')?lng('QA validation progress'):lng('QA progress');
+	
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+		//$data['left_menu_perspective']='left_menu_screening';
+		//$data['project_perspective']='screening';
+		$data ['page'] = 'relis/screen_completion';
+	
+	
+	
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
+	
+	
+	public function class_completion($type='class'){
+		
+		
+		
+		$users=$this->manager_lib->get_reference_select_values('users;user_name',FALSE);
+	//print_test($users);
+	$per_user_completion=array();
+		if($type=='validate'){
+			$gen_completion=$this->manager_lib->get_classification_completion('validation','all');
+			if(!empty($gen_completion['all_papers'])){
+				foreach ($users as $key => $value) {
+					$user_completion=$this->manager_lib->get_classification_completion('validation',$key);
+					
+					if(!empty($user_completion['all_papers'])){
+						$per_user_completion[$key]['total_papers']=$user_completion['all_papers'];
+						$per_user_completion[$key]['papers_screened']=$user_completion['processed_papers'];
+						$per_user_completion[$key]['completion']=(int)($per_user_completion[$key]['papers_screened'] *100 / $per_user_completion[$key]['total_papers'] );
+						$per_user_completion[$key]['user']=$value;
+					}
+					
+					$per_user_completion['total']['total_papers']=$gen_completion['all_papers'];
+					$per_user_completion['total']['papers_screened']=$gen_completion['processed_papers'];
+					$per_user_completion['total']['completion']=(int)($per_user_completion['total']['papers_screened'] *100 / $per_user_completion['total']['total_papers'] );
+					$per_user_completion['total']['user']='Total';
+					
+				}
+			}
+			
+			
+			
+	
+		}else{
+			$gen_completion=$this->manager_lib->get_classification_completion('class','all');
+			if(!empty($gen_completion['all_papers'])){
+				foreach ($users as $key => $value) {
+					$user_completion=$this->manager_lib->get_classification_completion('class',$key);
+					if(!empty($user_completion['all_papers'])){
+						$per_user_completion[$key]['total_papers']=$user_completion['all_papers'];
+						$per_user_completion[$key]['papers_screened']=$user_completion['processed_papers'];
+						$per_user_completion[$key]['completion']=(int)($per_user_completion[$key]['papers_screened'] *100 / $per_user_completion[$key]['total_papers'] );
+						$per_user_completion[$key]['user']=$value;
+					}
+				}
+				
+				$per_user_completion['total']['total_papers']=$gen_completion['all_papers'];
+				$per_user_completion['total']['papers_screened']=$gen_completion['processed_papers'];
+				$per_user_completion['total']['completion']=(int)($per_user_completion['total']['papers_screened'] *100 / $per_user_completion['total']['total_papers'] );
+				$per_user_completion['total']['user']='Total';
+			}
+				
+			
+		}
+	
+	
+	
+	
+		$data['completion_screen']=$per_user_completion;
+	
+	
+	
+	
+	
+	
+		$data ['page_title']=($type=='validate')?lng('Classification validation progress'):lng('Classification progress');
+	
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+		//$data['left_menu_perspective']='left_menu_screening';
+		//$data['project_perspective']='screening';
+		$data ['page'] = 'relis/screen_completion';
+	
+	
+	
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
 	
 	
 	/*
@@ -4063,20 +4205,22 @@ class Manager extends CI_Controller {
 			}
 		
 		}
-		$kappa=$this->calculate_kappa();
-		$kappa_meaning='-';
-		
-	//	print_test($kappa_meaning);
-		$k_display="";
-		if(!empty($kappa)){
-			$kappa_meaning=$this->kappa_meaning($kappa);
-			$k_display=" -   Kappa : $kappa ($kappa_meaning)";
+		//test if kappa is enabled
+		if(get_appconfig_element('use_kappa')){
+			$kappa=$this->calculate_kappa();
+			$kappa_meaning='-';
+			
+		//	print_test($kappa_meaning);
+			$k_display="";
+			if(!empty($kappa)){
+				$kappa_meaning=$this->kappa_meaning($kappa);
+				$k_display=" -   Kappa : $kappa ($kappa_meaning)";
+			}
+			
+			$data['kappa']=$kappa;
+			$data['kappa_meaning']=$kappa_meaning;
 		}
-		
 		$data['result_per_criteria']=$result_per_criteria;
-	
-		$data['kappa']=$kappa;
-		$data['kappa_meaning']=$kappa_meaning;
 		$data ['page_title'] = lng('Screening Statistics');//.$k_display;
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 		$data['left_menu_perspective']='left_menu_screening';
@@ -5645,9 +5789,9 @@ class Manager extends CI_Controller {
 function qa_exlusion($paper_id,$op=1){
 	
 		if($op==1){
-			$this->db_current->update('paper',array('screening_status'=>'Excluded_QA'),array('id'=>$paper_id));
+			$this->db_current->update('paper',array('screening_status'=>'Excluded_QA','classification_status'=>'Waiting'),array('id'=>$paper_id));
 		}else{
-			$this->db_current->update('paper',array('screening_status'=>'Included'),array('id'=>$paper_id));
+			$this->db_current->update('paper',array('screening_status'=>'Included','classification_status'=>'To classify'),array('id'=>$paper_id));
 		}
 		
 		$after_after_save_redirect="relis/manager/qa_conduct_result";

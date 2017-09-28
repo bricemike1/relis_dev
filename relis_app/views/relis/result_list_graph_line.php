@@ -98,27 +98,29 @@
 							{
 								foreach ($result_value['chart'] as $key_chart => $value_chart) {
 									//print_test($result_value);
-									if($value_chart=='pie')
+								/*	if($value_chart=='pie')
 										pie_graph($result_value);
 									if($value_chart=='bar')
 										column_graph($result_value);
-									
-									//if($value_chart=='line')
-									//		line_graph($result_value);
+								*/	
+									if($value_chart=='line')
+											line_graph($result_value);
 								}
 								
 								
 							}else{
 								foreach ($result_value['chart'] as $key_chart => $value_chart) {
 									//print_test($result_value);
-									if($value_chart=='bar')
+								/*	if($value_chart=='bar')
 										
 										multi_collumn($result_value);
-									//if($value_chart=='line')
-									//	line_graph_multi($result_value);
-											
+									
 									if($value_chart=='pie')
 										pie_drilldown($result_value);
+									*/	
+									if($value_chart=='line')
+										line_graph_multi($result_value);
+											
 								}
 								
 								

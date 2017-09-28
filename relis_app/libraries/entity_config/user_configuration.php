@@ -113,6 +113,7 @@ function get_config_user() {
 			'input_type'=>'select',
 			'input_select_source'=>'table',
 			'input_select_values'=>'user_project;project_id',//the reference table and the field to be displayed
+			//'input_select_values'=>'user_project;CONCAT_WS(" - ",project_id,user_role)',
 			'input_select_key_field'=>'user_id',
 			'number_of_values'=>'*',
 			'input_select_source_type'=>'drill_down',
@@ -259,11 +260,54 @@ function get_config_user() {
 					
 		);
 		
+		$operations['edit_user_min']=array(
+				'operation_type'=>'Edit',
+				'operation_title'=>'Edit a new user',
+				'operation_description'=>'Used when a user want to edit his profile',
+				'page_title'=>'Edit my account',
+				'save_function'=>'op/save_element',
+				'page_template'=>'general/frm_entity',
+				
+				'redirect_after_save'=>'home',
+				'success_message'=>'Success: changes will be affected at next login ',
+				'data_source'=>'get_user_detail',
+				'db_save_model'=>'update_users_mine',
+				
+				'support_drilldown'=>TRUE,
+				'drilldown_source'=>'detail_user',
+		
+				'generate_stored_procedure'=>True,
+					
+				'fields'=>array(
+						'user_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+						'user_name'=>array('mandatory'=>'mandatory','field_state'=>'disabled'),
+						'user_username'=>array('mandatory'=>'mandatory','field_state'=>'disabled'),
+						'user_mail'=>array('mandatory'=>'','field_state'=>'enabled','pattern'=>'valid_email'),
+						//'user_usergroup'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+						'user_password'=>array('mandatory'=>'','field_state'=>'enabled'),
+						'user_picture'=>array('mandatory'=>'','field_state'=>'enabled'),
+						//'user_projects'=>array('mandatory'=>'','field_state'=>'drill_down')
+							
+				),
+		
+				'top_links'=>array(
+							
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'close',
+										'url'=>'home',
+									)
+				
+				),
+					
+		);
+		
 		$operations['list_users']=array(
 				'operation_type'=>'List',
 				'operation_title'=>'List all user',
 				'operation_description'=>'List all users',
-				'page_title'=>'List of users',
+				'page_title'=>'Users',
 				
 				//'page_template'=>'list',
 				
@@ -278,10 +322,10 @@ function get_config_user() {
 								'trim'=>'0'
 							)),
 						'user_username'=>array(),
-						'user_mail'=>array(),
+						//'user_mail'=>array(),
 						'user_usergroup'=>array(),
 						'user_projects'=>array(),
-						'created_by'=>array()
+						//'created_by'=>array()
 							
 				),
 				'order_by'=>'user_name ASC ', 
@@ -379,6 +423,7 @@ function get_config_user() {
 									'icon'=>'edit',
 									'url'=>'op/edit_element/edit_user/~current_element~',
 								),	
+						
 						'back'=>array(
 										'label'=>'',
 										'title'=>'Close',
@@ -423,7 +468,7 @@ function get_config_user() {
 				
 				
 				'top_links'=>array(
-						
+						'edit'=>array(),	
 						'back'=>array(
 										'label'=>'',
 										'title'=>'Close',
@@ -435,6 +480,15 @@ function get_config_user() {
 				
 				),
 		);
+		
+		$operations['detail_user_min_ed']=$operations['detail_user_min']; // etail user with edit enabled
+		$operations['detail_user_min_ed']['top_links']['edit']= array(
+									'label'=>'',
+									'title'=>'Edit',
+									'icon'=>'edit',
+									'url'=>'op/edit_element/edit_user_min/~current_element~',
+								);
+		
 		$operations['remove_user']=array(
 				'operation_type'=>'Remove',
 				'operation_title'=>'Remove a user',

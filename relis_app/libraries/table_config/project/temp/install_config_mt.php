@@ -3,8 +3,9 @@ function get_classification_mt(){
 $reference_tables=array();//from nowit will worklike this
 $config=array();
 $result['class_action']='no_overide';
-$result['screen_action']='no_overide';
-$result['project_title']='Model transformation ';
+$result['screen_action']='override';
+$result['qa_action']='override';
+$result['project_title']='Model transformation';
 $result['project_short_name']='mt';
 $config['classification']['table_name']='classification';
 $config['classification']['config_id']='classification';
@@ -303,7 +304,65 @@ $config['classification']['fields'][ 'target_language']=array(
  	}
  		
  		
-$config['classification']['fields'][ 'scope']=array( 		
+$config['scope']['table_name']='scope';
+$config['scope']['table_id']='scope_id';
+$config['scope']['table_active_field']='scope_active';
+$config['scope']['main_field']='scope';
+$config['scope']['order_by']='scope_id ASC ';
+
+
+$config['scope']['reference_title']='Scope';
+$config['scope']['reference_title_min']='Scope';
+		
+$config['scope']['entity_label_plural']='Scope';
+$config['scope']['entity_label']='Scope';
+
+
+$config['scope']['links'][ 'edit']=array(
+	   			'label'=>'Edit',
+	   			'title'=>'Edit ',
+	   			'on_list'=>False,
+	   			'on_view'=>True
+	   	);
+
+$config['scope']['links'][ 'view']=array(
+	   			'label'=>'View',
+	   			'title'=>'View',
+	   			'on_list'=>True,
+	   			'on_view'=>True
+	   	);
+	   	
+$config['scope']['fields']['scope_id']=array(
+			   	'field_title'=>'#',
+			   	'field_type'=>'int',
+			   	'field_size'=>11,
+			   	'field_value'=>'auto_increment',					   	
+			   	'default_value'=>'auto_increment',
+			   	//to clean
+			   	'on_add'=>'hidden',
+			   	'on_edit'=>'hidden',
+			   	'on_list'=>'show',
+			   	'on_view'=>'hidden'
+			   	);
+$config['scope']['fields']['parent_field_id']=array(
+					   	'category_type'=>'ParentExternalKey',
+					   	'field_title'=>'Parent',
+					   	'field_type'=>'int',
+					   	//'field_value'=>'normal',
+					   	'field_size'=>11,
+					   	'mandatory'=>' mandatory ',
+					   	'input_type'=>'select',
+					   	'input_select_source'=>'table',
+					   	'input_select_values'=>'classification',
+					   	//to clean
+					   	'compute_result'=>'no',							   
+					   	'on_add'=>'hidden',
+					   	'on_edit'=>'hidden',
+					   	'on_list'=>'hidden',
+					   	'on_view'=>'hidden'
+				);
+				
+$config['scope']['fields'][ 'scope']=array( 		
 	'category_type'=>'IndependantDynamicCategory',		
  	'field_title'=>'Scope',	
  	'field_type'=>'int',
@@ -334,6 +393,40 @@ $config['classification']['fields'][ 'scope']=array(
  	}
  		
  		
+$config['scope']['fields']['scope_active']=array(
+					   	'field_title'=>'Active',
+					   	'field_type'=>'int',
+					   	'field_size'=>'1',
+					   	'field_value'=>'1',
+					   	//to clean				
+					   	'on_add'=>'not_set',
+					   	'on_edit'=>'not_set',
+					   	'on_list'=>'hidden',
+					   	'on_view'=>'hidden'
+			);
+$config['scope']['operations']=array();
+			
+$config['classification']['fields'][ 'scope']=array( 		
+	'category_type'=>'WithMultiValues',		
+ 	'field_title'=>'Scope',	
+ 	'field_type'=>'int',
+ 	'field_size'=>11,
+ 	//'field_value'=>'normal',
+ 	'number_of_values'=>'10',//a verifier
+ 	
+ 	
+ 	'input_type'=>'select',
+ 	'input_select_source'=>'table',
+ 	'input_select_values'=>'scope',
+ 	'input_select_key_field'=>'parent_field_id',
+ 	'input_select_source_type'=>'normal',
+ 	'multi-select' => 'Yes',
+ 	'on_add'=>'enabled',
+ 	'on_edit'=>'enabled',
+ 	'compute_result'=>'no',
+ 	'on_list'=>'show'				
+ 				);			
+
 $config['intent']['table_name']='intent';
 $config['intent']['table_id']='intent_id';
 $config['intent']['table_active_field']='intent_active';
@@ -432,7 +525,7 @@ $config['intent']['fields'][ 'name_used']=array(
  	'input_type'=>'text',
  	'field_size'=>100,
  	'field_type'=>'text',
- 	//'number_of_values'=>'0',//a verifier
+ 	//'number_of_values'=>'',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -507,7 +600,7 @@ $config['intent']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'0',//a verifier
+ 	//'number_of_values'=>'',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -540,7 +633,7 @@ $config['classification']['fields'][ 'intent']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  	//'field_value'=>'normal',
- 	'number_of_values'=>'2',//a verifier
+ 	'number_of_values'=>'10',//a verifier
  	
  	'mandatory'=>' mandatory ',
  	
@@ -651,12 +744,12 @@ $config['intent_relation']['fields'][ 'intent_1']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  //	'field_value'=>'normal',
- 	'number_of_values'=>'0',
+ 	'number_of_values'=>'1',
  	'mandatory'=>' mandatory ',
  	
  	'input_type'=>'select',
  	'input_select_source'=>'table',
- 	'input_select_values'=>'intent',//à corriger seul les category sur le root sont supportés pour le moment
+ 	'input_select_values'=>'intent',//? corriger seul les category sur le root sont support?s pour le moment
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'compute_result'=>'no',
@@ -671,12 +764,12 @@ $config['intent_relation']['fields'][ 'intent_2']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  //	'field_value'=>'normal',
- 	'number_of_values'=>'0',
+ 	'number_of_values'=>'1',
  	'mandatory'=>' mandatory ',
  	
  	'input_type'=>'select',
  	'input_select_source'=>'table',
- 	'input_select_values'=>'intent',//à corriger seul les category sur le root sont supportés pour le moment
+ 	'input_select_values'=>'intent',//? corriger seul les category sur le root sont support?s pour le moment
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'compute_result'=>'no',
@@ -693,7 +786,7 @@ $config['intent_relation']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'0',//a verifier
+ 	//'number_of_values'=>'',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -845,7 +938,7 @@ $config['classification']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'0',//a verifier
+ 	//'number_of_values'=>'',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -911,7 +1004,7 @@ $result[ 'reference_tables' ] =$reference_tables;
 
  		
 $qa=array();
-$qa['cutt_off_score']='2';
+$qa['cutt_off_score']='3.2';
 $qa['questions']=array();
   array_push($qa['questions'], array(
   										'title' =>"Question 1",
@@ -932,12 +1025,12 @@ $qa['questions']=array();
 $qa['responses']=array();
    array_push($qa['responses'], array(
    										'title' =>"Yes",
-   										'score' =>"2",
+   										'score' =>"2.4",
    										)
    );
    array_push($qa['responses'], array(
    										'title' =>"Partially",
-   										'score' =>"1",
+   										'score' =>"1.9",
    										)
    );
    array_push($qa['responses'], array(
@@ -952,6 +1045,37 @@ $result[ 'qa' ]=$qa;
 
 //SCREENING area
 
+ 		
+$screening=array();
+$screening['review_per_paper']='7';
+$screening['conflict_type']='ExclusionCriteria';
+$screening['conflict_resolution']='Unanimity';
+$screening['validation_assigment_mode']='Normal';
+$screening['validation_percentage']='30';
+$screening['exclusion_criteria']=array();
+array_push($screening['exclusion_criteria'], "Criteria 1");
+array_push($screening['exclusion_criteria'], "Criteria 2");
+$screening['source_papers']=array();
+array_push($screening['source_papers'], "Scopus");
+array_push($screening['source_papers'], "IEEE");
+$screening['source_papers']=array();
+array_push($screening['source_papers'], "Scopus");
+array_push($screening['source_papers'], "IEEE");
+$screening['phases']=array();
+ array_push($screening['phases'], array(
+ 										'title' =>"Phase 1",
+ 										'description' =>"Screen per title",
+ 										'fields'=>'Title|',
+ 										)
+ );
+ array_push($screening['phases'], array(
+ 										'title' =>"Phase 2",
+ 										'description' =>"Screen per title and abstract 2",
+ 										'fields'=>'Title|Abstract|',
+ 										)
+ );
+
+$result[ 'screening' ]=$screening; 		
 
 //SCREENING area
 

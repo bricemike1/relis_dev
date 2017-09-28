@@ -127,6 +127,8 @@
                     
                     <li><a href="<?php echo base_url()?>/auth/discon""><i class="fa fa-sign-out pull-right"></i><?php echo lng_min('Log Out')?></a>
                     </li>
+                    <li><a href="<?php echo base_url();?>op/display_element/detail_user_min_ed/<?php echo active_user_id()?>"></i><?php echo lng_min('Profile')?></a>
+                    </li>
                   </ul>
                 </li>
                 <li role="presentation" class="dropdown">

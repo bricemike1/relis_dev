@@ -531,7 +531,14 @@ function active_user_name() {
 		else
 			return 'user_unknown';
 }
+function active_project_id() {
 
+	$ci = get_instance ();
+	if($ci->session->userdata ( 'user_id' ))
+		return $ci->session->userdata ( 'project_id' );
+		else
+			return 0;
+}
 function active_user_id() {
 
 	$ci = get_instance ();
@@ -739,7 +746,8 @@ function admin_config($config,$config_name=True,$type='config'){
 	if($type=='table'){
 		$admin_configs=array('users','usergroup','log','projects','userproject','config_admin');
 	}else{
-		$admin_configs=array('users','usergroup','logs','project','user_project','config_admin');
+		$admin_configs=array('users','usergroup','logs','project','user_project','config_admin','remove_user_project');
+		//remove_user_project to remove user while in current project : to avoid  deleting in project database
 	}
 	
 	
@@ -1771,6 +1779,8 @@ function user_project($project_id , $user=0,$user_role=""){
 	
 	//default caraters to display on list
 	function trim_nbr_car(){
-		return 80 ;
+		$res=get_appconfig_element('list_trim_nbr');
+		
+		return $res;
 	}
 	

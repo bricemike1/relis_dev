@@ -90,6 +90,30 @@ function get_operations_project() {
 			'operation_id'=>'edit_project_to_user'
 	);
 	
+	
+	$operations['list_users_current_projects']=array(
+			'type'=>'List',
+			'tab_ref'=>'user_project',
+			'operation_id'=>'list_users_current_projects'
+	);
+	
+	$operations['add_user_current_project']=array(
+			'type'=>'Add',
+			'tab_ref'=>'user_project',
+			'operation_id'=>'add_user_current_project'
+	);
+	
+	$operations['edit_user_current_project']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'user_project',
+			'operation_id'=>'edit_user_current_project'
+	);
+	
+	$operations['remove_user_current_project']=array(
+			'type'=>'Remove',
+			'tab_ref'=>'user_project',
+			'operation_id'=>'remove_user_current_project'
+	);
 	return $operations;
 	
 	

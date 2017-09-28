@@ -59,13 +59,14 @@ CREATE TABLE IF NOT EXISTS `config` (
   `screening_reviewer_number` int(3) NOT NULL DEFAULT '2',
   `screening_status_to_validate` enum('Excluded','Included') NOT NULL DEFAULT 'Excluded',
   `screening_validator_assignment_type` enum('Normal','Veto','Info') NOT NULL DEFAULT 'Normal',
-  `qa_on` int(2) NOT NULL DEFAULT '1',
+  `qa_on` int(2) NOT NULL DEFAULT '0',
   `qa_open` int(2) NOT NULL DEFAULT '0',
   `qa_cutt_off_score` double NOT NULL DEFAULT '1.5',
   `qa_validation_on` int(2) NOT NULL DEFAULT '0',
   `qa_validation_default_percentage` int(3) NOT NULL DEFAULT '20',
   `class_validation_on` int(2) NOT NULL DEFAULT '0',
   `class_validation_default_percentage` int(3) NOT NULL DEFAULT '20',
+  `list_trim_nbr` int(3) NOT NULL DEFAULT '80',
   `config_active` int(2)  NOT NULL DEFAULT '1',
   PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
@@ -146,19 +147,6 @@ CREATE TABLE IF NOT EXISTS `str_management` (
   PRIMARY KEY (`str_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
-
-
-DROP TABLE IF EXISTS `operations`;;;;
-CREATE TABLE IF NOT EXISTS `operations` (
-  `operation_id` int(11) NOT NULL AUTO_INCREMENT,
-  `operation_code` varchar(20) NOT NULL DEFAULT '01',
-  `operation_type` enum('import_paper','assign_papers','assign_papers_validation') NOT NULL DEFAULT 'import_paper',
-  `operation_desc` varchar(200) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `operation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `operation_active` int(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`operation_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1;;;;
 
 -- VIEWS
 

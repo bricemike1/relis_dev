@@ -19,7 +19,7 @@ class Op extends CI_Controller {
 	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=1){
 			
 		$op=check_operation($operation_name,'List');
-	//	print_test($op); 
+		//print_test($op);
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];
 		
@@ -954,7 +954,8 @@ class Op extends CI_Controller {
 		$result=array();
 	}
 		 $data ['graph_result']=$result;
-	
+		
+		// print_test($result);
 	
 			/*
 			 * Ajout de l'entête de la liste
@@ -991,8 +992,11 @@ class Op extends CI_Controller {
 				$data['has_graph']='yes';
 					
 					
-				
-				$data['page']='relis/result_list_graph';
+				if(!empty($val) AND $val=='line'){
+				$data['page']='relis/result_list_graph_line';
+				}else{
+					$data['page']='relis/result_list_graph';
+				}
 				$this->load->view('body',$data);
 	}
 	
@@ -1048,7 +1052,7 @@ class Op extends CI_Controller {
 			/*
 			 * Appel de la fonction  récupérer la ligne à afficher
 			 */
-		//	print_test($table_config);
+			//print_test($table_config);
 			$item_data = $this->manager_lib->get_detail($table_config,$ref_id,False,False);
 			
 			$data['item_data']=$item_data;
@@ -1599,11 +1603,12 @@ class Op extends CI_Controller {
 			$content_item = $this->DBConnection_mdl->get_row_details( $table_config_child['operations'][$ref_table_operation]['data_source'],$parent_id ,true);
 		//	print_test($data);
 		//	print_test($content_item);
+		if(!empty($content_item)){
 			foreach ($content_item as $key => $value) {
 				if(!isset($data['content_item'][$key]))
 					$data['content_item'][$key]=$value;
 			}
-			
+		}	
 	//		print_test($data);
 		//	exit;
 		}
@@ -1752,7 +1757,11 @@ class Op extends CI_Controller {
 		}
 		$table_config=get_table_configuration($ref_table);
 	
-	
+		if($ref_table_operation=='edit_user_min' AND $ref_id != active_user_id()) {
+			
+			set_top_msg('No access to this operation!','error');
+			redirect('home');
+		}
 		/*
 		 * Appel de la fonction du model pour récupérer la ligne à modifier
 		 */
@@ -2194,7 +2203,7 @@ class Op extends CI_Controller {
 	
 		}
 	
-	//print_test($post_arr);
+
 
 	
 		if($post_arr['table_config']=='users'){
@@ -2223,8 +2232,19 @@ class Op extends CI_Controller {
 			}
 				
 		}
-	
-	
+		
+		
+		if(!empty($table_config['operations'][$current_operation]['check_exist'])){
+			
+			$record_exist=$this->check_record_exist($table_config['operations'][$current_operation]['check_exist'],$table_config,$post_arr);
+		//	print_test($record_exist);
+			if($record_exist != '0'){
+				$data ['err_msg'] .= $table_config['operations'][$current_operation]['check_exist']['message']."<br/>";
+				$other_check = FALSE;
+			}
+		}
+//	s
+//	exit;
 			
 		$operation_source=$post_arr ['operation_source'];
 		$parent_id=$post_arr ['parent_id'];
@@ -2553,6 +2573,44 @@ class Op extends CI_Controller {
 						
 				}
 			}
+	}
+	
+	function check_record_exist($exist_config,$table_config ,$post_array){
+		
+		$table_active_field= $table_config['table_active_field'];
+		$table_id= $table_config['table_id'];
+		$table_name= $table_config['table_name'];
+		$operation_type=$post_array['operation_type'];
+		
+		$table_config['table_active_field'];
+		
+		$sql= "select * from $table_name WHERE $table_active_field = 1 ";
+		
+		foreach ($exist_config['fields'] as $key => $value) {
+			if(!empty($post_array[$value])){
+				$sql .= " AND ($value = ' ".$post_array[$value]."') ";
+			}
+		}
+		
+		
+		if($operation_type=='edit'){
+			$sql .= " AND ( $table_id <>  '".$post_array[$table_id]."' ) ";
+		}
+		
+		if(admin_config($table_config['config_id'])){
+			$res=$this->db->query($sql)->num_rows();
+		}else{
+			$res= $this->db_current->query($sql)->num_rows();
+		}
+		
+		
+		//echo $sql;
+		//print_test($res);
+		//print_test($post_array);
+		
+		//print_test($exist_config);
+		
+		return $res;
 	}
 	
 	function numeric_wcomma ($str)

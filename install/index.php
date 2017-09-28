@@ -57,6 +57,7 @@ if(isset($_POST['submit_form'])){
 			install_form($_POST,array('Database hosts connection error : '. mysqli_error($link)));
 		}else{
 			//echo "<h2>Relis installation</h2>";
+			
 			$sql = 'CREATE DATABASE IF NOT EXISTS '.$db_name;
 			if (mysqli_query($link,$sql )) {
 		
@@ -103,6 +104,17 @@ if(isset($_POST['submit_form'])){
 						die('Invalid query : ' . mysqli_error($link));
 					}
 					
+					// add dsl configuration 
+					$dsl_url=trim($_POST['dsl_url']);
+					$dsl_workspace=trim($_POST['dsl_workspace']);
+					
+					if( !empty($dsl_url) AND !empty($dsl_workspace)){
+						$sql="UPDATE  config_admin SET  editor_url ='".$dsl_url."' , editor_generated_path = '".$dsl_workspace."'";
+						$result = mysqli_query($link,$sql);
+						if (!$result) {
+							die('Invalid query : ' . mysqli_error($link));
+						}
+					}
 					// Add to CodeIgniter the database configuration
 					add_database_config($db_host,$db_name,$db_user,$db_pass);
 		

@@ -130,7 +130,16 @@ function get_qa_assignment() {
 	   	);
 	   	
 		$config['fields']=$fields;
-	   	
+	   	$table_views=array();
+	
+		$table_views['view_papers_in_qa']=array(
+					'name'=>'view_papers_in_qa',
+					'desc'=>'',
+					
+					'script'=>'SELECT Q.*,Q.qa_assignment_id as assignment_id,P.title,P.screening_status as status FROM qa_assignment Q,paper P where Q.paper_id=P.id AND qa_assignment_active=1 AND paper_active=1  ',
+					
+			);
+		$config['table_views']=$table_views;
 	
 		$operations['add_qa_assignment']=array(
 			'operation_type'=>'Add',
@@ -261,6 +270,77 @@ function get_qa_assignment() {
 				
 				),
 		);
+		
+
+		
+		$operations['list_qa_papers']=array(
+				'operation_type'=>'List',
+				'page_title'=>'All papers Papers in QA',
+				'table_display_style'=>'dynamic_table',
+				'table_name'=>'view_papers_in_qa',
+				'data_source'=>'get_list_qa_papers',
+				'generate_stored_procedure'=>True,
+					
+				'fields'=>array(
+					//'qa_assignment_id'=>array(),
+					'paper_id'=>array('field_title'=>'Title',
+					'link'=>array(
+								'url'=>'relis/manager/display_paper_min/',
+								'id_field'=>'paper_id',
+								'trim'=>trim_nbr_car()
+							)),
+					
+							
+				),
+				'order_by'=>'qa_assignment_id DESC ', 
+		
+				'list_links'=>array(
+					/*	'view'=>array(
+									'label'=>'View',
+									'title'=>'Disaly element',
+									'icon'=>'folder',
+									'url'=>'op/display_element/detail_qa_assignment/',
+								),
+						'edit'=>array(
+									'label'=>'Edit',
+									'title'=>'Edit',
+									'icon'=>'edit',
+									'url'=>'op/edit_element/edit_qa_assignment/',
+								),
+						'delete'=>array(
+									'label'=>'Delete',
+									'title'=>'Delete ',
+									'url'=>'op/delete_element/remove_qa_assignment/'
+								)*/
+												
+				),
+				
+				'top_links'=>array(
+							
+							'close'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									)
+				
+				),
+		);
+		
+		$operations['list_qa_papers_done']=$operations['list_qa_papers'];
+		$operations['list_qa_papers_done']['page_title']='Assessed papers in QA';
+		$operations['list_qa_papers_done']['data_source']='get_list_qa_papers_per_status';
+		$operations['list_qa_papers_done']['conditions']['screening_status']=array(
+																'field'=>'qa_status',
+																'value'=>'Done',
+																'evaluation'=>'equal',
+																'add_on_generation'=>False,
+																'parameter_type'=>'VARCHAR(20)'
+															);
+		$operations['list_qa_papers_pending']=$operations['list_qa_papers_done'];
+		$operations['list_qa_papers_pending']['page_title']='Pending papers in QA';
+		$operations['list_qa_papers_pending']['generate_stored_procedure']=FALSE;
+		$operations['list_qa_papers_pending']['conditions']['screening_status']['value']='Pending';
 		
 		$operations['detail_qa_assignment']=array(
 				'operation_type'=>'Detail',

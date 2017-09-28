@@ -24,6 +24,10 @@ class Auth extends CI_Controller {
 			redirect('home');
 		}else
 		{
+			/*
+			 * For first connection create stored procedure for admin database
+			 * 
+			 */
 			
 			/* Affichage du formulaire de connexion 
 			 * 
@@ -107,6 +111,11 @@ class Auth extends CI_Controller {
 					$default_lang=$user['user_default_lang'];
 				else
 					$default_lang='en';
+				
+					
+					if(get_adminconfig_element('first_connect')){
+						admin_initial_db_setup();
+					}
 				
 				$this->session->set_userdata('active_language',$default_lang);
 				set_log('Connection','User connected');

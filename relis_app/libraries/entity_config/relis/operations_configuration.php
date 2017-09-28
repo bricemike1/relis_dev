@@ -47,6 +47,14 @@ function get_operation() {
 				),
 	   	);
 		
+		$fields['operation_type']=array(
+	   			'field_title'=>'Operation type',
+	   			'field_type'=>'text',
+				'field_size'=>20,
+				'mandatory'=>' mandatory ',
+				'input_type'=>'text',
+				
+	   	);
 		$fields['operation_desc']=array(
 				'field_title'=>'Description',
 				'field_type'=>'text',

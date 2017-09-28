@@ -2361,9 +2361,75 @@ class Manager extends CI_Controller {
 	}
 	public function clear_papers(){
 	
-		$sql="UPDATE paper SET paper_active=0 where paper_active=1 ";
+		$sql="UPDATE paper SET paper_active=3 where paper_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE paperauthor SET 	paperauthor_active=3 where paperauthor_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE assigned SET assigned_active=3 where assigned_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE classification SET class_active=3 where class_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE exclusion SET exclusion_active=3 where exclusion_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		
+		$sql="UPDATE qa_assignment SET qa_assignment_active=3 where qa_assignment_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE qa_result SET qa_active=3 where qa_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE qa_validation_assignment SET qa_validation_active=3 where qa_validation_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE screening_paper SET 	screening_active = 3  where 	screening_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE screen_decison SET 	decision_active = 3  where 	decision_active=1 ";
 		$res=$this->db_current->query($sql);
 		set_top_msg('All papers deleted');
+		redirect ('op/entity_list/list_all_papers');
+	
+	}
+	
+	
+	public function cancel_clear_papers(){
+	
+		$sql="UPDATE paper SET paper_active=1 where paper_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE paperauthor SET 	paperauthor_active=1 where paperauthor_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE assigned SET assigned_active=1 where assigned_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE classification SET class_active=1 where class_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE exclusion SET exclusion_active=1 where exclusion_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+	
+		$sql="UPDATE qa_assignment SET qa_assignment_active=1 where qa_assignment_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE qa_result SET qa_active=1 where qa_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE qa_validation_assignment SET qa_validation_active=1 where qa_validation_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE screening_paper SET 	screening_active = 1  where 	screening_active=3 ";
+		$res=$this->db_current->query($sql);
+	
+		$sql="UPDATE screen_decison SET 	decision_active = 1  where 	decision_active=3 ";
+		$res=$this->db_current->query($sql);
+		set_top_msg('Clear papers cancelled');
 		redirect ('op/entity_list/list_all_papers');
 	
 	}

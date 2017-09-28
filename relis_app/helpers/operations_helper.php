@@ -24,7 +24,11 @@ function check_operation($operation,$type="List") {
 			'tab_ref'=>'users',
 			'operation_id'=>'detail_user_min'
 	);
-	
+	$operations['detail_user_min_ed']=array(
+			'type'=>'Detail',
+			'tab_ref'=>'users',
+			'operation_id'=>'detail_user_min_ed'
+	);
 	$operations['remove_user']=array(
 			'type'=>'Remove',
 			'tab_ref'=>'users',
@@ -41,7 +45,11 @@ function check_operation($operation,$type="List") {
 			'tab_ref'=>'users',
 			'operation_id'=>'edit_user'
 	);
-	
+	$operations['edit_user_min']=array(
+			'type'=>'Edit',
+			'tab_ref'=>'users',
+			'operation_id'=>'edit_user_min'
+	);
 	
 	
 
@@ -263,5 +271,32 @@ function create_stored_procedures($entity_config,$target_db='current' ,$verbose=
 		}
 	}
 
+
 	
+}
+
+
+/*
+ * Création des stored procedures pour la partie admin
+ */
+
+function admin_initial_db_setup($verbose=FALSE){
+	$ci = get_instance ();
+	$target_db='default';
+
+	$configs=array('users','project','user_project','logs','str_mng'
+				,'debug');
+			
+	
+
+	foreach ($configs as $k => $config) {
+			
+		create_stored_procedures($config,$target_db ,False);
+
+
+	}
+	
+	//change config value
+	$sql="UPDATE config_admin SET first_connect = 0  ";
+	$res=$ci->db->simple_query($sql);
 }

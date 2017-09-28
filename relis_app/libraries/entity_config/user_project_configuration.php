@@ -57,7 +57,7 @@ function get_user_project() {
 				
 		);
 		$fields['user_role']=array(
-			'field_title'=>'User role',
+			'field_title'=>'Role',
 			'field_type'=>'text',
 			'field_size'=>20,
 			//'field_value'=>'normal'
@@ -159,7 +159,12 @@ function get_user_project() {
 				'parent_detail_source_field'=>'user_name',
 				
 	   			'generate_stored_procedure'=>False,
-	   				
+				
+	   			'check_exist'=>array(
+						'fields'=>array('project_id','user_id'),
+						'message'=>'The user have already been added to the project',
+				),
+				
 	   			'fields'=>array(
 	   					'userproject_id'=>array('mandatory'=>'','field_state'=>'hidden'),
 	   					'user_id'=>array('mandatory'=>'','field_state'=>'hidden'),
@@ -253,7 +258,7 @@ function get_user_project() {
 					
 		);
 		
-	   	
+	   		
 	   	
 	   	$operations['list_userprojects']=array(
 	   			'operation_type'=>'List',
@@ -316,7 +321,147 @@ function get_user_project() {
 				
 				),
 	   	);
+	   	$operations['add_user_current_project']=array(
+	   			'operation_type'=>'Add',
+	   			'operation_title'=>'Add a project to a user',
+	   			'operation_description'=>'Add a project to a user',
+	   			'page_title'=>'Add a user to current project',
+	   			'save_function'=>'op/save_element',
+	   			'page_template'=>'general/frm_entity',
+	   			'redirect_after_save'=>'op/entity_list/list_users_current_projects',
+	   			'db_save_model'=>'add_users_project',
 	   	
+	   			'generate_stored_procedure'=>False,
+	   				
+	   			'fields'=>array(
+	   					'userproject_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'user_id'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'project_id'=>array('mandatory'=>'mandatory','field_state'=>'hidden','field_value'=>active_project_id()),
+	   					'user_role'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'added_by'=>array('mandatory'=>'','field_state'=>'hidden')
+	   						
+	   			),
+				
+				'check_exist'=>array(
+						
+						'fields'=>array('project_id','user_id'),
+						'message'=>'The user have already been added to the project',
+				),
+	   	
+	   			'top_links'=>array(
+	   				'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'close',
+										'url'=>'home',
+									)
+	   	
+	   			),
+	   				
+	   	);
+		
+		$operations['edit_user_current_project']=array(
+				'operation_type'=>'Edit',
+				'operation_title'=>'Edit project for a user',
+				'operation_description'=>'Edit project for a user',
+				'page_title'=>'Edit project for a user ',
+				'save_function'=>'op/save_element',
+				'page_template'=>'general/frm_entity',
+				
+				'redirect_after_save'=>'op/entity_list/list_users_current_projects',
+				'data_source'=>'get_userproject_detail',
+				'db_save_model'=>'update_user_project',
+		
+				'generate_stored_procedure'=>False,
+					
+				'fields'=>array(
+						'userproject_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'user_id'=>array('mandatory'=>'','field_state'=>'disabled'),
+	   					'project_id'=>array('mandatory'=>'mandatory','field_state'=>'hidden'),
+	   					'user_role'=>array('mandatory'=>'mandatory','field_state'=>'enabled')
+							
+				),
+				/*'check_exist'=>array(
+						
+						'fields'=>array('project_id','user_id'),
+						'message'=>'The user have already been added to the project',
+				),*/
+				'top_links'=>array(
+							
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'close',
+										'url'=>'home',
+									)
+				
+				),
+					
+		);
+			$operations['list_users_current_projects']=array(
+	   			'operation_type'=>'List',
+	   			'operation_title'=>'List of user projects',
+	   			'operation_description'=>'List user projects',
+	   			'page_title'=>'Users in this project',
+	   	
+	   			//'page_template'=>'list',
+	   	
+	   			'data_source'=>'get_list_user_current_project',
+	   			'generate_stored_procedure'=>True,
+	   		  
+	   			'fields'=>array(
+	   					//'userproject_id'=>array(),
+	   					'user_id'=>array(),
+	   					//'project_id'=>array(),
+	   					'user_role'=>array(),
+	   					'added_by'=>array(),
+	   					'add_time'=>array(),
+	   	
+	   					 
+	   			),
+	   			'order_by'=>'user_id ASC ',
+				'conditions'=>array(
+					'user_project'=>array('field'=>'project_id',
+												'value'=>active_project_id(),
+												'evaluation'=>'equal',
+												'add_on_generation'=>FALSE,
+												'parameter_type'=>'VARCHAR(4)'
+											)
+	   			),
+	   	
+	   			'list_links'=>array(
+	   					
+						'edit'=>array(
+									'label'=>'Edit',
+									'title'=>'Edit',
+									'icon'=>'edit',
+									'url'=>'op/edit_element/edit_user_current_project/',
+								),
+						'delete'=>array(
+									'label'=>'Remove',
+									'title'=>'Remove the user from the project',
+									'url'=>'op/delete_element/remove_user_current_project/'
+								)
+	   	
+	   			),
+	   	
+	   			'top_links'=>array(
+							'add'=>array(
+										'label'=>'',
+										'title'=>'Add a new user to the project',
+										'icon'=>'add',
+										'url'=>'op/add_element/add_user_current_project',
+									),
+							'back'=>array(
+										'label'=>'',
+										'title'=>'Close',
+										'icon'=>'add',
+										'url'=>'home',
+									)
+				
+				),
+	   	);
+		
 	   	$operations['detail_userproject']=array(
 				'operation_type'=>'Detail',
 				'operation_title'=>'Characteristics of a userproject',
@@ -368,7 +513,11 @@ function get_user_project() {
 		
 		$operations['remove_userproject_p']=$operations['remove_userproject_c'];
 		$operations['remove_userproject_p']['redirect_after_delete']='op/display_element/detail_project/~current_element~';
-	   	$config['operations']=$operations;
+	   
+		$operations['remove_user_current_project']=$operations['remove_userproject_c'];
+		$operations['remove_user_current_project']['redirect_after_delete']='op/entity_list/list_users_current_projects';
+	 
+	 $config['operations']=$operations;
 	
 	return $config;
 	

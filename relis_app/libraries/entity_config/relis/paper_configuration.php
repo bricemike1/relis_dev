@@ -213,7 +213,8 @@ function get_papers() {
 					'Excluded' => 'Excluded',
 					'In conflict' => 'In conflict',
 					'Resolved included' => 'Resolved included',
-					'Resolved excluded' => 'Resolved excluded'				
+					'Resolved excluded' => 'Resolved excluded',				
+					'Excluded_QA' => 'Excluded in QA'				
 			),
 			'mandatory'=>' mandatory ',
 			'field_value'=>'Pending',
@@ -494,7 +495,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 						'link'=>array(
 								'url'=>'relis/manager/display_paper_screen/',
 								'id_field'=>'id',
-								'trim'=>'100'
+								'trim'=>trim_nbr_car()
 							)
 					),
 					//'authors'=>array(),
@@ -561,7 +562,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 	unset($operations['list_pending_papers']['list_links']['edit']);
 	
 	$operations['list_included_papers']=$operations['list_pending_papers'];
-	$operations['list_included_papers']['page_title']='Pending papers';
+	$operations['list_included_papers']['page_title']='Included papers';
 	$operations['list_included_papers']['data_source']='get_list_included_papers';
 	$operations['list_included_papers']['conditions']['screening_status']['value']='Included';
 
@@ -573,9 +574,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 	
 	$operations['list_papers_screen']=array(
 			'operation_type'=>'List',
-			'operation_title'=>'List papers',
-			'operation_description'=>'List papers',
-			'page_title'=>'Papers',
+			'page_title'=>'All papers in this phase',
 		  
 			'table_display_style'=>'dynamic_table',
 			'table_name'=>'view_paper_decision',
@@ -637,7 +636,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 	
 	
 	$operations['list_papers_screen_included']=$operations['list_papers_screen'];
-	$operations['list_papers_screen_included']['page_title']='Included papers';
+	$operations['list_papers_screen_included']['page_title']='Included papers in this phase';
 	$operations['list_papers_screen_included']['data_source']='get_list_papers_screen_per_status';
 	$operations['list_papers_screen_included']['conditions']['screening_status']=array(
 																'field'=>'screening_status',
@@ -648,20 +647,20 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 															);
 	
 	$operations['list_papers_screen_excluded']=$operations['list_papers_screen_included'];
-	$operations['list_papers_screen_excluded']['page_title']='Excluded papers';
+	$operations['list_papers_screen_excluded']['page_title']='Excluded papers in this phase';
 	$operations['list_papers_screen_excluded']['generate_stored_procedure']=FALSE;
 	$operations['list_papers_screen_excluded']['conditions']['screening_status']['value']='Excluded';
 	
 	$operations['list_papers_screen_pending']=$operations['list_papers_screen_excluded'];
-	$operations['list_papers_screen_pending']['page_title']='Pending papers';
+	$operations['list_papers_screen_pending']['page_title']='Pending papers in this phase';
 	$operations['list_papers_screen_pending']['conditions']['screening_status']['value']='Pending';
 	
 	$operations['list_papers_screen_review']=$operations['list_papers_screen_excluded'];
-	$operations['list_papers_screen_review']['page_title']='Papers in review';
+	$operations['list_papers_screen_review']['page_title']='Papers under review in this phase';
 	$operations['list_papers_screen_review']['conditions']['screening_status']['value']='In review';
 	
 	$operations['list_papers_screen_conflict']=$operations['list_papers_screen_excluded'];
-	$operations['list_papers_screen_conflict']['page_title']='Papers in conflict';
+	$operations['list_papers_screen_conflict']['page_title']='In conflict papers for this phase';
 	$operations['list_papers_screen_conflict']['conditions']['screening_status']['value']='In conflict';
 	
 	

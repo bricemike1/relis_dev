@@ -123,6 +123,25 @@ function get_operations_qa() {
 			'tab_ref'=>'qa_assignment',
 			'operation_id'=>'remove_qa_assignment'
 	);
+	$operations['list_qa_papers']=array(
+			'type'=>'List',
+			'tab_ref'=>'qa_assignment',
+			'operation_id'=>'list_qa_papers'
+	);
+	$operations['list_qa_papers_done']=array(
+			'type'=>'List',
+			'tab_ref'=>'qa_assignment',
+			'operation_id'=>'list_qa_papers_done'
+	);
+	$operations['list_qa_papers_pending']=array(
+			'type'=>'List',
+			'tab_ref'=>'qa_assignment',
+			'operation_id'=>'list_qa_papers_pending'
+	);
+	
+	
+	
+	
 	$operations['list_qa_validation']=array(
 			'type'=>'List',
 			'tab_ref'=>'qa_validation_assignment',

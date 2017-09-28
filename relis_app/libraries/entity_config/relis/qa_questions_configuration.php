@@ -125,7 +125,7 @@ function get_qa_questions() {
 				'operation_type'=>'List',
 				'operation_title'=>'List questions',
 				'operation_description'=>'List questions',
-				'page_title'=>'List of questions for quality assessment',
+				'page_title'=>'Questions for quality assessment',
 				
 				
 				'data_source'=>'get_list_qa_questions',

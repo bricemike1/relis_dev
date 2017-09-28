@@ -221,7 +221,7 @@ function get_screening() {
 	   					'paper_id'=>array('link'=>array(
 								'url'=>'op/display_element/display_assignment/',
 								'id_field'=>'screening_id',
-								'trim'=>'80'
+								'trim'=>trim_nbr_car()
 							)),
 	   					'user_id'=>array(),
 	   					//'assignment_note'=>array(),
@@ -308,7 +308,7 @@ function get_screening() {
 	   					'paper_id'=>array('link'=>array(
 								'url'=>'op/display_element/display_assignment/',
 								'id_field'=>'screening_id',
-								'trim'=>'80'
+								'trim'=>trim_nbr_car()
 							)),
 	   					'user_id'=>array(),
 	   					//'assignment_note'=>array(),
@@ -400,7 +400,7 @@ function get_screening() {
 	   					'paper_id'=>array('link'=>array(
 								'url'=>'op/display_element/display_screening/',
 								'id_field'=>'screening_id',
-								'trim'=>'80'
+								'trim'=>trim_nbr_car()
 							)),
 	   					'user_id'=>array(),
 	   					'screening_decision'=>array(),
@@ -493,7 +493,7 @@ function get_screening() {
 	   					'paper_id'=>array('link'=>array(
 								'url'=>'op/display_element/display_screening/',
 								'id_field'=>'screening_id',
-								'trim'=>'80'
+								'trim'=>trim_nbr_car()
 							)),
 	   					'user_id'=>array(),
 	   					'screening_decision'=>array(),

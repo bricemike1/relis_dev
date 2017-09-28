@@ -14,6 +14,10 @@ function string_anchor($link,$text,$trim_size=0,$title=True){
 		$label=mb_substr($text,0,$trim_size);
 	}
 	
+	if(strlen($label) < strlen($text)){
+		$label .= '...';
+	}
+	//$label .= '...';
 	if($title)
 			$attibute=array('title'=>$text);
 	else

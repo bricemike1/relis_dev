@@ -55,8 +55,12 @@ function install_form($values=array(),$error=array()){?>
 			$user_mail=(!empty($values['user_mail']))?$values['user_mail']:'' ;
 			$user_name=(!empty($values['user_name']))?$values['user_name']:'' ;
 			
+			$dsl_url=(!empty($values['dsl_url']))?$values['dsl_url']:'' ;
+			$dsl_workspace=(!empty($values['dsl_workspace']))?$values['dsl_workspace']:'' ;
+			
 			$array_fields_db=array();
 			$array_fields_admin=array();
+			$array_fields_dsl=array();
 			
 			$field=array(
 					'type'=>'text',
@@ -95,6 +99,32 @@ function install_form($values=array(),$error=array()){?>
 			);
 			
 			array_push($array_fields_db,$field);
+			
+			
+			$field=array(
+					'type'=>'text',
+					'id'=>'dsl_url',
+					'value'=>$dsl_url,
+					'label'=>'Editor location',
+					'extra_note'=>'The url of the Editor',
+					'is_required'=>False
+			);
+			
+			array_push($array_fields_dsl,$field);
+			
+			
+			$field=array(
+					'type'=>'text',
+					'id'=>'dsl_workspace',
+					'value'=>$dsl_workspace,
+					'label'=>'Editor work space',
+					'extra_note'=>'The path to the Editor workspace',
+					'is_required'=>False
+			);
+			
+			array_push($array_fields_dsl,$field);
+			
+			
 			
 			
 			$field=array(
@@ -193,6 +223,42 @@ function install_form($values=array(),$error=array()){?>
                     	<br/>
 				<?php
 				foreach ($array_fields_db as $key => $value) {
+					if($value['is_required']){
+						$required_p='<span class="required">*</span>';
+						$required_s='required="" ';
+					}else{
+						$required_p="";
+						$required_s="";
+					}
+					
+					if(!empty($value['extra_note'])){
+						$extra_note='<p>'.$value['extra_note'].'</p>';
+					}else{
+						$extra_note="<p> . </p>";
+					}
+					?>
+					
+					<div class="form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">
+						 <?php echo $value['label'].' '. $required_p ?>
+						</label>
+						<div class="col-md-9 col-sm-9 col-xs-12">
+						<?php echo '<input type="'.$value['type'].'" name="'.$value['id'].'" value="'. $value['value'].'" id="'.$value['id'].'" class="form-control col-md-7 col-xs-12"  '.$required_s .'style="margin-bottom:1px">'.$extra_note ?>
+											
+						</div>		
+					</div>
+					
+					<?php
+				}
+				
+				?>
+				
+				<div class>
+			 <h2 class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">RelisEditor configuration</h2>
+			 </div> 
+                    	<br/>
+				<?php
+				foreach ($array_fields_dsl as $key => $value) {
 					if($value['is_required']){
 						$required_p='<span class="required">*</span>';
 						$required_s='required="" ';

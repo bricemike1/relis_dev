@@ -350,7 +350,13 @@ function get_config_screen_phase() {
 					
 				'fields'=>array(
 					'screen_phase_id'=>array(),
-					'phase_title'=>array(),
+					'phase_title'=>array(
+					'link'=>array(
+								'url'=>'op/display_element/detail_screen_phase/',
+								'id_field'=>'screen_phase_id',
+								'trim'=>'0'
+							)
+					),
 					
 					'displayed_fields'=>array(),
 					//'source_paper'=>array(),
@@ -365,7 +371,7 @@ function get_config_screen_phase() {
 				'search_by'=>'phase_title',
 			
 				'list_links'=>array(
-						'view'=>array(
+						/*'view'=>array(
 									'label'=>'View',
 									'title'=>'Disaly element',
 									'icon'=>'folder',
@@ -376,10 +382,10 @@ function get_config_screen_phase() {
 									'title'=>'Edit',
 									'icon'=>'edit',
 									'url'=>'op/edit_element/edit_screen_phase/',
-								),
+								),*/
 						'delete'=>array(
-									'label'=>'Delete',
-									'title'=>'Delete the user',
+									'label'=>'Cancel',
+									'title'=>'Cancel the phase',
 									'url'=>'op/delete_element/remove_screen_phase/'
 								)
 												
@@ -424,10 +430,10 @@ function get_config_screen_phase() {
 					'phase_title'=>array(),
 					'description'=>array(),
 					'displayed_fields'=>array(),
-					'phase_state'=>array(),
-					'source_paper'=>array(),
-					'source_paper_status'=>array(),
-					'screen_phase_order'=>array(),
+					//'phase_state'=>array(),
+					//'source_paper'=>array(),
+					//'source_paper_status'=>array(),
+					//'screen_phase_order'=>array(),
 					'screen_phase_final'=>array(),
 					'added_by'=>array(),
 					'add_time'=>array(),

@@ -7,6 +7,7 @@
             <div class="clearfix"></div>
 
             <!-- menu profile quick info -->
+            <a href="<?php echo base_url();?>op/display_element/detail_user_min_ed/<?php echo active_user_id()?>">
             <div class="profile">
               <div class="profile_pic">
               <?php 
@@ -26,11 +27,12 @@
                 <img src="<?php echo $images;?>" alt="..." class="img-circle profile_img">
               </div>
               <div class="profile_info">
-                <span>.</span>
+                
                 <h2><?php 
                 echo $this->session->userdata('user_name')." " ; ?></h2>
               </div>
             </div>
+            </a>
             <!-- /menu profile quick info -->
 
             <br />

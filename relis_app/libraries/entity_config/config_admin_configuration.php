@@ -57,6 +57,30 @@ function get_admin_configuration() {
 				'field_title'=>'Debug comment active',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
+	   			'field_value'=>'0',
+				'default_value'=>'0',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'1',
+		);
+		
+		
+		
+		$fields['list_trim_nbr']=array(
+	   			'field_title'=>'Paper name nb caracters displayed ',
+	   			'field_type'=>'int',	   			
+	   			'field_value'=>'80',
+	   			'default_value'=>'80',
+	   			'field_size'=>3,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' '
+	   	);
+		
+		
+		$fields['first_connect']=array(
+				'field_title'=>'First connect',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
 	   			'field_value'=>'1',
 				'default_value'=>'0',
 				'input_type'=>'select',
@@ -72,12 +96,16 @@ function get_admin_configuration() {
 				'default_value'=>'1'
 	   	);
 	   	$config['fields']=$fields;
-	   	
+		
+	   	$config['init_query'][0]="INSERT INTO `config_admin`
+		(`config_id`, `editor_url`, `editor_generated_path`) VALUES
+(1, 'http://127.0.0.1:8080/relis/texteditor', 'C:\\dslforge_workspace')";
+
 	   	$operations['admin_config']=array(
 	   			'operation_type'=>'Detail',
 	   			'operation_title'=>'Configurations values',
 	   			'operation_description'=>'Configurations values',
-	   			'page_title'=>'Admin configurations',
+	   			'page_title'=>'Admin settings',
 	   	
 	   			//'page_template'=>'general/display_element',
 	   	
@@ -120,7 +148,7 @@ function get_admin_configuration() {
 	   			'operation_type'=>'Edit',
 	   			'operation_title'=>'Edit configuration for papers',
 	   			'operation_description'=>'Edit configuration for papers',
-	   			'page_title'=>'Edit configurations ',
+	   			'page_title'=>'Edit settings ',
 	   			'save_function'=>'op/save_element',
 	   			'page_template'=>'general/frm_entity',
 	   	

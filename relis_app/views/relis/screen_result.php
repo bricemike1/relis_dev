@@ -62,12 +62,14 @@
           
            echo  box_footer();
             
+           if(isset($kappa) ){
+	           echo box_header("Agreement : ".$kappa_meaning);
+	            
+	           //echo "<h1>$kappa_meaning</h1>";
+	           echo "<h2>Kappa: $kappa</h2>";
+	           echo  box_footer();
+           }
            
-           echo box_header("Agreement : ".$kappa_meaning);
-            
-           //echo "<h1>$kappa_meaning</h1>";
-           echo "<h2>Kappa: $kappa</h2>";
-           echo  box_footer();
            
            echo box_header("Decision per user");
          

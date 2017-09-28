@@ -1113,6 +1113,16 @@ END";
 	//		echo $del_line."<br/><br/>";
 			
 		//	echo $sql;
+		// add initial query
+		
+			if(!empty($config['init_query'])){
+				foreach ($config['init_query'] as $key => $query) {
+					if(!empty($query)){
+						$res_sql = $this->CI->manage_mdl->run_query($query,False,$target_db);
+					}
+				}
+				
+			}
 			
 		//	print_test($res_sql);
 			return "$del_line $sql";
@@ -1541,6 +1551,8 @@ END";
 								print_test($res);
 		
 		}
+		
+		
 		
 		
 		

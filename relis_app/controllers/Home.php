@@ -59,11 +59,15 @@ class Home extends CI_Controller {
 		$data['excluded_papers']=$this->DBConnection_mdl->count_papers('excluded');
 		
 		$gen_class_completion=$this->get_classification_completion('class','all');
+		
+	
 		$my_class_completion=$this->get_classification_completion('class','');
+		
+		if(get_appconfig_element('class_validation_on')){
 		$gen_validation_completion=$this->get_classification_completion('validation','all');
 		$my_validation_completion=$this->get_classification_completion('validation','');
 		//print_test($gen_validation_completion);
-		
+		}
 		if(!empty($my_class_completion['all_papers'])){
 			$data['classification_completion']['title']="My classification completion";
 			$data['classification_completion']['all_papers']=array('value'=>$my_class_completion['all_papers'],
@@ -199,6 +203,17 @@ class Home extends CI_Controller {
 		}
 	} 
 	
+	
+	public function  test_bibler(){
+		
+		$result="{'result_code': True, 'result_msg': 'publisher is missing.', 'entry': {'author': 'Omar, N. and Hasbullah, S. S.', 'id': 265, 'entrykey': 'Omar2008', 'paper': 'http://dx.doi.org/10.1109/ITSIM.2008.4631716', 'title': 'SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing', 'entrytype': 'INPROCEEDINGS', 'valid': True, 'year': '2008', 'message': 'publisher is missing.', 'booktitle': '2008 International Symposium on Information Technology', 'abstract': 'The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.', 'address': '', 'annote': '', 'crossref': '', 'editor': '', 'key': '', 'month': 'Aug', 'note': '', 'number': '', 'organization': '', 'pages': '1--7', 'publisher': '', 'series': '', 'volume': '2', 'comment': '', 'doi': '10.1109/ITSIM.2008.4631716'}, 'preview': '<p><font face=\"verdana\"><b><i>INPROCEEDINGS</i>(Omar2008)</b></font></p>\n<p>N. Omar. and S. S. Hasbullah. SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing. <i>2008 International Symposium on Information Technology</i>. 2, pp. 1&#8211;7. Aug (2008).</p>\n<p><center></center></p>', 'bibtex': '@INPROCEEDINGS{Omar2008,\n  author = {Omar, N. and Hasbullah, S. S.},\n  booktitle = {2008 International Symposium on Information Technology},\n  title = {SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing},\n  year = {2008},\n  abstract = {The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.},\n  month = {Aug},\n  pages = {1--7},\n  volume = {2},\n  doi = {10.1109/ITSIM.2008.4631716},\n  paper = {http://dx.doi.org/10.1109/ITSIM.2008.4631716}\n}'}";
+		
+		
+		print_test($result);
+		$Tres=json_decode($result);
+		print_test($Tres);
+		
+	}
 	private function get_classification_completion($type='class',$user=''){
 		/*//all
 		
@@ -342,8 +357,10 @@ class Home extends CI_Controller {
 			
 			
 			
-			
-			$validation_completion=$this->get_user_completion(active_user_id(),active_screening_phase(),'screen_validation');
+			if(get_appconfig_element('screening_validation_on')){
+				$validation_completion=$this->get_user_completion(active_user_id(),active_screening_phase(),'screen_validation');
+				$general_validation_completion=$this->get_user_completion(0,active_screening_phase(),'screen_validation');
+			}
 			//print_test($validation_completion);
 			if(!empty($validation_completion['all_papers'])){
 				$data['validation_completion']['title']="My validations progress";
@@ -366,7 +383,6 @@ class Home extends CI_Controller {
 			
 			
 			////general screening validation completion
-			$general_validation_completion=$this->get_user_completion(0,active_screening_phase(),'screen_validation');
 			//print_test($validation_completion);
 			
 			
@@ -447,6 +463,7 @@ class Home extends CI_Controller {
 	
 		$general_completion=$completion['general_completion'];
 		$user_completion=$completion['user_completion'];
+		//print_test($user_completion);
 		$active_user_id=active_user_id();
 		if(!empty($user_completion[$active_user_id]['all'])){
 			
@@ -474,29 +491,30 @@ class Home extends CI_Controller {
 			$data['gen_qa_completion']['title']="Overall completion";
 			$data['gen_qa_completion']['all_papers']=array('value'=>$general_completion['all'],
 					'title'=>'All',
-					'url'=>'relis/manager/qa_conduct_list'
+					'url'=>'relis/manager/qa_conduct_list/all'
 			);
 			$data['gen_qa_completion']['pending_papers']=array('value'=>!empty($general_completion['pending'])?$general_completion['pending']:0,
 					'title'=>'Pending',
-					'url'=>'relis/manager/qa_conduct_list/mine/0/pending'
+					'url'=>'relis/manager/qa_conduct_list/all/0/pending'
 			);
 			$data['gen_qa_completion']['done_papers']=array('value'=>!empty($general_completion['done'])?$general_completion['done']:0,
 					'title'=>'Done',
-					'url'=>'relis/manager/qa_conduct_list/mine/0/done'
+					'url'=>'relis/manager/qa_conduct_list/all/0/done'
 			);
 				
 		
 			$data['gen_qa_completion']['gauge_all']=$general_completion['all'];
-			$data['gen_qa_completion']['gauge_done']=($general_completion['done'])?$general_completion['done']:0;
+			$data['gen_qa_completion']['gauge_done']=!empty($general_completion['done'])?$general_completion['done']:0;
 		}
 		
 		
+		if(get_appconfig_element('qa_validation_on')){
 		
 		$completion_val=$this->manager_lib->get_qa_completion('QA_Val');
-		
+		//print_test($completion_val);
 		$general_completion_val=$completion_val['general_completion'];
 		$user_completion_val=$completion_val['user_completion'];
-		
+		}
 		
 		if(!empty($user_completion_val[$active_user_id]['all'])){
 				
@@ -516,7 +534,7 @@ class Home extends CI_Controller {
 				
 		
 			$data['qa_completion_val']['gauge_all']=$user_completion_val[$active_user_id]['all'];
-			$data['qa_completion_val']['gauge_done']=($user_completion_val[$active_user_id]['done'])?$user_completion_val[$active_user_id]['done']:0;
+			$data['qa_completion_val']['gauge_done']=!empty($user_completion_val[$active_user_id]['done'])?$user_completion_val[$active_user_id]['done']:0;
 		}
 		
 		if(!empty($general_completion_val['all'])){
@@ -524,15 +542,15 @@ class Home extends CI_Controller {
 			$data['gen_qa_completion_val']['title']="Overall validation completion";
 			$data['gen_qa_completion_val']['all_papers']=array('value'=>$general_completion_val['all'],
 					'title'=>'All',
-					'url'=>'relis/manager/qa_conduct_list'
+					'url'=>'relis/manager/qa_conduct_list_val/all'
 			);
 			$data['gen_qa_completion_val']['pending_papers']=array('value'=>!empty($general_completion_val['pending'])?$general_completion_val['pending']:0,
 					'title'=>'Pending',
-					'url'=>'relis/manager/qa_conduct_list/mine/0/pending'
+					'url'=>'relis/manager/qa_conduct_list_val/all/0/pending'
 			);
 			$data['gen_qa_completion_val']['done_papers']=array('value'=>!empty($general_completion_val['done'])?$general_completion_val['done']:0,
 					'title'=>'Done',
-					'url'=>'relis/manager/qa_conduct_list/mine/0/done'
+					'url'=>'relis/manager/qa_conduct_list_val/all/0/done'
 			);
 		
 		
@@ -971,7 +989,7 @@ class Home extends CI_Controller {
 		for($i=1;$i<=1;$i++){
 			/*
 			 * Préparation des valeurs qui sont générés de façon aléatoire
-			 */
+			 
 			$fields=array(
 					
 					'number_citation'=>rand(2 ,206)
@@ -980,7 +998,7 @@ class Home extends CI_Controller {
 			);
 		
 			print_test($fields);
-		
+		*/
 			/*
 			 * update des données
 			 */
@@ -990,7 +1008,7 @@ class Home extends CI_Controller {
 		
 		$i=1;
 		
-		for($i=1;$i<=1;$i++){
+		for($i=1;$i<=15;$i++){
 		/*
 		 * Préparation des valeurs qui sont générés de façon aléatoire
 		 */	
@@ -998,24 +1016,25 @@ class Home extends CI_Controller {
 			'class_paper_id'=>$i,	
 			'transformation_name'=>"Test transformation $i",	
 			'domain'=>rand(1 , 5),	
-			'source_language'=>rand(1,3 ),	
-			'target_language'=>rand(3 , 4),	
+			'trans_language'=>rand(1,4 ),	
+			'source_language'=>rand(1,4 ),	
+			'target_language'=>rand(1 , 4),	
 			'scope'=>rand(1 , 3),	
 			'industrial'=>rand(0 ,1 ),	
 			'bidirectional'=>rand(0 ,1),	
 			'year'=>rand(2011 ,2016),	
-			'number_citation'=>rand(2 ,2016),	
+			//'number_citation'=>rand(2 ,2016),	
 			'user_id'=>1	
 				
 		);
 		
-		//print_test($fields);
+		print_test($fields);
 		
 		/*
 		 * Insertion des données
 		 */
-		//$headersaved = $this->db_current->insert ( 'classification', $fields );
-		//print_test($headersaved);
+		$headersaved = $this->db_current->insert ( 'classification', $fields );
+		print_test($headersaved);
 		}
 		
 		$i=1;
@@ -1027,7 +1046,7 @@ class Home extends CI_Controller {
 			
 			$intent_numbers=rand(1,3);
 			$j=1;
-			for($j=1;$j<=$intent_numbers;$j++){
+			for($j=1;$j<=1;$j++){
 			$fields=array(
 					'parent_field_id'=>$i,
 					'name_used'=>"Intent $i $j",
@@ -1198,10 +1217,10 @@ class Home extends CI_Controller {
 			 */
 			if($query_type!='multi'){
 			$data ['top_buttons'] = get_top_button ( 'all', 'Switch to multi query!', 'home/sql_query/multi','Switch to multi query!',' fa-exchange','',' btn-info ' );
-			$data['title']='Run SQL query';
+			$data['title']='Query database - single SQL query';
 			}else{
 				$data ['top_buttons'] = get_top_button ( 'all', 'Switch to single query!', 'home/sql_query/','Switch to single query!',' fa-exchange','',' btn-info ' );
-				$data['title']=lng_min('Run multiple SQL queries');
+				$data['title']=lng_min('Query database - multiple SQL queries');
 			}	
 			$data['page']='sql';
 			$this->load->view('body',$data);

@@ -199,7 +199,7 @@ function get_configuration() {
 	   			'default_value'=>'Paper_',
 	   			'field_size'=>20,
 	   			'input_type'=>'text',
-	   			'mandatory'=>' mandatory '
+	   			'mandatory'=>'  '
 	   	);
 		
 		$fields['key_paper_serial']=array(
@@ -259,12 +259,23 @@ function get_configuration() {
 				
 		);
 		
-		$fields['qa_on']=array(
-				'field_title'=>'Quality assessment enabled',
+		$fields['use_kappa']=array(
+				'field_title'=>'Use kappa',
 				'field_type'=>'int',
 	   			'field_size'=>'1',
 	   			'field_value'=>'0',
 				'default_value'=>'1',
+				'input_type'=>'select',
+				'input_select_source'=>'yes_no',
+				'input_select_values'=>'',
+		)
+		
+		;$fields['qa_on']=array(
+				'field_title'=>'Quality assessment enabled',
+				'field_type'=>'int',
+	   			'field_size'=>'1',
+	   			'field_value'=>'0',
+				'default_value'=>'0',
 				'input_type'=>'select',
 				'input_select_source'=>'yes_no',
 				'input_select_values'=>'',
@@ -328,6 +339,16 @@ function get_configuration() {
 	   			'mandatory'=>' mandatory '
 	   	);
 		
+		$fields['list_trim_nbr']=array(
+	   			'field_title'=>'Paper characters displayed ',
+	   			'field_type'=>'int',	   			
+	   			'field_value'=>'80',
+	   			'default_value'=>'80',
+	   			'field_size'=>3,
+	   			'input_type'=>'text',
+	   			'mandatory'=>' '
+	   	);
+		
 	   	$fields['config_active']=array(
 	   			'field_title'=>'Active',
 	   			'field_type'=>'int',
@@ -336,7 +357,17 @@ function get_configuration() {
 				'default_value'=>'1'
 	   	);
 	   	$config['fields']=$fields;
+		
+		
+		$config['init_query'][0]="INSERT INTO `config` 
+		(`config_id`, `config_type`, `editor_url`, `editor_generated_path`) VALUES
+		(1, 'default', 'http://127.0.0.1:8080/relis/texteditor', 'C:/dslforge_workspace')";
 	   	
+		
+		
+		
+
+
 	   	$operations['configurations']=array(
 	   			'operation_type'=>'Detail',
 	   			'operation_title'=>'Configurations values',
@@ -362,6 +393,7 @@ function get_configuration() {
 	   					'csv_field_separator_export'=>array('group'=>'papers'),						
 	   					'key_paper_prefix'=>array('group'=>'papers'),
 	   					'key_paper_serial'=>array('group'=>'papers'),
+	   					'list_trim_nbr'=>array('group'=>'papers'),
 	   					'source_papers_on'=>array('group'=>'papers'),
 	   					'search_strategy_on'=>array('group'=>'papers'),
 						
@@ -372,6 +404,7 @@ function get_configuration() {
 	   					'screening_reviewer_number'=>array('group'=>'screen'),
 	   					'screening_conflict_type'=>array('group'=>'screen'),
 	   					'screening_screening_conflict_resolution'=>array('group'=>'screen'),
+	   					'use_kappa'=>array('group'=>'screen'),
 	   					'screening_validation_on'=>array('group'=>'screen'),
 	   					'screening_validator_assignment_type'=>array('group'=>'screen'),
 	   					'validation_default_percentage'=>array('group'=>'screen'),
@@ -431,6 +464,7 @@ function get_configuration() {
 	   					'csv_field_separator_export'=>array(),	   					
 						'key_paper_prefix'=>array(),
 	   					'key_paper_serial'=>array(),
+	   					'list_trim_nbr'=>array(),
 						'source_papers_on'=>array(),
 	   					'search_strategy_on'=>array(),
 	   					
@@ -589,6 +623,7 @@ function get_configuration() {
 						'screening_reviewer_number'=>array(),
 	   					'screening_conflict_type'=>array(),	   					
 						'screening_screening_conflict_resolution'=>array(),
+						'use_kappa'=>array(),
 	   					'validation_default_percentage'=>array(),						
 	   					'screening_validator_assignment_type'=>array(),
 	   					
@@ -686,8 +721,9 @@ function get_configuration() {
 	   					'import_papers_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'csv_field_separator'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'csv_field_separator_export'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
-	   					'key_paper_prefix'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'key_paper_prefix'=>array('mandatory'=>' ','field_state'=>'enabled'),
 	   					'key_paper_serial'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'list_trim_nbr'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 						'source_papers_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'search_strategy_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   				
@@ -728,6 +764,7 @@ function get_configuration() {
 						'screening_reviewer_number'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_conflict_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_screening_conflict_resolution'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'use_kappa'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'screening_validation_on'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),	   					
 	   					'screening_validator_assignment_type'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'validation_default_percentage'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),

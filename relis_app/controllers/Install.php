@@ -524,6 +524,8 @@ class Install extends CI_Controller {
 			$this->update_screening_values($res_install_config['screening'],$project_short_name);
 				
 			array_push($success_array, 'Screening configuration added');
+		}else{
+			set_appconfig_element('screening_on', 0);
 		}
 			
 		//adding Qality assessment values
@@ -532,7 +534,11 @@ class Install extends CI_Controller {
 			$this->update_qa_values($res_install_config['qa'],$project_short_name);
 				
 			array_push($success_array, 'Quality assessment configuration added');
+		}else{
+			set_appconfig_element('qa_on', 0);
 		}
+		
+		
 		$this->project_install_result($error_array,$success_array,'update_project');
 		
 		//echo "<h2>Installation done</h3>";
@@ -757,6 +763,22 @@ class Install extends CI_Controller {
 			
 				
 			$res_sql = $this->manage_mdl->run_query($sql_add_project,false,'default');
+			
+			
+			// Update config editor according to general values
+			
+			$editor_url= get_adminconfig_element('editor_url');
+			$editor_generated_path= get_adminconfig_element('editor_generated_path');
+			
+			
+			if(!empty($editor_url) AND !empty($editor_generated_path)){
+				$sql="UPDATE  config SET  editor_url='".$editor_url."' , editor_generated_path= '".$editor_generated_path."'";
+				
+			
+				$res_sql = $this->manage_mdl->run_query($sql,false,$project_short_name);
+				
+				
+			}
 			
 			if($verbose)
 				echo "<h3>New project added</h3>";
@@ -1354,9 +1376,9 @@ class Install extends CI_Controller {
 		
 		$data ['page_title'] = lng('Uninstall the project : ').$detail_project['project_title'];
 		
+		$data ['next_operation_button'] =get_top_button ( 'all', 'Continue uninstall', 'install/remove_project/'.$project_id,'Continue to uninstall','','',' btn-success ',FALSE );
 		
-		$data ['next_operation_button'] = get_top_button ( 'all', 'Cancel', 'admin/projects_list','Cancel','','',' btn-danger ',FALSE );
-		$data ['next_operation_button'] .=" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue uninstall', 'install/remove_project/'.$project_id,'Continue to uninstall','','',' btn-success ',FALSE );
+		$data ['next_operation_button'] .= " &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Cancel', 'admin/projects_list','Cancel','','',' btn-danger ',FALSE );
 		
 		
 		$this->load->view ( 'body', $data );
@@ -1410,9 +1432,10 @@ class Install extends CI_Controller {
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
 		
 		if($config=='init'){
-			$configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
+			$configs=array('config','exclusioncrieria','papers_sources','search_strategy','papers','author'
 					,'paper_author','venue','screen_phase','screening','screen_decison'
-					,'operations','qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug');
+					,'operations','qa_questions','qa_responses','qa_result','qa_assignment'
+					,'qa_validation_assignment','assignation','debug');
 			}else{
 			$configs=array($config);
 		
@@ -1435,7 +1458,7 @@ class Install extends CI_Controller {
 	
 	private function populate_common_tables_views($target_db='current'){
 		$target_db=($target_db=='current')?project_db():$target_db;
-		$configs=array('papers','assignation');
+		$configs=array('papers','assignation','qa_assignment');
 		foreach ($configs as $key => $value) {
 			$table_configuration=get_table_configuration($value);
 			if(!empty($table_configuration['table_views'])){

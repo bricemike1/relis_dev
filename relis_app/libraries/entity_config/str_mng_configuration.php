@@ -225,7 +225,7 @@ function get_str_mng() {
 				'operation_type'=>'List',
 				'operation_title'=>'List ',
 				'operation_description'=>'List ',
-				'page_title'=>'Label mangement ',
+				'page_title'=>'Label Mangement ',
 				
 				'table_display_style'=>'normal',
 				

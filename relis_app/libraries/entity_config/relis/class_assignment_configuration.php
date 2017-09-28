@@ -429,7 +429,7 @@ function get_class_assignment() {
 					'link'=>array(
 								'url'=>'relis/manager/display_paper/',
 								'id_field'=>'assigned_paper_id',
-								'trim'=>'80'
+								'trim'=>trim_nbr_car()
 							)),
 					//'assigned_user_id'=>array(),
 					'assigned_by'=>array(),
