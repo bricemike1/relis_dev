@@ -687,7 +687,7 @@ class Manager extends CI_Controller {
 		$data['data_assignations']=$T_item_data_assignation;
 		$data['remove_assignation_button']=$T_remove_assignation_button;
 	
-		$data ['add_assignation_buttons']=get_top_button ( 'all', "Assigne to a user", 'op/add_element_child/new_assignment_class/'.$ref_id ,' Assigne to someone '," fa-plus ","  ",'btn-success' )." ";
+		$data ['add_assignation_buttons']=get_top_button ( 'all', "Assign to a user", 'op/add_element_child/new_assignment_class/'.$ref_id ,' Assign to someone '," fa-plus ","  ",'btn-success' )." ";
 	
 	
 		}
