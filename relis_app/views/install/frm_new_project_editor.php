@@ -60,13 +60,15 @@
                   		<select id='selected_config' name='selected_config' class=' select2_group form-control  '>
                   		
                   		";
+                    $path_separator=path_separator();// used to diferenciate windows and linux server
+               	
                     foreach ($project_result as $project => $project_detail) {
 						$dir=$project_detail['dir'];
 						
 						if(!empty($project_detail['generated'])){
 							echo "<optgroup label='".$project."'>";
 							foreach ($project_detail['generated'] as $key => $value) {
-								echo  "<option value='".$dir."\\src-gen\\".$value."'>$value</option>";
+								echo  "<option value='".$dir.$path_separator."src-gen".$path_separator.$value."'>$value</option>";
 							}
 							echo "</optgroup>";
 						}

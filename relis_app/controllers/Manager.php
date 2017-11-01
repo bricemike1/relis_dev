@@ -2251,25 +2251,39 @@ class Manager extends CI_Controller {
 		print_test($res);
 		
 		if(!empty($res)){
-		
+			$sql="";
 			if($res['operation_type']=='assign_papers_validation' OR $res['operation_type']=='assign_papers'  ){//asssign papers
 				
-				$sql="UPDATE screening_paper set screening_active = $active_value where 	operation_code LIKE '".$res['operation_code']."'";
+				$sql="UPDATE screening_paper set screening_active = $active_value 
+				where 	operation_code LIKE '".$res['operation_code']."'";
 				
-			}else{//import papers
-				$sql="UPDATE paper set paper_active = $active_value  where 	operation_code LIKE '".$res['operation_code']."'";
+			}elseif($res['operation_type']=='assign_qa'){//assignment for QA
+				$sql="UPDATE qa_assignment set qa_assignment_active = $active_value  
+				where 	operation_code LIKE '".$res['operation_code']."'";
+			}elseif($res['operation_type']=='assign_qa_validation'){//assignment for QA validation
+				$sql="UPDATE qa_validation_assignment set qa_validation_active = $active_value  
+				where 	operation_code LIKE '".$res['operation_code']."'";
+			}elseif($res['operation_type']=='assign_class' OR  $res['operation_type']=='assign_class_validation'){//assignment for classification
+				$sql="UPDATE assigned set assigned_active = $active_value  
+				where 	operation_code LIKE '".$res['operation_code']."'";
+			}elseif($res['operation_type']=='import_paper'){//import papers
+				$sql="UPDATE paper set paper_active = $active_value  
+				where 	operation_code LIKE '".$res['operation_code']."'";
 			}
 			
-			$res=$this->manage_mdl->run_query($sql);
+			if(!empty($sql)){
+				$res=$this->manage_mdl->run_query($sql);
+				
+				$operation_state=!empty($active_value)?'Active':'Cancelled';
+				
+				$sql_update_operation=$sql="UPDATE operations set operation_state = '".$operation_state."'  where 	operation_id = $operations_id ";
+				
+				$res=$this->manage_mdl->run_query($sql);
 			
-			$operation_state=!empty($active_value)?'Active':'Cancelled';
-			
-			$sql_update_operation=$sql="UPDATE operations set operation_state = '".$operation_state."'  where 	operation_id = $operations_id ";
-			
-			$res=$this->manage_mdl->run_query($sql);
-		
-			set_top_msg(lng_min("Operation done"));
-			
+				set_top_msg(lng_min("Operation done"));
+			}else{
+				set_top_msg(lng_min("Operation not supported"),'error');
+			}
 		}else{
 			
 			set_top_msg(lng_min("Error : operation not found"),'error');

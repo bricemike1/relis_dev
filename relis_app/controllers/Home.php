@@ -158,15 +158,15 @@ class Home extends CI_Controller {
 		if(can_manage_project())
 			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for classification', 'relis/manager/class_assignment_set','Assign papers','fa-mail-forward','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 				
-			if(can_review_project())
-				$action_but['screen']=get_top_button ( 'all', 'Classify', 'op/entity_list/list_class_assignment_pending_mine','Classify','fa-search','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
+		if(can_review_project())
+			$action_but['screen']=get_top_button ( 'all', 'Classify', 'op/entity_list/list_class_assignment_pending_mine','Classify','fa-search','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 					
-				if(can_manage_project() ){
-					//$action_but['screen_result']=get_top_button ( 'all', 'Screening progress', 'relis/manager/screen_completion','Progress','fa-tasks','',' btn-info action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
-					$action_but['screen_completion']=get_top_button ( 'all', 'Result', 'op/entity_list/list_classification','Result','fa-th','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-				}
+		if(can_manage_project() ){
+				//$action_but['screen_result']=get_top_button ( 'all', 'Screening progress', 'relis/manager/screen_completion','Progress','fa-tasks','',' btn-info action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
+				$action_but['screen_completion']=get_top_button ( 'all', 'Result', 'op/entity_list/list_classification','Result','fa-th','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
+		}
 					
-				$data['action_but_screen']=$action_but;
+		$data['action_but_screen']=$action_but;
 					
 				$action_but=array();
 				if(get_appconfig_element('class_validation_on') ){
@@ -206,12 +206,110 @@ class Home extends CI_Controller {
 	
 	public function  test_bibler(){
 		
-		$result="{'result_code': True, 'result_msg': 'publisher is missing.', 'entry': {'author': 'Omar, N. and Hasbullah, S. S.', 'id': 265, 'entrykey': 'Omar2008', 'paper': 'http://dx.doi.org/10.1109/ITSIM.2008.4631716', 'title': 'SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing', 'entrytype': 'INPROCEEDINGS', 'valid': True, 'year': '2008', 'message': 'publisher is missing.', 'booktitle': '2008 International Symposium on Information Technology', 'abstract': 'The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.', 'address': '', 'annote': '', 'crossref': '', 'editor': '', 'key': '', 'month': 'Aug', 'note': '', 'number': '', 'organization': '', 'pages': '1--7', 'publisher': '', 'series': '', 'volume': '2', 'comment': '', 'doi': '10.1109/ITSIM.2008.4631716'}, 'preview': '<p><font face=\"verdana\"><b><i>INPROCEEDINGS</i>(Omar2008)</b></font></p>\n<p>N. Omar. and S. S. Hasbullah. SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing. <i>2008 International Symposium on Information Technology</i>. 2, pp. 1&#8211;7. Aug (2008).</p>\n<p><center></center></p>', 'bibtex': '@INPROCEEDINGS{Omar2008,\n  author = {Omar, N. and Hasbullah, S. S.},\n  booktitle = {2008 International Symposium on Information Technology},\n  title = {SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing},\n  year = {2008},\n  abstract = {The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.},\n  month = {Aug},\n  pages = {1--7},\n  volume = {2},\n  doi = {10.1109/ITSIM.2008.4631716},\n  paper = {http://dx.doi.org/10.1109/ITSIM.2008.4631716}\n}'}";
+		
+		$bibtex="@INPROCEEDINGS{4631716,
+author={N. Omar and S. S. Hasbullah},
+booktitle={2008 International Symposium on Information Technology},
+title={SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing},
+year={2008},
+volume={2},
+pages={1-7},
+abstract={The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.},
+keywords={Books;Computational linguistics;Computer science;Humans;Information science;Joining processes;Labeling;Lifting equipment;Natural language processing;Testing},
+doi={10.1109/ITSIM.2008.4631716},
+ISSN={2155-8973},
+month={Aug},}
+		
+";
+		
+		$bibtex="@INPROCEEDINGS{4631716,
+author={N. Omar and S. S. Hasbullah},
+booktitle={2008 International Symposium on Information Technology},
+title={SRL TOOL: Heuristics-based Semantic Role Labeling through natural language processing},
+year={2008},
+volume={2},
+pages={1-7},
+abstract={The Semantic Role Labeling (SRL Tool) is developed to label the semantic roles that exist in English sentences. This paper proposed a set of new heuristics to assist the semantic role labeling using natural language processing. The preliminary result shows that the use of heuristics can improve the process of assigning the correct semantic roles. This application tool is useful for researchers in Natural Language processing field and also for experts or students in Linguistics.},
+keywords={Books;Computational linguistics;Computer science;Humans;Information science;Joining processes;Labeling;Lifting equipment;Natural language processing;Testing},
+doi={10.1109/ITSIM.2008.4631716},
+ISSN={2155-8973},
+month={Aug},}
+		
+";
+		
+		$bibdtex="@article {1519,
+	title = {Classification d{\textquoteright}offres d{\textquoteright}emploi},
+	year = {2017},
+	month = {2017},
+	type = {Technical report},
+	abstract = {Les ressources humaines utilisent de plus en plus les donn{\'e}es intelligentes et les techniques du big data pour faciliter le recrutement. Ainsi, gr{\^a}ce aux profils des r{\'e}seaux sociaux, les recruteurs peuvent identifier des candidats potentiels qui ne sont pas actifs en termes de recherche d{\textquoteright}emploi mais qui pourraient {\^e}tre quand m{\^e}me int{\'e}ress{\'e}s par une opportunit{\'e}. Leur int{\'e}r{\^e}t pour une offre non sollicit{\'e}e est d{\textquoteright}autant plus grand lorsque cette derni{\`e}re correspond bien {\`a} leur profil et {\`a} leur secteur d{\textquoteright}activit{\'e}. Afin d{\textquoteright}am{\'e}liorer les r{\'e}sultats d{\textquoteright}un tel syst{\`e}me de recommandation appariant offres d{\textquoteright}emploi et profils suivant les comp{\'e}tences et les exp{\'e}riences requises, nous proposons de d{\'e}tecter automatiquement le secteur d{\textquoteright}activit{\'e}s des offres {\`a} l{\textquoteright}aide de techniques d{\textquoteright}apprentissage supervis{\'e}.
+},
+	keywords = {Automatic classification, E-recruitment, Recommendation systems},
+	url = {http://rali.iro.umontreal.ca/rali/node/1519/},
+	pdf = {http://rali.iro.umontreal.ca/rali/sites/default/files/publis/classification_offre_emploi.pdf},
+	author = {Annette Casagrande and Fabrizio Gotti and Guy Lapalme}
+}
+";
+		//print_test($bibtex);
+		
+		$init_time=microtime ();
+		$i=1;
+		$res="init";
+		while($i<10){
+			//$res=$this->biblerproxy_lib->addEntry($bibtex);
+			//$res=$this->biblerproxy_lib->bibtextobibtex($bibtex);
+			//$res=$this->biblerproxy_lib->bibtextosql($bibtex);
+			//$res=$this->biblerproxy_lib->addEntry($bibtex);
+			//$res=$this->biblerproxy_lib->previewEntry($bibtex);
+			//$res=$this->biblerproxy_lib->bibtextocsv($bibtex);
+			//$res=$this->biblerproxy_lib->bibtextohtml($bibtex);
+			//$res=$this->biblerproxy_lib->formatBibtex($bibtex);
+			$res=$this->biblerproxy_lib->createentryforreliS($bibtex);
+			$correct=False;
+			if (strpos($res, 'Internal Server Error') !== false OR empty($res) ){
+				 
+			//	echo " error - ".$i;
+				$i++;
+			}else{
+			//	echo " ok - ".$i;
+				$correct=True;
+				$i=20;
+			}
+			//usleep(500);
+			
+		}
+		
+		$end_time=microtime ();
+		//print_test($res);
+	//	echo "<h1>".($end_time - $init_time)."</h1>";
+		ini_set('auto_detect_line_endings',TRUE);
+		if($correct){
+		
+			//$fp = fopen('test_'.time().'.txt', 'w+');
+			//fputs($fp, $res);
+			$res=str_replace("True,", "'True',", $res);
+			$res=str_replace("False,", "'False',", $res);
+			$res = $this->biblerproxy_lib->fixJSON($res);
 		
 		
-		print_test($result);
-		$Tres=json_decode($result);
-		print_test($Tres);
+			$Tres = json_decode($res,True);
+			if (json_last_error() === JSON_ERROR_NONE) {
+				//do something with $json. It's ready to use
+				//print_test();
+				echo "<pre>";
+				print_r($Tres);
+				echo "</pre>";
+			} else {
+		
+				//yep, it's not JSON. Log error or alert someone or do nothing
+				echo json_last_error();
+				echo "<p>Not a valid Json</p>";
+			}
+		
+		
+		
+		}
+		echo "<hr/>";
 		
 	}
 	private function get_classification_completion($type='class',$user=''){
@@ -1008,7 +1106,7 @@ class Home extends CI_Controller {
 		
 		$i=1;
 		
-		for($i=1;$i<=15;$i++){
+		for($i=16;$i<=20;$i++){
 		/*
 		 * Préparation des valeurs qui sont générés de façon aléatoire
 		 */	
@@ -1016,19 +1114,19 @@ class Home extends CI_Controller {
 			'class_paper_id'=>$i,	
 			'transformation_name'=>"Test transformation $i",	
 			'domain'=>rand(1 , 5),	
-			'trans_language'=>rand(1,4 ),	
+			//'trans_language'=>rand(1,4 ),	
 			'source_language'=>rand(1,4 ),	
 			'target_language'=>rand(1 , 4),	
-			'scope'=>rand(1 , 3),	
+			//'scope'=>rand(1 , 3),	
 			'industrial'=>rand(0 ,1 ),	
 			'bidirectional'=>rand(0 ,1),	
 			'year'=>rand(2011 ,2016),	
-			//'number_citation'=>rand(2 ,2016),	
+			'number_citation'=>rand(2 ,2016),	
 			'user_id'=>1	
 				
 		);
 		
-		print_test($fields);
+		//print_test($fields);
 		
 		/*
 		 * Insertion des données
@@ -1039,14 +1137,14 @@ class Home extends CI_Controller {
 		
 		$i=1;
 		
-		for($i=1;$i<=1;$i++){
+		for($i=16;$i<=20;$i++){
 			/*
 			 * Préparation des valeurs qui sont générés de façon aléatoire
 			 */
 			
 			$intent_numbers=rand(1,3);
 			$j=1;
-			for($j=1;$j<=1;$j++){
+			for($j=1;$j<=$intent_numbers;$j++){
 			$fields=array(
 					'parent_field_id'=>$i,
 					'name_used'=>"Intent $i $j",
@@ -1061,14 +1159,14 @@ class Home extends CI_Controller {
 			/*
 			 * Insertion des données
 			 */
-			//$headersaved = $this->db_current->insert ( 'intent', $fields );
-			//print_test($headersaved);
+			$headersaved = $this->db_current->insert ( 'intent', $fields );
+			print_test($headersaved);
 			}
 		}
 		
 		$i=1;
 		
-		for($i=1;$i<=1;$i++){
+		for($i=16;$i<=20;$i++){
 			/*
 			 * Préparation des valeurs qui sont générés de façon aléatoire
 			 */
@@ -1078,7 +1176,7 @@ class Home extends CI_Controller {
 			for($j=1;$j<=$intent_numbers;$j++){
 				$fields=array(
 						'parent_field_id'=>$i,
-						//'trans_language'=>rand(1 , 4)
+						'trans_language'=>rand(2 , 4),
 						'trans_language'=>$j
 		
 				);
@@ -1088,8 +1186,8 @@ class Home extends CI_Controller {
 				/*
 				 * Insertion des données
 				 */
-				//$headersaved = $this->db_current->insert ( 'trans_language', $fields );
-				//print_test($headersaved);
+				$headersaved = $this->db_current->insert ( 'trans_language', $fields );
+				print_test($headersaved);
 			}
 		}
 	
@@ -1927,4 +2025,56 @@ class Home extends CI_Controller {
 			
 			print_test($kappa);
 		}
+		
+		public function test_mail_old() {
+			$ci = get_instance();
+			$ci->load->library('email');
+			$config['protocol'] = "smtp";
+			$config['smtp_host'] = "ssl://smtp.gmail.com";
+			$config['smtp_port'] = "465";
+			$config['smtp_user'] = "relisgeodes@gmail.com";
+			$config['smtp_pass'] = "R3l1sApp";
+			$config['charset'] = "utf-8";
+			$config['mailtype'] = "html";
+			$config['newline'] = "\r\n";
+			
+			$ci->email->initialize($config);
+			
+			$ci->email->from('relisgeodes@gmail.com', 'ReLiS');
+			$list = array('bbigendako@gmail.com');
+			$ci->email->to($list);
+			$this->email->reply_to('relisgeodes@gmail.com', 'Explendid Videos');
+			$ci->email->subject('This is an email test');
+			$ci->email->message('It is working. Great!');
+			
+			if($ci->email->send()){
+				echo "Email sent successfully.";
+			}
+			else{
+				//	echo "Error in sending Email.";
+				echo $ci->email->print_debugger();
+			}
+			//$res=$ci->email->send();
+			//print_test($ci->email);
+		}
+		public function test_mail() {
+			$message="
+					<h2>Relis Validation message</h2>
+					<p>
+					Wecome to ReLiS:<br/>
+					Your validation code is : <b>53653536363</b>
+					</p>
+					
+					test message";
+			$subject="Validation code";
+			$destination=array('bbigendako@gmail.com','relisgeodes@gmail.com');
+			$res=$this->bm_lib->send_mail($subject,$message,$destination);
+			print_test($res);
+		}
+		public function test_randomstr() {
+			
+			$res=$this->bm_lib->random_str(10);
+			print_test($res);
+		}
+		
 }

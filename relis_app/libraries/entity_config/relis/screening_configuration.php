@@ -285,12 +285,20 @@ function get_screening() {
 	   			),
 	   	);
 		
+		if(!can_manage_project()){
+		unset($operations['list_assignments']['list_links']['delete']);
+		
+		}
+		
 			$operations['list_assignments_validation']=$operations['list_assignments'];
 			$operations['list_assignments_validation']['page_title']='Assignments for validation';
-			$operations['list_assignments_validation']['conditions']['assignment_role']['value']='Validation';
+			$operations['list_assignments_validation']['conditions']['assignment_role']['value']='Validation';			
 			$operations['list_assignments_validation']['list_links']['delete']['url']='op/delete_element/remove_assignment_val/';
 			
-			
+		if(!can_manage_project()){
+		unset($operations['list_assignments_validation']['list_links']['delete']);
+		
+		}	
 		
 		$operations['list_my_assignments']=array(
 	   			'operation_type'=>'List',
@@ -460,6 +468,11 @@ function get_screening() {
 	   					 
 	   			),
 	   	);
+		
+		if(!can_manage_project()){
+		unset($operations['list_screenings']['list_links']['edit']);
+		
+		}
 		//List all validations
 		$operations['list_screenings_validation']=$operations['list_screenings'];
 		$operations['list_screenings_validation']['page_title']='Screenings  validation';

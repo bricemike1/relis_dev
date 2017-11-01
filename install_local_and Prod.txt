@@ -1,0 +1,13 @@
+Install ReLiS Local and Production different files
+
+---
+.htaccess
+
+relis_app\config\config.php 
+relis_app\config\database.php
+
+// to update
+relis_app\controllers\Install.php
+relis_app\views\install\frm_install_editor.php
+relis_app\views\install\frm_new_project_editor.php
+

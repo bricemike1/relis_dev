@@ -360,7 +360,9 @@ class DBConnection_mdl extends CI_Model
 			if(empty($tab_config)){
 				$tab_config=$config;
 			}
-			//print_test($tab_config);
+			
+			
+			
 			if(!admin_config($tab_config)){
 				$this->db2 = $this->load->database(project_db(), TRUE);
 			

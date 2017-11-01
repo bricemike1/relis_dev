@@ -1,0 +1,21 @@
+#;Paper;"Transformation name";Domain;"Transformation Language";"Source language";"Target language";Scope;Intent;"Intent relation";Industrial;Bidirectional;"Number of citations";"Targeted year";Note
+1;"Paper_21 - 5W+1H pattern: A perspective of systematic mapping studies and a case study on cloud software testing";"Test transformation 1";E-commerce;"ATL | Henshin | MoTiF | QVT";UML;DSL;;Migration;;No;Yes;640;2014;
+2;"Paper_22 - A Mapping Study of Software Causal Factors for Improving Maintenance";"Test transformation 2";HOT;"ATL | Henshin | MoTiF | QVT";DSL;Java;;Simulation;;No;No;551;2015;
+3;"Paper_23 - A first systematic mapping study on combinatorial interaction testing for software product lines";"Test transformation 3";"Artificial Intelligence";"ATL | Henshin";DSL;Java;;Simulation;;Yes;Yes;940;2016;
+4;"Paper_24 - A systematic literature review of literature reviews in software testing";"Test transformation 4";"Collaborative system";"ATL | Henshin";UML;DSL;;Translation;;Yes;No;1011;2014;
+5;"Paper_25 - A systematic mapping of data generation for integration software testing";"Test transformation 5";Compilation;"ATL | Henshin | MoTiF";Java;UML;;Translation;;No;Yes;58;2015;
+6;"Paper_26 - A systematic mapping study of software product lines testing";"Test transformation 6";HOT;"ATL | Henshin | MoTiF";SySML;DSL;;Migration;;No;No;852;2014;
+7;"Paper_27 - A systematic mapping study on non-functional search-based software testing";"Test transformation 7";Compilation;"ATL | Henshin";UML;SySML;;Translation;;No;No;364;2014;
+8;"Paper_28 - A systematic mapping study on software engineering testbeds";"Test transformation 8";"Artificial Intelligence";"ATL | Henshin | MoTiF";DSL;DSL;;Simulation;;No;Yes;1845;2013;
+9;"Paper_29 - Alignment of requirements specification and testing: A systematic mapping study";"Test transformation 9";"Collaborative system";"ATL | Henshin | MoTiF | QVT";Java;DSL;;Simulation;;Yes;No;637;2014;
+10;"Paper_30 - Analyzing an automotive testing process with evidence-based software engineering";"Test transformation 10";E-commerce;"ATL | Henshin | MoTiF";SySML;UML;;Composition;;Yes;Yes;1919;2012;
+11;"Paper_31 - Challenges and opportunities for software change request repositories: A systematic mapping study";"Test transformation 11";Compilation;"ATL | Henshin | MoTiF";SySML;UML;;Simulation;;Yes;Yes;602;2015;
+12;"Paper_32 - Change impact in product lines: A systematic mapping study";"Test transformation 12";HOT;"ATL | Henshin | MoTiF | QVT";UML;Java;;Simulation;;Yes;No;1714;2012;
+13;"Paper_33 - Characteristics, attributes, metrics and usability recommendations: A systematic mapping";"Test transformation 13";HOT;"ATL | Henshin | MoTiF";DSL;UML;;Simulation;;No;Yes;1432;2015;
+14;"Paper_34 - Concurrent software testing in practice: A catalog of tools";"Test transformation 14";"Artificial Intelligence";Henshin;UML;DSL;;Migration;;Yes;No;1047;2012;
+15;"Paper_35 - Cost, benefits and quality of software development documentation: A systematic mapping";"Test transformation 15";Compilation;"Henshin | MoTiF";DSL;UML;;Migration;;No;No;207;2013;
+16;"Paper_36 - Empirical studies concerning the maintenance of UML diagrams and their use in the maintenance of code: A systematic mapping study";"Test transformation 16";"Collaborative system";"Henshin | MoTiF | QVT";Java;UML;;"Migration | Migration | Translation";;Yes;No;1827;2012;
+17;"Paper_37 - Evaluating software product quality: A systematic mapping study";"Test transformation 17";E-commerce;"Henshin | MoTiF";Java;DSL;;"Translation | Simulation";;Yes;No;943;2015;
+18;"Paper_38 - Feature location for software product line migration: A mapping study";"Test transformation 18";HOT;Henshin;DSL;Java;;"Migration | Migration | Composition";;Yes;Yes;1387;2014;
+19;"Paper_39 - Graphical user interface (GUI) testing: Systematic mapping and repository";"Test transformation 19";HOT;Henshin;SySML;DSL;;"Composition | Simulation";;Yes;Yes;1733;2011;
+20;"Paper_40 - ISBSG variables most frequently used for software effort estimation: A mapping review";"Test transformation 20";"Artificial Intelligence";Henshin;Java;UML;;"Composition | Translation";;Yes;Yes;143;2012;

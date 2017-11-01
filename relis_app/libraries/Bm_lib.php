@@ -14,10 +14,10 @@ class Bm_lib
 		}
 		
 		$sections = array(
-				'config'  => FALSE,
-				'http_headers'  => FALSE,
-				'session_data' => FALSE,
-				'queries' => FALSE
+		'config'  => FALSE,
+		'http_headers'  => FALSE,
+		'session_data' => FALSE,
+		'queries' => FALSE
 		);
 //	echo 	print_test($this->CI->load->database('default',true));
 		$f = APPPATH.'config/database.php';
@@ -112,7 +112,55 @@ class Bm_lib
 			}
 			
 			
+	public function send_mail($subject,$message,$destination) {
+		$ci = get_instance();
+		$ci->load->library('email');
+		$config['protocol'] = "smtp";
+		$config['smtp_host'] = "ssl://smtp.gmail.com";
+		$config['smtp_port'] = "465";
+		$config['smtp_user'] = "relisgeodes@gmail.com";
+		$config['smtp_pass'] = "R3l1sApp";
+		$config['charset'] = "utf-8";
+		$config['mailtype'] = "html";
+		$config['newline'] = "\r\n";
 			
+		$ci->email->initialize($config);
+			
+		$ci->email->from('relisgeodes@gmail.com', 'ReLiS');
+		//$list = array('bbigendako@gmail.com');
+		$ci->email->to($destination);
+		$ci->email->reply_to('relisgeodes@gmail.com', 'ReLiS');
+		$ci->email->subject($subject);
+		$ci->email->message($message);
+			
+		if($ci->email->send()){
+			//echo "Email sent successfully.";
+			return 1;
+		}
+		else{
+			
+			//echo $ci->email->print_debugger();
+			return 0;
+		}
+		
+	}
+	
+	
+	/**
+	 * Generate a random string, 	
+	 * @param int $length      How many characters do we want?
+	 * @return string
+	 */
+	public function random_str($length)
+	{
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$charactersLength = strlen($characters);
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, $charactersLength - 1)];
+		}
+		return $randomString;
+	}
 			
 
 		}

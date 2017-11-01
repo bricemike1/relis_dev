@@ -1,12 +1,12 @@
-<?php //mt_class
-function get_classification_mt_class(){
+<?php //brice
+function get_classification_brice(){
 $reference_tables=array();//from nowit will worklike this
 $config=array();
-$result['class_action']='no_override';
+$result['class_action']='no_overide';
 $result['screen_action']='override';
 $result['qa_action']='override';
-$result['project_title']='Model transformation classification';
-$result['project_short_name']='mt_class';
+$result['project_title']='Brice';
+$result['project_short_name']='brice';
 $config['classification']['table_name']='classification';
 $config['classification']['config_id']='classification';
 $config['classification']['table_id']='class_id';
@@ -1002,12 +1002,80 @@ $result[ 'reference_tables' ] =$reference_tables;
 
 //QA area
 
+ 		
+$qa=array();
+$qa['cutt_off_score']='3';
+$qa['questions']=array();
+  array_push($qa['questions'], array(
+  										'title' =>"Question 1",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 2",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 3",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 4",
+  										)
+  );
+$qa['responses']=array();
+   array_push($qa['responses'], array(
+   										'title' =>"Yes",
+   										'score' =>"3",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"Partially",
+   										'score' =>"1.5",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"No",
+   										'score' =>"0",
+   										)
+   );
+$result[ 'qa' ]=$qa; 		
 
 //QA area
 
 
 //SCREENING area
 
+ 		
+$screening=array();
+$screening['review_per_paper']='2';
+$screening['conflict_type']='ExclusionCriteria';
+$screening['conflict_resolution']='Unanimity';
+$screening['validation_assigment_mode']='Normal';
+$screening['validation_percentage']='30';
+$screening['exclusion_criteria']=array();
+array_push($screening['exclusion_criteria'], "Criteria 1");
+array_push($screening['exclusion_criteria'], "Criteria 2");
+$screening['source_papers']=array();
+array_push($screening['source_papers'], "Scopus");
+array_push($screening['source_papers'], "IEEE");
+$screening['source_papers']=array();
+array_push($screening['source_papers'], "Scopus");
+array_push($screening['source_papers'], "IEEE");
+$screening['phases']=array();
+ array_push($screening['phases'], array(
+ 										'title' =>"Phase 1",
+ 										'description' =>"Screen per title",
+ 										'fields'=>'Title|',
+ 										)
+ );
+ array_push($screening['phases'], array(
+ 										'title' =>"Phase 2",
+ 										'description' =>"Screen per title and abstract 2",
+ 										'fields'=>'Title|Abstract|Link|',
+ 										)
+ );
+
+$result[ 'screening' ]=$screening; 		
 
 //SCREENING area
 
@@ -1022,20 +1090,8 @@ $report['domain']['values']['style']='select';
 $report['domain']['values']['title']='Domain';  
 $charts=array();
  	array_push($charts, "pie");
- 	array_push($charts, "line");
-$report['domain']['chart']=$charts;
-$report['trans_lang']['type']='simple';
-$report['trans_lang']['title']='Transformation language'; 		
-$report['trans_lang']['id']='trans_lang';
-$report['trans_lang']['link']='false'; 
-$report['trans_lang']['values']['field']='trans_language';
-$report['trans_lang']['values']['style']='select';
-$report['trans_lang']['values']['title']='Transformation Language';  
-$charts=array();
- 	array_push($charts, "pie");
  	array_push($charts, "bar");
- 	array_push($charts, "line");
-$report['trans_lang']['chart']=$charts;
+$report['domain']['chart']=$charts;
 $report['year_domain']['type']='compare';
 $report['year_domain']['title']='Domain per year'; 		
 $report['year_domain']['id']='year_domain';

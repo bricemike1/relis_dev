@@ -724,10 +724,10 @@ class Manager extends CI_Controller {
 	}else{
 		$data ['page_title'] = lng('Paper - Validation');
 		//$data ['classification_button'].=create_button ( 'Correct', 'relis/manager/qa_validate/'.$ref_id,'Correct',' btn-success');
-
-		$data ['classification_button'].=get_top_button ( 'all', "Correct", 'relis/manager/class_validate/'.$ref_id,'Correct'," ",'','btn-success' )." ";
-		$data ['classification_button'].=get_top_button ( 'all', "Not correct", 'relis/manager/class_validate/'.$ref_id.'/0','Not correct'," ",'','btn-danger' )." ";
-		
+		if(can_validate_project()){
+			$data ['classification_button'].=get_top_button ( 'all', "Correct", 'relis/manager/class_validate/'.$ref_id,'Correct'," ",'','btn-success' )." ";
+			$data ['classification_button'].=get_top_button ( 'all', "Not correct", 'relis/manager/class_validate/'.$ref_id.'/0','Not correct'," ",'','btn-danger' )." ";
+		}
 		//$data ['classification_button'].=create_button ( 'Not correct', 'relis/manager/qa_validate/'.$ref_id.'/0','Not correct',' btn-danger');
 		
 	}
@@ -1717,6 +1717,8 @@ class Manager extends CI_Controller {
 		$operation_code=active_user_id()."_".time();
 		
 		$default_key_prefix= get_appconfig_element('key_paper_prefix');
+		$default_key_prefix=($default_key_prefix=='0')?'':$default_key_prefix;
+		
 		$default_key_serial= get_appconfig_element('key_paper_serial');
 		$serial_key=$default_key_serial;
 		
@@ -3487,7 +3489,7 @@ class Manager extends CI_Controller {
 		
 		
 		$data['completion_screen']=$assign_per_user;
-		print_test($data['completion_screen']);
+		//print_test($data['completion_screen']);
 		
 		
 		
@@ -5066,7 +5068,7 @@ class Manager extends CI_Controller {
 				//		print_test($papers);
 				$papers_to_validate_nbr= round( count($papers) * $percentage/100);
 	
-				$operation_description="Assign  papers for qa";
+				$operation_description="Assign  papers for QA";
 				//	print_test($papers);
 				shuffle($papers); // randomize the list
 				//		print_test($papers);exit;
@@ -5293,7 +5295,7 @@ class Manager extends CI_Controller {
 			//		print_test($papers);
 			$papers_to_validate_nbr= round( count($papers) * $percentage/100);
 	
-			$operation_description="Assign  papers for qa";
+			$operation_description="Assign  papers for QA validation";
 			//	print_test($papers);
 			shuffle($papers); // randomize the list
 			//		print_test($papers);exit;
@@ -5562,7 +5564,12 @@ class Manager extends CI_Controller {
 		$qa_cutt_off_score=get_appconfig_element('qa_cutt_off_score');
 		$data['qa_cutt_off_score']=$qa_cutt_off_score;
 		//print_test($data);
-		$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'home' );
+		$data ['top_buttons']="";
+		
+		//if(can_manage_project())
+		//$data ['top_buttons'].=get_top_button ( 'all', "Exclude low quality papers", 'relis/manager/exclude_low_quality' ,'Exclude low quality'," fa-minus",'','btn-danger' )." ";
+			
+		$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'home' );
 	
 		
 		if($type=='excluded'){
@@ -5580,6 +5587,11 @@ class Manager extends CI_Controller {
 		return $this->manager_lib->get_qa_result($type,$id,$category,$add_Link,$status);
 		
 		 
+	}
+	
+	public function exclude_low_quality(){
+		//s
+		
 	}
 	
 	
@@ -5984,11 +5996,226 @@ function qa_exlusion($paper_id,$op=1){
  	elseif( 0.61 <= $kappa AND $kappa <= 0.8) $interpretation = 'Substantial';
  	elseif( 0.81 <= $kappa AND $kappa < 1) $interpretation = 'Almost perfect';
  	elseif( $kappa >= 1) $interpretation = 'Perfect';
- 	elseif( $kappa == 'one user') $interpretation = 'Just one paricipant';
+ 	elseif( $kappa == 'one user') $interpretation = 'Just one participant';
  	else $interpretation= 'something went wrong...';
  	
  	
  	return $interpretation;
  	
  }
+ 
+ /*
+  * Page pour ajouter un papier avec bibtex
+  */
+ public function add_paper_bibtex($data=array()){
+ 		
+ 	$data ['top_buttons'] = get_top_button ( 'close', 'Back', 'op/entity_list/list_all_papers' );
+ 	$data['title']='Add paper using bibtex';
+ 	
+ 	$data['page']='relis/bibtex_form';
+ 	$this->load->view('body',$data);
+ }
+ 
+ //save paper from bibtex
+ 
+ 
+ public function  save_bibtex_paper(){
+ 
+ 	
+ 	$post_arr = $this->input->post ();
+ 	$data['message_error']="";
+ 	$data['message_success']="";
+ 	if(empty($post_arr['bibtext']))
+ 	{
+ 		$data['message_error'].="Bibtex field empty.<br/>";
+ 		$this->add_paper_bibtex($data);
+ 	}else
+ 	{
+ 		$bibtex=$post_arr['bibtext'];
+ 	
+ 	
+ 
+ 	$init_time=microtime ();
+ 	$i=1;
+ 	$res="init";
+ 	while($i<10){
+ 		//$res=$this->biblerproxy_lib->addEntry($bibtex);
+ 		//$res=$this->biblerproxy_lib->bibtextobibtex($bibtex);
+ 		//$res=$this->biblerproxy_lib->bibtextosql($bibtex);
+ 		//$res=$this->biblerproxy_lib->addEntry($bibtex);
+ 		//$res=$this->biblerproxy_lib->previewEntry($bibtex);
+ 		//$res=$this->biblerproxy_lib->bibtextocsv($bibtex);
+ 		//$res=$this->biblerproxy_lib->bibtextohtml($bibtex);
+ 		//$res=$this->biblerproxy_lib->formatBibtex($bibtex);
+ 		$res=$this->biblerproxy_lib->createentryforreliS($bibtex);
+ 		$correct=False;
+ 		if (strpos($res, 'Internal Server Error') !== false OR empty($res) ){
+ 				
+ 			//	echo " error - ".$i;
+ 			$i++;
+ 		}else{
+ 			//	echo " ok - ".$i;
+ 			$correct=True;
+ 			$i=20;
+ 		}
+ 		//usleep(500);
+ 			
+ 	}
+ 
+ 	$end_time=microtime ();
+ 	//print_test($res);
+ 	//	echo "<h1>".($end_time - $init_time)."</h1>";
+ 	ini_set('auto_detect_line_endings',TRUE);
+ 	if($correct){
+ 		//print_test($res);
+ 		$res=str_replace("True,", "'True',", $res);
+ 		$res=str_replace("False,", "'False',", $res);
+ 		$res = $this->biblerproxy_lib->fixJSON($res);
+ 
+		//tou correct the error in venu from the webservice
+ 		//$res=substr($res,0,strpos($res,', "venue_full":')).'}';
+ 		
+ 		$Tres = json_decode($res,True);
+ 		
+ 		if (json_last_error() === JSON_ERROR_NONE) {
+ 			
+ 		
+ 			//print_test($Tres);
+ 			
+ 			$data['bibtext']=$bibtex;
+ 		
+ 			$paper_array=array();
+ 			if(!empty($Tres['result_code']) 
+ 				//	AND $Tres['result_code']=='True' 
+ 					AND !empty($Tres['entry']['entrykey'])){
+ 						
+ 				//bibtex decoded
+ 				$paper_array['bibtexKey']=$Tres['entry']['entrykey'];
+ 				$paper_array['title']=!empty($Tres['entry']['title']) ? $Tres['entry']['title'] : "";
+ 				$paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
+ 				$paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
+ 				$paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
+ 				$paper_array['doi']=!empty($Tres['entry']['paper']) ? $Tres['entry']['paper'] : "";
+ 				$paper_array['year']=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
+ 				$paper_array['authors']=!empty($Tres['authors']) ? $Tres['authors']: "";
+ 			
+ 			
+ 				
+ 				$insert_res=$this->insert_paper_bibtext($paper_array);
+ 				if($insert_res==1){
+ 					$data['message_success'].="Paper added";
+ 				}else{
+ 					$data['message_error'].=$insert_res;
+ 				}
+ 			}else{
+ 				$data['message_error'].="Error: chect your Bibtext format.<br/>";
+ 			
+ 			}
+ 			
+ 			$this->add_paper_bibtex($data);
+ 		} else {
+ 
+ 			//echo json_last_error();
+ 			$data['message_error'].="JSON Error : ".json_last_error().".<br/>";
+ 			$this->add_paper_bibtex($data);
+ 		}
+ 
+ 	}else{
+ 		$data['message_error'].="Unable to connect to Bibler web service.<br/>";
+ 		$this->add_paper_bibtex($data);
+ 		
+ 	}
+ 	
+ 	
+ 	}
+ 
+ }
+ 
+ private function insert_paper_bibtext($paper_array) {
+ 	//check papers_exist
+ 	//print_test($paper_array);
+ 	$authors=$paper_array['authors'];
+ 	unset($paper_array['authors']);
+ 	$bibtexKey=$paper_array['bibtexKey'];
+ 	$exist=False;
+ 	$stopsearch=False;
+ 	$i=1;
+ 	while(!$stopsearch){
+ 		$res = $this->db_current->get_where('paper',
+ 				array('bibtexKey' => $bibtexKey,'paper_active'=>1))
+ 				->row_array();
+ 		if(empty($res)){
+ 			$stopsearch=True;
+ 			$exist=False;
+ 		}else{
+ 			if($res['title']==$paper_array['title']){
+ 				$stopsearch=True;
+ 				$exist=True;
+ 			}else{
+ 				$bibtexKey=$paper_array['bibtexKey'].'_'.$i;
+ 			}
+ 			
+ 		}
+ 		$i++;
+ 	}
+ 	
+ 	
+	if(!$exist){
+		$paper_array['added_by']=active_user_id();
+		$paper_array['bibtexKey']=$bibtexKey;
+		//set classification status
+		if(get_appconfig_element('screening_on')){
+				
+			$paper_array['classification_status']='Waiting';
+			$paper_array['screening_status']='Pending';
+		}else{
+			$paper_array['classification_status']='To classify';
+				
+			$paper_array['screening_status']='Included';
+		}
+		$this->db_current->insert('paper', $paper_array);
+		$paper_id=$this->db_current->insert_id();
+		if(!empty($authors)){
+			$this->add_author($paper_id, $authors);
+			
+		}
+		return 1;
+	}else{
+		return 'Paper already exit';
+	}
+ 	//print_test($res);
+ }
+ 
+ private function add_author($paper_id,$author_array) {
+ 	//check author exist
+ 	foreach ($author_array as $key => $author) {
+ 	
+ 	$author_name=$author['first_name'].' '.$author['last_name'];
+ 	$res = $this->db_current->get_where('author',
+ 			array('	author_name' =>$author_name,'author_active'=>1))
+ 			->row_array();
+ 	
+ 			//print_test($res);
+ 			if(empty($res['author_id'])){
+ 				
+ 				$this->db_current->insert('author', array('author_name'=>$author_name));
+ 				$author_id=$this->db_current->insert_id();
+ 			}else{
+ 				$author_id=$res['author_id'];
+ 			}
+ 			
+ 			if(!empty($author_id)){
+ 				
+ 				$this->db_current->insert('paperauthor', 
+ 						array(	'paperId'=>$paper_id,
+ 								'authorId'=>$author_id,
+ 								'author_rank'=>$key+1,
+ 						));
+ 			}
+ 			//print_test($res);
+	 }
+ 
+ }
+ 
+ 
 }

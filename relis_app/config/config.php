@@ -302,6 +302,7 @@ $config['project_specific_config_folder']="relis_app/libraries/table_config/proj
 
 // The prefix that will have the new databases for projects  installed
 $config['project_db_prefix'] = "relis_dev_correct_";
+$config['server_OS'] = "WINDOWS";
 
 // Added configuration
 

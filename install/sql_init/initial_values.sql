@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_picture` longblob,
   `created_by` int(11) NOT NULL DEFAULT '1',
   `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user_state` int(2) NOT NULL DEFAULT '0',
+  `user_state` int(2) NOT NULL DEFAULT '1',
   `user_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `user_username` (`user_username`)

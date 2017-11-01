@@ -29,9 +29,15 @@
   <div class="row">
 	<div class="login_description col-md-7 col-sm-7 col-xs-12">
   <p >
-  <b>ReLiS</b> stands for <i>"Revue Littéraire Systématique"</i> which is French for <i>"Systematic Literature Review"</i>. When a researcher wants to address a research problem, he starts by looking at what already exists in the scientific literature (published papers) on the topic. ReLiS is a tool that helps him considerably reduce the effort to analyze the corpus of papers, typically varying between hunderds and thousands depending on the research topic. ReLiS allows the user to follow a systematic process and automate the review process as much as possible .
+  <b>ReLiS</b> stands for <i>"Revue Littéraire Systématique"</i> which is French for <i>"Systematic Literature Review"</i>.
+   When a researcher wants to address a research problem, he starts by looking at what already exists 
+   in the scientific literature (published papers) on the topic. 
+   ReLiS is a tool that helps him considerably reduce the effort to analyze the corpus of papers, 
+   typically varying between hunderds and thousands depending on the research topic.
+    ReLiS allows the user to follow a systematic process and automate the review process as much as possible .
   
   </p>
+  
   </div>
       
   <div id="wrapper" class="col-md-5 col-sm-5 col-xs-12">
@@ -44,7 +50,7 @@
              
               <h2><?php echo lng_min('Log in')?></h2>
 			  <?php
-                    	if(validation_errors() OR isset($err_msg) OR ($this->session->userdata('page_msg_err')) )
+                    	if(validation_errors() OR !empty($err_msg) OR ($this->session->userdata('page_msg_err')) )
 						{
 							echo '<div class="alert alert-danger" style="text-align:center">';
 							echo validation_errors();
@@ -57,6 +63,11 @@
 							 }
 							echo "</div>";
 						}
+						if(!empty($success_msg)){
+							echo '<div class="alert alert-success" style="text-align:center">';
+							echo $success_msg;
+							echo "</div>";
+						}
                     	?>
                     	<br/>
               <div>
@@ -67,7 +78,8 @@
               </div>
               <div>
                 <button type="submit" class="btn btn-default submit" ><?php echo lng_min('Log in')?></button>
-                
+                <a href="<?php echo base_url()?>auth/new_user"><u>Create account</u></a>
+                <a href="<?php echo base_url()?>auth/demo_user"><u>Demo user</u></a>
               </div>
               <div class="clearfix"></div>
               

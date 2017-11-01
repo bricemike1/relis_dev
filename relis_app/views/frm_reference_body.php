@@ -130,7 +130,7 @@
 								
                     			// for image edit save the old value and use it when used does not choose another image
                     			if($var_check=="on_edit"){
-                    				echo "zzzzzzzzzzzzzzzzzz";
+                    			//	echo "zzzzzzzzzzzzzzzzzz";
                     				echo form_hidden(array( $key.'_zsaved' => isset($content_item['$key'])?$content_item['$key']:''));			
                     				
                     			}

@@ -428,12 +428,12 @@ function get_configuration() {
 	   	
 	   	
 	   			'top_links'=>array(
-	   					'edit'=>array(
+	   					/*'edit'=>array(
 	   							'label'=>'',
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
 	   							'url'=>'op/edit_element/edit_configuration/~current_element~',
-	   					),
+	   					),*/
 	   					'back'=>array(
 	   							'label'=>'',
 	   							'title'=>'Close',

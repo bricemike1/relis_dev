@@ -425,9 +425,9 @@ function checkbox_form_bm($label, $name, $id, $values = 1, $selected = 0, $class
 
 
 function create_button_link($url,$label,$button_class="btn-info",$title="",$type="onlist",$alert_message="") {
-	
+	//print_test($alert_message);
 	if(empty($alert_message)){
-	$button=anchor ( $url, $label, 'class=" btn '.$button_class.' btn-xs " , title=" '.$title.' "' );
+		$button=anchor ( $url, $label, 'class=" btn '.$button_class.' btn-xs " , title=" '.$title.' "' );
 	}else{
 		$button=anchor ( $url, $label, 'class=" btn '.$button_class.' btn-xs " , title=" '.$title.' " onClick="return confirm_delete()" ' );
 	
@@ -440,11 +440,16 @@ function create_button_link_dropdown($arr_buttons,$btn_label="Action",$li_button
 
 	//print_test($arr_buttons);
 	if(!empty($arr_buttons)){
-	//	print_test(count($arr_buttons));
-	//	print_test($arr_buttons);
+		
+		//print_test($arr_buttons);
+	
+	//print_test(count($alert_message));
 		if(count($arr_buttons)==1){
-			
-			$button=create_button_link($arr_buttons[0]['url'], $arr_buttons[0]['label'],!empty($arr_buttons[0]['btn_type'])?$arr_buttons[0]['btn_type']:'btn-info',$arr_buttons[0]['title']);
+			$alert_message=!empty($arr_buttons[0]['delete_alert'])?"Delete the record?":"";
+			$button=create_button_link($arr_buttons[0]['url'],
+										$arr_buttons[0]['label'],
+										!empty($arr_buttons[0]['btn_type'])?$arr_buttons[0]['btn_type']:'btn-info',
+										$arr_buttons[0]['title'],'onlist',$alert_message);
 			
 		}else{
 			if($li_button){
@@ -459,15 +464,19 @@ function create_button_link_dropdown($arr_buttons,$btn_label="Action",$li_button
 				$button.='<li>'.anchor ( $value['url'], !empty($value['label'])?($value['label']):"", 'class=""  title=" '.!empty($value['title'])?($value['title']):"".' "' ).'</li>';
 			}
 			
+		
 			
 			
 			$button.='</ul></div>'; //close the UL
 			}else{
+				
 				$button="";
 				foreach ($arr_buttons as $key => $value) {
+					$alert_message=!empty($arr_buttons[$key]['delete_alert'])?"Delete the record":"";
 					
+					//print_test($alert_message);
 					//$button.='<li>'.anchor ( $value['url'], !empty($value['label'])?($value['label']):"", 'class=""  title=" '.!empty($value['title'])?($value['title']):"".' "' ).'</li>';
-					$button.=create_button_link($value['url'], $value['label'],!empty($value['btn_type'])?$value['btn_type']:'btn-info',$value['title']);
+					$button.=create_button_link($value['url'], $value['label'],!empty($value['btn_type'])?$value['btn_type']:'btn-info',$value['title'],'onlist',$alert_message);
 				}
 			}
 		}
@@ -772,20 +781,34 @@ function admin_config($config,$config_name=True,$type='config'){
 	}
 
 	
-}	 
+}	
+
+
+/**
+ * Function to verify if a user has access to a project
+ * @param number $project_id : the id of the project
+ * @param number $user : id of the user
+ * @param string $user_role : if not null the role tha the user has in that project
+ * @return boolean
+ */
 function user_project($project_id , $user=0,$user_role=""){
 		$ci = get_instance ();
-		
+		//if user null it takes the connected user
 		if($user==0){
 			$user=$ci->session->userdata('user_id');
 		}
-		$sql="select project_id from userproject where userproject_active=1 AND user_id=$user ";
+		$sql="select project_id from userproject where userproject_active=1 
+				AND user_id=$user ";
 		
 		$user_projects = $ci->db->query($sql)->num_rows();
+		//print_test($user);
 		
-		if($user_projects>0){
+		
+		
+		if($user_projects > 0 ){
 			if(!empty($user_role)){
-				$sql="select project_id from userproject where userproject_active=1 AND user_id=$user  AND user_role LIKE '$user_role'";
+				$sql="select project_id from userproject where userproject_active=1
+				AND user_id=$user  AND user_role LIKE '$user_role'";
 					
 			}else{
 				$sql="select project_id from userproject where userproject_active=1 AND user_id=$user AND project_id=$project_id ";
@@ -793,17 +816,23 @@ function user_project($project_id , $user=0,$user_role=""){
 			}
 			
 			$user_projects = $ci->db->query($sql)->num_rows();
+			
 			if($user_projects>0){
 				return TRUE;
 			}else{
 				return FALSE;
 			}
 		}else{
-			return TRUE;
+			//
+			//if an super admin does not have a projected assigned to him he can access
+			// all projects
+			//
+			if(has_usergroup(1,$user))
+				return TRUE;
+			else 
+				return False;
 		}
-		//$config=$ci->DBConnection_mdl->get_row_details('config','1');
-	
-		//return $config;
+		
 	}
 	
 	function file_upload_error($code){
@@ -864,6 +893,7 @@ function user_project($project_id , $user=0,$user_role=""){
 	}
 	
 	function has_user_role($role , $user=0, $project_id=0){
+		
 		$ci = get_instance ();
 	
 		if($user==0){
@@ -874,12 +904,16 @@ function user_project($project_id , $user=0,$user_role=""){
 			$project_id=$ci->session->userdata('project_id');
 		}
 		
-		$sql="select userproject_id from userproject where user_id=$user AND  project_id=$project_id AND user_role LIKE '".$role."' AND    	userproject_active=1 ";
-	//echo $sql; exit;
-		$user_res = $ci->db->query($sql)->num_rows();
-	//print_test($user_res);
-		if($user_res>0){
-			return TRUE;
+		if(!empty($project_id)){
+			$sql="select userproject_id from userproject where user_id=$user AND  project_id=$project_id AND user_role LIKE '".$role."' AND    	userproject_active=1 ";
+		//echo $sql; exit;
+			$user_res = $ci->db->query($sql)->num_rows();
+		//print_test($user_res);
+			if($user_res>0){
+				return TRUE;
+			}else{
+				return FALSE;
+			}
 		}else{
 			return FALSE;
 		}
@@ -1782,5 +1816,14 @@ function user_project($project_id , $user=0,$user_role=""){
 		$res=get_appconfig_element('list_trim_nbr');
 		
 		return $res;
+	}
+	
+	function path_separator(){
+		$syst=get_ci_config('server_OS');
+		if($syst=='WINDOWS'){
+			return '\\';
+		}else{
+			return '/';
+		}
 	}
 	

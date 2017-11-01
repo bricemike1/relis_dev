@@ -64,13 +64,15 @@ class Install extends CI_Controller {
 		$dir=get_appconfig_element('editor_generated_path');		
 		$editor_url=get_appconfig_element('editor_url');
 		
+		$path_separator=path_separator();// used to diferenciate windows and linux server
+	
 		
 		$Tprojects=array();
 		if(is_dir($dir)){
 			$files = array_diff(scandir($dir), array('.', '..',".metadata"));
 			foreach ($files as $key => $file) {
-				if(is_dir($dir.'\\'.$file)){
-					$project_dir=$dir.'\\'.$file;
+				if(is_dir($dir.$path_separator.$file)){
+					$project_dir=$dir.$path_separator.$file;
 					$Tprojects[$file]=array();
 					$Tprojects[$file]['dir']=$project_dir;
 					$Tprojects[$file]['syntax']=array();
@@ -79,14 +81,14 @@ class Install extends CI_Controller {
 					$project_content = array_diff(scandir($project_dir), array('.', '..',".metadata"));
 					foreach ($project_content as $key => $value_c) {
 							
-						if(!is_dir($project_dir.'\\'.$value_c)){
+						if(!is_dir($project_dir.$path_separator.$value_c)){
 							array_push($Tprojects[$file]['syntax'], $value_c);
 		
 						}elseif($value_c=='src-gen'){
 		
-							$project_content_gen = array_diff(scandir($project_dir.'\\src-gen'), array('.', '..',".metadata"));
+							$project_content_gen = array_diff(scandir($project_dir.$path_separator.'src-gen'), array('.', '..',".metadata"));
 							foreach ($project_content_gen as $key_g => $value_g) {
-								if(!is_dir($project_dir.'\\src-gen\\'.$value_g)){
+								if(!is_dir($project_dir.$path_separator.'src-gen'.$path_separator.$value_g)){
 									array_push($Tprojects[$file]['generated'], $value_g);
 		
 								}
@@ -153,6 +155,8 @@ class Install extends CI_Controller {
 		/**
 		 * @var string  $editor_url  the url adress of ReLiS Editor: 
 		 */
+		
+		$path_separator=path_separator();// used to diferenciate windows and linux server
 		$editor_url=$this->config->item('editor_url');
 		
 		$dir=get_adminconfig_element('editor_generated_path');
@@ -162,11 +166,11 @@ class Install extends CI_Controller {
 		$Tprojects=array();
 		if(is_dir($dir)){
 			$files = array_diff(scandir($dir), array('.', '..',".metadata"));
-			
+			//print_test($files);
 			foreach ($files as $key => $file) {
-				if(is_dir($dir.'\\'.$file)){
+				if(is_dir($dir.$path_separator.$file)){
 					
-					$project_dir=$dir.'\\'.$file;
+					$project_dir=$dir.$path_separator.$file;
 					$Tprojects[$file]=array();
 					$Tprojects[$file]['dir']=$project_dir;
 					$Tprojects[$file]['syntax']=array();
@@ -176,14 +180,14 @@ class Install extends CI_Controller {
 					$project_content = array_diff(scandir($project_dir), array('.', '..',".metadata"));
 					foreach ($project_content as $key => $value_c) {
 							
-						if(!is_dir($project_dir.'\\'.$value_c)){
+						if(!is_dir($project_dir.$path_separator.$value_c)){
 							array_push($Tprojects[$file]['syntax'], $value_c);
 		
 						}elseif($value_c=='src-gen'){
 		
-							$project_content_gen = array_diff(scandir($project_dir.'\\src-gen'), array('.', '..',".metadata"));
+							$project_content_gen = array_diff(scandir($project_dir.$path_separator.'src-gen'), array('.', '..',".metadata"));
 							foreach ($project_content_gen as $key_g => $value_g) {
-								if(!is_dir($project_dir.'\\src-gen\\'.$value_g)){
+								if(!is_dir($project_dir.$path_separator.'src-gen'.$path_separator.$value_g)){
 									array_push($Tprojects[$file]['generated'], $value_g);
 		
 								}
@@ -621,7 +625,8 @@ class Install extends CI_Controller {
 			//setting CI database configuration
 			$this->add_database_config($project_short_name);
 			
-			
+			//sleep to wait for config to be update (to correct for something really sure)
+			sleep(1);
 			
 			//echo "<h2>initialise database</h2>";
 		
@@ -753,7 +758,7 @@ class Install extends CI_Controller {
 			$creator=1;
 			$creator=$this->session->userdata('user_id');
 			
-		//	$sql_add_config="INSERT INTO config  (project_title,project_description,creator ) VALUES ('".$project_title."','Project description goes here',".$creator.")";
+		//	$sql_add_config="INSERT INTO userproject  (	user_id,project_id,	user_role,added_by	 ) VALUES ('".$project_title."','Project description goes here',".$creator.")";
 			//echo $sql_add_config;
 			
 		///	$res_sql = $this->manage_mdl->run_query($sql_add_config,false,$project_short_name);
@@ -764,7 +769,15 @@ class Install extends CI_Controller {
 				
 			$res_sql = $this->manage_mdl->run_query($sql_add_project,false,'default');
 			
-			
+			//Add the user as project admin
+			if(!has_usergroup(1)){
+				$project_id = $this->get_last_added_project();
+				 
+				$sql_add_user_project="INSERT INTO userproject  (	user_id,project_id,	user_role,added_by	 )
+									VALUES ('".$creator."','".$project_id."','Project admin','".$creator."')";
+				echo $sql_add_user_project;
+				$res_sql = $this->manage_mdl->run_query($sql_add_user_project,false,'default');
+			}	
 			// Update config editor according to general values
 			
 			$editor_url= get_adminconfig_element('editor_url');
@@ -1642,6 +1655,19 @@ class Install extends CI_Controller {
 		
 		}
 	
+	}
+	
+	private function get_last_added_project(){
+		$sql="SELECT 	project_id FROM projects where 	project_active =1 
+				ORDER BY project_id DESC LIMIT 1
+				";
+		$res=$this->db->query($sql)->row_array();
+		if(!empty($res['project_id']))
+			return $res['project_id'];
+		else 
+			return 0;
+		
+		
 	}
 	
 }

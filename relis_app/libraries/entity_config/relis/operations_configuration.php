@@ -37,7 +37,7 @@ function get_operation() {
 		$fields['operation_type']=array(
 	   			'field_title'=>'Operation type',
 	   			'field_type'=>'text',
-				'field_size'=>20,
+				'field_size'=>50,
 				'mandatory'=>' mandatory ',
 				'input_type'=>'select',
 				'input_select_source'=>'array',
@@ -136,7 +136,7 @@ function get_operation() {
 		
 			'list_links'=>array(
 					
-					'delete'=>array(
+					'edit'=>array(
 							'label'=>'Undo',
 							'title'=>'Undo operation',
 							'icon'=>'rotate-left',

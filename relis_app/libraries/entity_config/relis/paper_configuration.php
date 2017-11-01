@@ -529,6 +529,12 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 		  
 			'top_links'=>array(
 					'clear_logs'=>$clear_papers,
+					'add_bibtex'=>array(
+							'label'=>'Add using bibtex',
+							'title'=>'Add using bibtex',
+							'icon'=>'add',
+							'url'=>'relis/manager/add_paper_bibtex',
+					),
 					'add'=>array(
 							'label'=>'',
 							'title'=>'Add a new paper',
@@ -544,6 +550,13 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 					 
 			),
 	);
+	if(!can_manage_project()){
+		unset($operations['list_all_papers']['top_links']['clear_logs']);
+		unset($operations['list_all_papers']['top_links']['add']);
+		unset($operations['list_all_papers']['top_links']['add_bibtex']);
+		unset($operations['list_all_papers']['list_links']['delete']);
+		unset($operations['list_all_papers']['list_links']['edit']);
+	}
 	
 	$operations['list_pending_papers']=$operations['list_all_papers'];
 	$operations['list_pending_papers']['page_title']='Pending papers';
@@ -558,6 +571,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 														));
 	unset($operations['list_pending_papers']['top_links']['clear_logs']);
 	unset($operations['list_pending_papers']['top_links']['add']);
+	unset($operations['list_pending_papers']['top_links']['add_bibtex']);
 	unset($operations['list_pending_papers']['list_links']['delete']);
 	unset($operations['list_pending_papers']['list_links']['edit']);
 	

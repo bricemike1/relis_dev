@@ -78,7 +78,7 @@ class Op extends CI_Controller {
 		$data=$this->DBConnection_mdl->get_list_mdl($ref_table_config,$val,$page,$rec_per_page);
 		
 	
-		//print_test($data);
+	//	print_test($data);
 	
 		/*
 		 * récupération des correspondances des clés externes pour l'affichage  suivant la structure de la table
@@ -161,9 +161,10 @@ class Op extends CI_Controller {
 						break;
 						
 						case 'delete':
-							
+							$link['delete_alert']=True;
 							if(!isset($link['icon']))
 								$link['icon']='trash';
+								
 								
 							
 						
@@ -299,8 +300,8 @@ class Op extends CI_Controller {
 			foreach ($list_links as $key_l => $value_l) {
 				
 				
-				
-			if($ref_table=='operations' AND !empty($value['operation_state'])){//setting redo link for list of operations
+				//setting redo link for list of operations
+			if($ref_table=='operations' AND !empty($value['operation_state'])){
 				if($value['operation_state']=='Cancelled'){
 					$value_l['icon']='repeat';
 					$value_l['label']='Redo';
@@ -312,18 +313,22 @@ class Op extends CI_Controller {
 			if(!empty($value_l['icon']))
 				$value_l['label']= icon($value_l['icon']).' '.lng_min($value_l['label']);
 			
-				
+			
 				array_push($arr_buttons, array(
 						'url'=> $value_l['url'].$value [$table_id],
 						'label'=>$value_l['label'],
 						'title'=>$value_l['title'],
+						'delete_alert'=>!empty($value_l['delete_alert'])?True:False,
 						'btn_type'=>!empty($value_l['btn_type'])?$value_l['btn_type']:'btn-info'
 							
 				)	);
+				
+				//print_test($value_l);
 			}
 				
+			
 			$action_button=create_button_link_dropdown($arr_buttons,lng_min('Action'));
-	
+			//print_test($action_button);
 		
 			if(!empty($action_button))
 			$element_array['links']=$action_button;
@@ -437,9 +442,157 @@ class Op extends CI_Controller {
 			$this->load->view('body',$data);
 	}
 	
+	
+	/*
+	 * Pour recuperer sous forme array le contenu d'une liste
+	 *
+	 * Input: $operation_name: l'operation concerner dans l'entity config
+	 * 			$val : valeur de recherche si une recherche a été faite sur la table en cours
+	 * 			$page: la page affiché : ulilisé dans la navigation
+	 */
+	public function entity_list_data($operation_name,$val = "_", $page = 0 ,$dynamic_table=1){
+		//Verification de l'operatoion pour recuperer la config correspondante	
+		$op=check_operation($operation_name,'List');
+		
+		$ref_table=$op['tab_ref'];
+		$ref_table_operation=$op['operation_id'];
+
+		//Vérification si il y a une condition de recherche
+		
+		$val = urldecode ( urldecode ( $val ) );
+		$filter = array ();
+		if (isset ( $_POST ['search_all'] )) {
+			$filter = $this->input->post ();	
+			unset ( $filter ['search_all'] );
+	
+			$val = "_";
+			if (isset ( $filter ['valeur'] ) and ! empty ( $filter ['valeur'] )) {
+				$val = $filter ['valeur'];
+				$val = urlencode ( urlencode ( $val ) );
+			}
+	
+			/*
+			 * mis à jours de l'url en ajoutant la valeur recherché dans le lien puis rechargement de l'url
+			 */
+			$url = "op/entity_list_data/" . $operation_name ."/". $val ."/0/";
+			redirect ( $url );
+		}
+	
+		/*
+		 * Récupération de la configuration(structure) de la table à afficher
+		 */
+		$ref_table_config=get_table_configuration($ref_table);			
+		$table_id=$ref_table_config['table_id'];
+			
+		//Affichage de tous les element
+		$rec_per_page=-1;
+		$ref_table_config['current_operation']=$ref_table_operation;
+			
+		//récupertaion de la liste
+		$data=$this->DBConnection_mdl->get_list_mdl($ref_table_config,$val,$page,$rec_per_page);
+		
+		/*
+		* récupération des correspondances des clés externes pour l'affichage  suivant la structure de la table
+		*/
+	
+		$dropoboxes=array();
+		foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k_field => $v){
+			if(!empty($ref_table_config['fields'][$k_field])){
+				$field_det=$ref_table_config['fields'][$k_field];
+				if(!empty($field_det['input_type']) AND $field_det['input_type']=='select' ){
+					if($field_det['input_select_source']=='array'){
+						$dropoboxes[$k_field]=$field_det['input_select_values'];
+					}elseif($field_det['input_select_source']=='table'){		
+						$dropoboxes[$k_field]= 
+						$this->manager_lib->get_reference_select_values($field_det['input_select_values']);
+					}elseif($field_det['input_select_source']=='yes_no'){
+						$dropoboxes[$k_field]=array('0'=>"No",
+									'1'=>"Yes");
+					}
+				}
+			}
+		}
+
+	
+		/*
+		* Préparation de la liste à afficher sur base du contenu et  stucture de la table
+		*/
+	
+		
+		//list of the field to be displayed
+		$field_list=array();
+		
+		//list of the label of field to be displayed
+		$field_list_header=array();
+		foreach ($ref_table_config['operations'][$ref_table_operation]['fields'] as $k => $v) {
+			if(!empty($ref_table_config['fields'][$k])){
+				array_push($field_list, $k);	
+				$field_header=!empty($v['field_title'])?$v['field_title']:$ref_table_config['fields'][$k]['field_title'];	
+					array_push($field_list_header, $field_header);
+			}
+		}
+			
+		$i=1;
+		$list_to_display=array();
+	
+		foreach ($data['list'] as $key => $value) {
+		$element_array=array();
+			foreach ($field_list as $key_field=> $v_field) {
+				if(isset($value[$v_field])){
+					if(isset($dropoboxes[$v_field][$value[$v_field]]) ){
+						$element_array[$v_field]=$dropoboxes[$v_field][$value[$v_field]];
+					}elseif(empty($value[$v_field]) AND empty($ref_table_config['fields'][$v_field]['display_null'])){
+						$element_array[$v_field]="";
+					}else{
+						$element_array[$v_field]=$value[$v_field];
+					}
+					
+				}else{	
+					$element_array[$v_field]="";
+					if((isset($ref_table_config['fields'][$v_field]['number_of_values'])
+							AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) 
+							OR (isset($ref_table_config['fields'][$v_field]['category_type']) 
+								AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
+										
+						if(isset($ref_table_config['fields'][$v_field]['input_select_values']) 
+							AND isset($ref_table_config['fields'][$v_field]['input_select_key_field'])){
+							// récuperations des valeurs de cet element
+							$M_values=$this->manager_lib->get_element_multi_values($ref_table_config['fields'][$v_field]['input_select_values'],$ref_table_config['fields'][$v_field]['input_select_key_field'],$data ['list'] [$key] [$table_id]);
+							$S_values="";
+							foreach ($M_values as $k_m => $v_m) {
+								if(isset($dropoboxes[$v_field][$v_m]) ){
+									$M_values[$k_m]=$dropoboxes[$v_field][$v_m];
+								}
+	
+								$S_values.=empty($S_values)?$M_values[$k_m]:" | ".$M_values[$k_m];
+							}
+											
+							$element_array[$v_field]=$S_values;
+						}
+	
+					}
+				}
+			}
+			
+						
+			if(isset($element_array[$table_id])){
+				$element_array[$table_id]=$i + $page;
+			}
+						
+			array_push($list_to_display,$element_array);
+						
+			$i++;
+		}
+	
+		
+		array_unshift($list_to_display,$field_list_header);
+		print_test($list_to_display);
+		
+	}
+	
 	public function entity_list_graph($operation_name,$val = "_",$page = 0,$graph='all'){
 		
-		
+		//$graph='all';
 		$dynamic_table=1;
 		$op=check_operation($operation_name,'List');
 	
@@ -639,7 +792,7 @@ class Op extends CI_Controller {
 									'operation'=>'count'
 							),
 					),
-					'2'=>array(
+					'12'=>array(
 							'type'=>'simple',
 							'id'=>'graph_source_lang',
 							'link'=>True,
@@ -656,9 +809,9 @@ class Op extends CI_Controller {
 			if(!empty($ref_table_config['report'])){
 				
 				$graph_config=$ref_table_config['report'];
-			
-			
-			
+			//	$graph_config['trans_lang']['values']['input_select_values_multi']='intent;intent';
+		
+			//print_test($graph_config);
 			
 			$fields_list_graph=array(); 
 			$fields_list_graph_all=array(); 
@@ -743,13 +896,13 @@ class Op extends CI_Controller {
 				
 				//Current_problem
 				foreach ($graph_config as $key_graph => $value_graph) {
-					//print_test($value_graph);
+					
 					$title_graph=$value_graph['id'];
 					if($value_graph['type']=='simple'){
 						$v_field=$value_graph['values']['field'];
 						
 						if(isset($value[$v_field])){
-						
+							
 							
 							$T_result[$title_graph][$value[$v_field]]=!empty($T_result[$title_graph][$value[$v_field]])?$T_result[$title_graph][$value[$v_field]]+1:1;
 						}else{
@@ -757,7 +910,8 @@ class Op extends CI_Controller {
 								
 							if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR
 							(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
-							
+								//print_test($key_graph);
+								$graph_config[$key_graph]['multi_value']=True;
 								if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
 								{
 									if(!empty($value_graph['values']['input_select_values_multi'])){
@@ -799,7 +953,7 @@ class Op extends CI_Controller {
 							
 								if((isset($ref_table_config['fields'][$v_field]['number_of_values']) AND $ref_table_config['fields'][$v_field]['number_of_values']!=1) OR
 										(isset($ref_table_config['fields'][$v_field]['category_type']) AND $ref_table_config['fields'][$v_field]['category_type'] =='WithSubCategories')  ){//recuperation pour les multivalues et les champs avec subcategory
-												
+											$graph_config[$key_graph]['multi_value']=True;
 											if(isset($ref_table_config['fields'][$v_field]['input_select_values']) AND isset($ref_table_config['fields'][$v_field]['input_select_key_field']))
 											{
 												if(!empty($value_graph['values']['input_select_values_multi'])){
@@ -882,8 +1036,12 @@ class Op extends CI_Controller {
 	//exit;
 	$result=array();
 	$Tzresult=array();
+	//print_test($graph_config);
 			foreach ($graph_config as $key => $value) {
-				//print_test($value);
+				
+				$value['link']=!empty($value['multi_value'])?False:True;
+				
+			//	print_test($value);
 				if(!empty($T_result[$value['id']])){
 					if($value['type']=='simple'){
 					
@@ -946,8 +1104,8 @@ class Op extends CI_Controller {
 				
 				}
 			}
-	
-	//print_test($result);
+		//	print_test($result);
+
 	
 	//exit;
 	}else{
@@ -3263,7 +3421,7 @@ class Op extends CI_Controller {
 		
 		$sql = "UPDATE $table_name SET $field = NULL WHERE $table_id ='".$element_id."'";
 		
-		$res =	$this->manage_mdl->run_query($sql);
+		$res =	$this->manage_mdl->run_query($sql,False,'default');
 		
 		if($res){
 			set_top_msg(lng_min("Success - picture removed"));

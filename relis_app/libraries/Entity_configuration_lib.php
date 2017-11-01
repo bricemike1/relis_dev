@@ -18,7 +18,10 @@ public function get_table_configuration($_table,$target_db='current')
 				require_once("entity_config/user_configuration.php");
 				$table_configurations['users']=get_config_user();
 				break;
-			
+			case 'user_creation':
+				require_once("entity_config/user_creation_configuration.php");
+				$table_configurations['user_creation']=get_user_creation();
+				break;
 			case 'usergroup':
 				require_once("entity_config/usergroup_configuration.php");
 				$table_configurations['usergroup']=get_config_usergroup();

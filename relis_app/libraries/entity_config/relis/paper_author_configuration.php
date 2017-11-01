@@ -51,7 +51,16 @@ function get_paper_author() {
 		);
 	
 		
-		
+		$fields['author_rank']=array(
+	   			'field_title'=>'Rank',
+	   			'field_type'=>'number', 				
+				'field_size'=>2,  	   			
+				'input_type'=>'text',
+				'field_value'=>'1',
+				'default_value'=>'1',
+				'mandatory'=>' mandatory ' 
+						
+	   	);
 	   	
 		$fields['paperauthor_active']=array(
 	   			'field_title'=>'Active',
