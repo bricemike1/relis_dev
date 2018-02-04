@@ -1,12 +1,12 @@
-<?php //mt_2
-function get_classification_mt_2(){
+<?php //mt_new
+function get_classification_mt_new(){
 $reference_tables=array();//from nowit will worklike this
 $config=array();
 $result['class_action']='override';
 $result['screen_action']='override';
 $result['qa_action']='override';
-$result['project_title']='Model transformation test schema';
-$result['project_short_name']='mt_2';
+$result['project_title']='Model transformation new';
+$result['project_short_name']='mt_new';
 $config['classification']['table_name']='classification';
 $config['classification']['config_id']='classification';
 $config['classification']['table_id']='class_id';

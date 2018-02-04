@@ -1,5 +1,5 @@
 <?php 
-//Some informations fave been hard codded for form validation
+//Some informations have been hard codded for form validation
 function get_config_user() {
 		$config['config_id']='users';
 		$config['table_name']=table_name('users');

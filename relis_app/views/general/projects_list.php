@@ -28,13 +28,14 @@
                 
 				<div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                  <?php 
-               
+              // 	print_test($projects['list']);
                  foreach ($projects['list'] as $key => $value) {
                  	
+                 	$project_class=(project_published($value['project_id']) )?'publishedProject':'';
                  ?>
                  <a href="<?php echo base_url().'manager/set_project/'.$value['project_id']?>">
                  <div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-1">
-                        <div class="thumbnail">
+                        <div class="thumbnail <?php echo $project_class ?>">
                           <div class="image view view-first">
                             <img style="height: 100%; display: block;" src="<?php echo $value['icon']?>" alt="<?php echo $value['project_description']?>" />
                             <div class="mask" >

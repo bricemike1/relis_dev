@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `project_creator` int(11) NOT NULL DEFAULT '1',
   `project_icon` longblob,
   `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `project_public` int(1) NOT NULL DEFAULT '0',
   `project_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 $$

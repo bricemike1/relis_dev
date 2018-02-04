@@ -49,7 +49,20 @@ public function get_table_configuration($_table,$target_db='current')
 					
 			case 'exclusioncrieria':
 					require_once("entity_config/references_configuration.php");
-					$table_configurations['exclusioncrieria']=get_reference('ref_exclusioncrieria','Exclusion criteria','exclusioncrieria');
+					$table_configurations['exclusioncrieria']=get_reference('ref_exclusioncrieria','Exclusion criteria','exclusioncrieria','Criteria');
+					break;
+
+			case 'inclusioncriteria':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['inclusioncriteria']=get_reference('ref_inclusioncriteria','Inclusion criteria','inclusioncriteria','Criteria');
+					break;
+			case 'research_question':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['research_question']=get_reference('research_question','Research question','research_question','Question');
+					break;
+			case 'affiliation':
+					require_once("entity_config/references_configuration.php");
+					$table_configurations['affiliation']=get_reference('ref_affiliation','Authors affiliation','affiliation','Institute');
 					break;
 			case 'papers_sources':
 					require_once("entity_config/references_configuration.php");

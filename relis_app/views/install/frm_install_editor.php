@@ -54,7 +54,7 @@
                    
                 
                     
-                    if(!empty($project_result)){
+                    if(!empty($project_result) AND empty($project_published)){
                     	echo "<div class='form-group '><label id='selected_config' for='selected_config' class='control-label col-md-3 col-sm-3 col-xs-12'> Select the configuration file generated</label>
                   		<div class='col-md-6 col-sm-6 col-xs-12'>
                   		<select id='selected_config' name='selected_config' class=' select2_group form-control  '>
@@ -76,8 +76,6 @@
                     	echo "</select>
                    			</div>
 							</div>";
-                    }
-                   // echo input_image_bm(lng('Choose setup file'),'install_config','install_config','',1, 'mandatory');
                      
                     ?>
                     
@@ -96,7 +94,7 @@
                     
                     <?php 
                     
-                    
+                    }
                     echo form_close();
                     
 					

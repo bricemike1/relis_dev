@@ -160,6 +160,7 @@ class Auth extends CI_Controller {
 					$this->validate_user($user);
 						
 				}else{
+					$this->session->sess_destroy();
 					$this->session->set_userdata($user);
 					$this->session->set_userdata('page_msg_err','');
 					$this->session->set_userdata('last_url',"");
@@ -192,13 +193,80 @@ class Auth extends CI_Controller {
 								
 				}
 	
-	
-	
-					
+				
 			}
 	
 	
 		
+	}
+	
+	//a
+	
+	public function demo_user_toproject($project_id){
+	
+			
+		/*
+		 * Vérification si login et password sont correct
+		 */
+		$user_id=6;
+		$user = $this->DBConnection_mdl->get_row_details( 'get_user_detail'
+				,$user_id ,true,'users');
+	
+			
+		if(empty($user)){
+				
+				
+			$data['err_msg'] = 'Username or Password not correct !';
+			$this->load->view('login',$data);
+				
+		}
+		else{
+				
+			if(empty($user['user_state']))	{
+				$this->validate_user($user);
+	
+			}else{
+				$this->session->sess_destroy();
+				$this->session->set_userdata($user);
+				$this->session->set_userdata('page_msg_err','');
+				$this->session->set_userdata('last_url',"");
+				$this->session->set_userdata('msg'," Logged in successfully");
+				$this->session->set_userdata('submit_mode','normal');
+				$this->session->set_userdata('language_edit_mode','no');
+				$this->session->set_userdata('language_edit_mode','class');
+				//used for redirection after saving data
+				$this->session->set_userdata('after_save_redirect','');
+				$this->session->set_userdata('current_screen_phase','');
+				$this->session->set_userdata('debug_paper_code','init');
+				$this->session->set_userdata('debug_paper_url','init');
+				//$this->session->set_userdata('project_db','mt');
+				//$this->session->set_userdata('project_db','stm');
+	
+				//	$configuration = get_appconfig();
+				if(!empty($user['user_default_lang']))
+					$default_lang=$user['user_default_lang'];
+					else
+						$default_lang='en';
+	
+	
+						if(get_adminconfig_element('first_connect')){
+							admin_initial_db_setup();
+						}
+	
+						$this->session->set_userdata('active_language',$default_lang);
+						set_log('Connection','User connected');
+						
+						redirect('manager/set_project/'.$project_id);
+	
+			}
+	
+	
+	
+				
+		}
+	
+	
+	
 	}
 	
 	/*

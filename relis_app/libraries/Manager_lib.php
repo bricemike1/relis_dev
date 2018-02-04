@@ -589,6 +589,8 @@ class Manager_lib
  function get_qa_result($type="mine",$id=0,$category='QA',$add_Link=True,$status='all'){
 		//print_test($type);
 		//get qa results
+ 		$project_published=project_published();
+ 		
 		$qa_result = $this->CI->db_current->order_by('qa_id', 'ASC')
 		->get_where('qa_result', array('qa_active'=>1))
 		->result_array();
@@ -691,6 +693,9 @@ class Manager_lib
 						$q_result_score+=$v_response['score'];
 						$question_asw=1;
 	
+					}
+					if($project_published){
+						$link="";
 					}
 					$responses[$v_response['response_id']]=array(
 							'response'=>$v_response,
@@ -1060,7 +1065,7 @@ class Manager_lib
 	}
 		
 	function get_left_menu(){
-		
+		$project_published=project_published();
 		$menu = array();
 		
 		$menu['general']=array(
@@ -1082,6 +1087,12 @@ class Manager_lib
 		//$menu['general']['menu']['papers']['sub_menu']['assigned_me']=array( 'label'=>'Assigned to me', 'url'=>'relis/manager/list_paper/assigned_me', '');
 		
 		//$menu['general']['menu']['papers']['sub_menu']['assigned_me']=array( 'label'=>'Assigned to me', 'url'=>'relis/manager/list_paper/assigned_me', '');
+
+		$menu['general']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'th');
+		$menu['general']['menu']['authors']=array('label'=>'Authors','url'=>'op/entity_list/list_authors','icon'=>'users');
+		$menu['general']['menu']['authors']['sub_menu']['all_authors']=array( 'label'=>'All', 'url'=>'op/entity_list/list_authors_class', '');
+		$menu['general']['menu']['authors']['sub_menu']['first_authors']=array( 'label'=>'First authors', 'url'=>'op/entity_list/list_first_authors_class', '');
+		$menu['general']['menu']['authors']['sub_menu']['affiliation']=array( 'label'=>'Affiliations', 'url'=>'op/entity_list/list_affiliation', '');
 		
 		
 		$menu['general']['menu']['reference']=array('label'=>'Reference Categories','url'=>'','icon'=>'table');
@@ -1092,8 +1103,8 @@ class Manager_lib
 		}
 		
 		$menu['general']['menu']['class']=array('label'=>'Classification','url'=>'','icon'=>'search');
-		
-		$menu['general']['menu']['class']['sub_menu']['classify']=array( 'label'=>'Classify', 'url'=>'op/entity_list/list_class_assignment_pending_mine', '');
+		if(!$project_published)
+			$menu['general']['menu']['class']['sub_menu']['classify']=array( 'label'=>'Classify', 'url'=>'op/entity_list/list_class_assignment_pending_mine', '');
 		$menu['general']['menu']['class']['sub_menu']['my_classify']=array( 'label'=>'My Assignments', 'url'=>'op/entity_list/list_class_assignment_mine', '');
 		$menu['general']['menu']['class']['sub_menu']['my_classify_done']=array( 'label'=>'My Classified', 'url'=>'op/entity_list/list_class_assignment_done_mine', '');
 		$menu['general']['menu']['class']['sub_menu']['my_classify_pending']=array( 'label'=>'My Pending', 'url'=>'op/entity_list/list_class_assignment_pending_mine', '');
@@ -1104,8 +1115,8 @@ class Manager_lib
 		$menu['general']['menu']['res']=array('label'=>'Result','url'=>'','icon'=>'pie-chart');
 		
 		$menu['general']['menu']['res']['sub_menu']['classify']=array( 'label'=>'Table', 'url'=>'op/entity_list/list_classification', '');
-		$menu['general']['menu']['res']['sub_menu']['evolution']=array( 'label'=>'Distributions', 'url'=>'op/entity_list_graph/list_classification', '');
-		$menu['general']['menu']['res']['sub_menu']['sistribution']=array( 'label'=>' Evolution', 'url'=>'op/entity_list_graph/list_classification/line', '');
+		$menu['general']['menu']['res']['sub_menu']['evolution']=array( 'label'=>'Chart', 'url'=>'op/entity_list_graph/list_classification', '');
+		//$menu['general']['menu']['res']['sub_menu']['sistribution']=array( 'label'=>' Evolution', 'url'=>'op/entity_list_graph/list_classification/line', '');
 		$menu['general']['menu']['res']['sub_menu']['export']=array( 'label'=>'Export', 'url'=>'relis/manager/result_export', '');
 		
 		
@@ -1120,7 +1131,7 @@ class Manager_lib
 		}
 		
 		if(can_manage_project())
-			$menu['general']['menu']['sql_query']=array('label'=>'Query database','url'=>'home/sql_query','icon'=>'database');
+			$menu['general']['menu']['sql_query']=array('label'=>'Query Database','url'=>'home/sql_query','icon'=>'database');
 				
 		
 		$menu['adm']=array(
@@ -1128,10 +1139,10 @@ class Manager_lib
 		);
 		
 		$menu['adm']['menu']['plan']=array('label'=>'Planning','url'=>'','icon'=>'th');
-		if(can_manage_project())
+		if(can_manage_project() AND !$project_published)
 			$menu['adm']['menu']['plan']['sub_menu']['assignment_screen']=array( 'label'=>'Assign Classification', 'url'=>'relis/manager/class_assignment_set', 'icon'=>'');
 		
-			if(can_validate_project())
+			if(can_validate_project()  AND !$project_published)
 				$menu['adm']['menu']['plan']['sub_menu']['validate_screen_assign']=array( 'label'=>'Assign Validation', 'url'=>'relis/manager/class_assignment_validation_set', 'icon'=>'');
 		
 				$menu['adm']['menu']['plan']['sub_menu']['exclusioncrieria']=array('label'=>'Exclusion Criteria','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'');
@@ -1179,6 +1190,7 @@ class Manager_lib
 	}
 
 	function get_left_menu_qa(){
+		$project_published=project_published();
 		$can_manage_project=can_manage_project();
 		$menu = array();
 	
@@ -1197,7 +1209,8 @@ class Manager_lib
 			
 		
 		$menu['general']['menu']['qa']=array('label'=>'Quality assessment','url'=>'','icon'=>'list');
-		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list_pending']=array( 'label'=>'Assess', 'url'=>'relis/manager/qa_conduct_list/mine/0/pending', '');			
+		if (!$project_published)
+			$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list_pending']=array( 'label'=>'Assess', 'url'=>'relis/manager/qa_conduct_list/mine/0/pending', '');			
 		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list']=array( 'label'=>'My Assignments', 'url'=>'relis/manager/qa_conduct_list', '');
 		$menu['general']['menu']['qa']['sub_menu']['qa_conduct_list_done']=array( 'label'=>'My Assessed', 'url'=>'relis/manager/qa_conduct_list/mine/0/done', '');
 		
@@ -1214,12 +1227,9 @@ class Manager_lib
 			
 			//$menu['general']['menu']['qa_val']['sub_menu']['list_qa_assignment']=array( 'label'=>'Assignment for quality assessment Validation', 'url'=>'op/entity_list/list_qa_validation_assignment', '');
 			if(can_validate_project())
-			$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_pending']=array( 'label'=>'Validate', 'url'=>'relis/manager/qa_conduct_list_val/mine/0/pending', '');		
-			//$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list']=array( 'label'=>'My validations', 'url'=>'relis/manager/qa_conduct_list_val', '');
-			//$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_pending']=array( 'label'=>'My validations - pending', 'url'=>'relis/manager/qa_conduct_list_val/mine/0/pending', '');				
-			//$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_done']=array( 'label'=>'My validations - done', 'url'=>'relis/manager/qa_conduct_list_val/mine/0/done', '');
-			
-			$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_mine']=array( 'label'=>'All Assignments', 'url'=>'relis/manager/qa_conduct_list_val/all', '');
+				if (!$project_published)
+					$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_pending']=array( 'label'=>'Validate', 'url'=>'relis/manager/qa_conduct_list_val/mine/0/pending', '');		
+				$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_mine']=array( 'label'=>'All Assignments', 'url'=>'relis/manager/qa_conduct_list_val/all', '');
 			
 			//$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_mine_pending']=array( 'label'=>'All validations - pending', 'url'=>'relis/manager/qa_conduct_list_val/all/0/pending', '');
 			$menu['general']['menu']['qa_val']['sub_menu']['qa_conduct_list_mine_done']=array( 'label'=>'Validated papers', 'url'=>'relis/manager/qa_conduct_list_val/all/0/done', '');
@@ -1234,12 +1244,12 @@ class Manager_lib
 		
 		
 		
-		if($can_manage_project){
+		if($can_manage_project AND !$project_published){
 			$menu['adm']=array(
 					'label'=>'ADMINISTRATION'
 			);
 			$menu['adm']['menu']['plan']=array('label'=>'Planning','url'=>'','icon'=>'th');
-		
+			
 			$menu['adm']['menu']['plan']['sub_menu']['qa_assignment_set']=array( 'label'=>'Assign for QA ', 'url'=>'relis/manager/qa_assignment_set', 'icon'=>'');
 			$menu['adm']['menu']['plan']['sub_menu']['qa_assignment_validation_set']=array( 'label'=>'Assign Validation', 'url'=>'relis/manager/qa_assignment_validation_set', 'icon'=>'');
 			$menu['adm']['menu']['plan']['sub_menu']['questions']=array( 'label'=>'Questions', 'url'=>'op/entity_list/list_qa_questions', 'icon'=>'');
@@ -1252,7 +1262,7 @@ class Manager_lib
 	}
 	
 	function get_left_menu_screen(){
-		
+		$project_published=project_published();
 		$menu = array();
 		
 		$menu['general']=array(
@@ -1287,7 +1297,7 @@ class Manager_lib
 		
 			$menu['general']['menu']['papers_screen']=array('label'=>'Screening','url'=>'','icon'=>'search');
 			
-			if(can_review_project()){
+			if(can_review_project() AND !$project_published){
 			$menu['general']['menu']['papers_screen']['sub_menu']['screen']=array( 'label'=>'Screen', 'url'=>'relis/manager/screen_paper', 'icon'=>'');
 			
 					
@@ -1311,7 +1321,7 @@ class Manager_lib
 					
 				$menu['general']['menu']['papers_screen_validate']=array('label'=>'Validation','url'=>'','icon'=>'check-square-o');
 				
-				if(can_validate_project()){
+				if(can_validate_project()  AND !$project_published){
 					$menu['general']['menu']['papers_screen_validate']['sub_menu']['screen_validate']=array( 'label'=>'Validate', 'url'=>'relis/manager/screen_paper_validation', 'icon'=>'');					
 					//$menu['general']['menu']['papers_screen_validate']['sub_menu']['validate_screen_assign']=array( 'label'=>'Assign papers for validation', 'url'=>'relis/manager/validate_screen_set', 'icon'=>'');
 				}
@@ -1323,7 +1333,7 @@ class Manager_lib
 				}
 		//$menu['general']['menu']['result']=array('label'=>'Result','url'=>'relis/manager/screen_result','icon'=>'bar-chart');
 			
-				if(can_review_project()){ //Guest cannot sccess administration
+				if(can_review_project() AND !$project_published ){ //Guest cannot sccess administration
 				$menu['adm']=array(
 						'label'=>'ADMINISTRATION'
 				);
@@ -1336,6 +1346,7 @@ class Manager_lib
 					$menu['adm']['menu']['plan']['sub_menu']['validate_screen_assign']=array( 'label'=>'Assign Validation', 'url'=>'relis/manager/validate_screen_set', 'icon'=>'');
 				
 					$menu['adm']['menu']['plan']['sub_menu']['exclusioncrieria']=array('label'=>'Exclusion Criteria','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'');
+				
 				if(can_validate_project())
 					$menu['adm']['menu']['plan']['sub_menu']['general']=array('label'=>'Settings ','url'=>'op/display_element/configurations/1','icon'=>'');
 				}	
@@ -1366,6 +1377,7 @@ class Manager_lib
 	
 	function get_left_menu_screen_select(){
 	    $can_manage_project=can_manage_project();
+	    $project_published=project_published();
 		$menu = array();
 	
 		$menu['general']=array(
@@ -1373,7 +1385,7 @@ class Manager_lib
 		);
 		$menu['general']['menu']['home']=array('label'=>'Project','url'=>'home/screening_select','icon'=>'home');
 		
-		if(get_appconfig_element('import_papers_on') AND $can_manage_project )	
+		if(get_appconfig_element('import_papers_on') AND $can_manage_project AND !$project_published)	
 			$menu['general']['menu']['import_papers']=array( 'label'=>'Import Papers', 'url'=>'relis/manager/import_papers', 'icon'=>'upload');
 			
 			$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
@@ -1382,15 +1394,19 @@ class Manager_lib
 			$menu['general']['menu']['papers']['sub_menu']['screen_paper_included']=array( 'label'=>'Included', 'url'=>'op/entity_list/list_included_papers', '');
 			$menu['general']['menu']['papers']['sub_menu']['screen_paper_excluded']=array( 'label'=>'Excluded', 'url'=>'op/entity_list/list_excluded_papers', '');
 			
-	
+			$menu['general']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'th');
+			
 		$menu['general']['menu']['authors']=array('label'=>'Authors','url'=>'op/entity_list/list_authors','icon'=>'users');
-				
+		$menu['general']['menu']['authors']['sub_menu']['all_authors']=array( 'label'=>'All', 'url'=>'op/entity_list/list_authors', '');
+		$menu['general']['menu']['authors']['sub_menu']['first_authors']=array( 'label'=>'First authors', 'url'=>'op/entity_list/list_first_authors', '');
+		$menu['general']['menu']['authors']['sub_menu']['affiliation']=array( 'label'=>'Affiliations', 'url'=>'op/entity_list/list_affiliation', '');
+			
 		if($can_manage_project){
 			
 			//
 			////$menu['general']['menu']['venues']=array('label'=>'Venues','url'=>'op/entity_list/list_venues','icon'=>'list');
 			if(can_manage_project())
-			$menu['general']['menu']['sql_query']=array('label'=>'Query database','url'=>'home/sql_query','icon'=>'database');
+			$menu['general']['menu']['sql_query']=array('label'=>'Query Database','url'=>'home/sql_query','icon'=>'database');
 				
 			
 			$menu['settings']=array('label'=>'ADMINISTRATION');
@@ -1410,10 +1426,15 @@ class Manager_lib
 				
 				
 			//$menu['settings']['menu']['configuration']['sub_menu']['space']=array('label'=>'_______________','url'=>'','icon'=>'');
+			$menu['settings']['menu']['configuration']['sub_menu']['research_question']=array('label'=>'Research Questions','url'=>'op/entity_list/list_research_question','icon'=>'');
+			
 			if(get_appconfig_element('screening_on'))
 				$menu['settings']['menu']['configuration']['sub_menu']['screen_phases']=array('label'=>'Screening Phases','url'=>'op/entity_list/list_screen_phases','icon'=>'');
 			
 			$menu['settings']['menu']['configuration']['sub_menu']['exclusioncrieria']=array('label'=>'Exclusion Criteria','url'=>'op/entity_list/list_exclusioncrieria','icon'=>'');
+			$menu['settings']['menu']['configuration']['sub_menu']['inclusioncrieria']=array('label'=>'Inclusion Criteria','url'=>'op/entity_list/list_inclusioncriteria','icon'=>'');
+			
+			
 			$menu['settings']['menu']['configuration']['sub_menu']['papers_sources']=array('label'=>'Papers Sources','url'=>'op/entity_list/list_papers_sources','icon'=>'');
 			$menu['settings']['menu']['configuration']['sub_menu']['search_strategy']=array('label'=>'Search Strategies','url'=>'op/entity_list/list_search_strategy','icon'=>'');
 			
@@ -1450,6 +1471,7 @@ class Manager_lib
 		if(has_usergroup(1)){
 		$menu['general']['menu']['usersn']=array('label'=>'Users','url'=>'op/entity_list/list_all_users','icon'=>'user');
 	//	$menu['general']['menu']['usergroup']=array('label'=>'User Groups','url'=>'op/entity_list/list_usergroups','icon'=>'users');
+		$menu['general']['menu']['sql_query']=array('label'=>'Query Database','url'=>'home/sql_query','icon'=>'database');
 		
 		$menu['adm']=array(	'label'=>'Administration');
 		
@@ -1459,8 +1481,6 @@ class Manager_lib
 		$menu['adm']['menu']['configuration']=array('label'=>'Settings','url'=>'op/display_element/admin_config/1','icon'=>'cog');
 		
 		$menu['adm']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
-		
-		
 		
 		}
 		

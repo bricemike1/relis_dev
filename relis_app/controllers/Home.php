@@ -46,6 +46,7 @@ class Home extends CI_Controller {
 			
 			//redirect('install');
 		}else{
+			$project_published=project_published();
 		/*
 		 * Recuperation du nombre de papiers par catégorie
 		 */
@@ -155,10 +156,10 @@ class Home extends CI_Controller {
 		
 		
 		$action_but=array();
-		if(can_manage_project())
+		if(can_manage_project() AND !$project_published)
 			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for classification', 'relis/manager/class_assignment_set','Assign papers','fa-mail-forward','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 				
-		if(can_review_project())
+		if(can_review_project() AND !$project_published)
 			$action_but['screen']=get_top_button ( 'all', 'Classify', 'op/entity_list/list_class_assignment_pending_mine','Classify','fa-search','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 					
 		if(can_manage_project() ){
@@ -170,7 +171,7 @@ class Home extends CI_Controller {
 					
 				$action_but=array();
 				if(get_appconfig_element('class_validation_on') ){
-					if(can_validate_project()){
+					if(can_validate_project() AND !$project_published){
 						$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/class_assignment_validation_set','Assign papers','fa-mail-forward','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 						$action_but['screen']=get_top_button ( 'all', 'Validate', 'op/entity_list/list_class_validation_mine','Validate','fa-check-square-o','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 					}
@@ -366,7 +367,7 @@ month={Aug},}
 	
 	public function screening()
 	{
-		
+		$project_published=project_published();
 	//	
 		//update_paper_status_all();
 		//$this->session->set_userdata('working_perspective','screen');
@@ -508,10 +509,10 @@ month={Aug},}
 			//$shortut operations
 			
 			$action_but=array();
-			if(can_manage_project())
+			if(can_manage_project() AND !$project_published)
 			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for screening', 'relis/manager/assignment_screen','Assign papers','fa-mail-forward','',' btn-info action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
 			
-			if(can_review_project())
+			if(can_review_project() AND !$project_published)
 			$action_but['screen']=get_top_button ( 'all', 'Screen papers', 'relis/manager/screen_paper','Screen','fa-search','',' btn-info action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
 			
 			if(can_manage_project() OR get_appconfig_element('screening_result_on') ){
@@ -523,7 +524,7 @@ month={Aug},}
 			
 			$action_but=array();
 			if(get_appconfig_element('screening_validation_on') ){
-				if(can_validate_project()){
+				if(can_validate_project() AND !$project_published){
 					$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/validate_screen_set','Assign papers','fa-mail-forward','',' btn-primary action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
 					$action_but['screen']=get_top_button ( 'all', 'Validate screening', 'relis/manager/screen_paper_validation','Validate','fa-check-square-o','',' btn-primary action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
 				}
@@ -554,6 +555,7 @@ month={Aug},}
 	
 	public function qa()//quality assessment
 	{
+		$project_published=project_published();
 		//update_paper_status_all();
 		//$this->session->set_userdata('working_perspective','screen');
 	
@@ -659,10 +661,10 @@ month={Aug},}
 		
 		
 		$action_but=array();
-		if(can_manage_project())
+		if(can_manage_project() AND !$project_published)
 			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for QA', 'relis/manager/qa_assignment_set','Assign papers','fa-mail-forward','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 		
-			if(can_review_project())
+			if(can_review_project() AND !$project_published)
 				$action_but['screen']=get_top_button ( 'all', 'Classify', 'relis/manager/qa_conduct_list/mine/0/pending','Assess','fa-search','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 					
 				
@@ -674,7 +676,7 @@ month={Aug},}
 					
 				$action_but=array();
 				if(get_appconfig_element('qa_validation_on') ){
-					if(can_validate_project()){
+					if(can_validate_project() AND !$project_published){
 						$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/qa_assignment_validation_set','Assign papers','fa-mail-forward','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 						$action_but['screen']=get_top_button ( 'all', 'Validate', 'relis/manager/qa_conduct_list_val/mine/0/pending','Validate','fa-check-square-o','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
 					}
@@ -729,8 +731,8 @@ month={Aug},}
 	
 	public function screening_select()
 	{
+		$project_published=project_published();
 		//debug_comment_diaplay();
-		
 		$screening_phases = $this->db_current->order_by('screen_phase_order', 'ASC')
 												->get_where('screen_phase', array('screen_phase_active'=>1))
 												->result_array();
@@ -782,7 +784,7 @@ month={Aug},}
 					$open_but=get_top_button ( 'all', 'Unlock the phase', 'home/screening_phase_manage/'.$phase['screen_phase_id'],'Open','fa-unlock','',' btn-success ' ,False);					
 				}	
 				
-				if(!can_manage_project()){
+				if(!can_manage_project() OR $project_published){
 					$close_but="";
 					$open_but="";
 				}
@@ -840,7 +842,7 @@ month={Aug},}
 				$qa_state="Closed";
 			}
 			
-			if(!can_manage_project()){
+			if(!can_manage_project() OR $project_published){
 				$close_but="";
 				$open_but="";
 			}
@@ -890,7 +892,7 @@ month={Aug},}
 			$class_state="Closed";
 		}
 		
-		if(!can_manage_project()){
+		if(!can_manage_project() OR $project_published){
 			$close_but="";
 			$open_but="";
 		}
@@ -938,6 +940,25 @@ month={Aug},}
 			 * Chargement de la vue qui va s'afficher
 			 *
 			 */
+			
+			//publish project
+			$data['top_buttons']="";
+			if(has_user_role('Project admin') OR has_usergroup(1)){
+				if(project_published())
+				{
+					$publish_but=get_top_button ( 'all', 'Reopen project',
+								'admin/publish_project/0/0','Reopen project',
+							' fa-folder-open ','', ' btn-warning ' ,False);
+				}else{  
+					$publish_but=get_top_button ( 'all', 'Publish project',
+							'admin/publish_project','Publish project',
+							'fa-send','',' btn-info ' ,False);
+					
+				}
+					$data['top_buttons']=$publish_but;
+			}
+			
+			
 			$this->session->set_userdata('current_screen_phase','');
 			
 			$data['page']='relis/h_screening_select';
@@ -2075,6 +2096,317 @@ month={Aug},}
 			
 			$res=$this->bm_lib->random_str(10);
 			print_test($res);
+		}
+		
+		
+		
+		public function import_edouard(){
+				
+		
+			
+			
+			$transfo_kind=array(
+					'Structurelle'=>1,
+					'Comportementale'=>2,
+					'Mixte'=>3,					
+			);
+			$mm_kind=array(
+					'input specific / output general'=>1,
+					'input specific / output specific'=>2,
+					'input general / output general'=>3,					
+					'input general / output specific'=>4,					
+			);
+			
+			$model_kind=array(
+					'Jouets'=>1,
+					'Open source'=>3,
+					'Industriels'=>2,					
+			);
+			
+			$intent=array(
+					'Abstraction'=>2,
+					'Analysis'=>6,
+					'Editing'=>7,					
+					'Language Translation'=>4,					
+					'Model Composition'=>9,					
+					'Model Visualization'=>8,					
+					'Refinement'=>1,					
+					'Semantic Definition'=>3,					
+			);
+			
+			$transfo_langauge=array(
+					'Langage dédié (QVT…)'=>1,
+					'Langage classique (Java…)'=>2,
+					'Langage ad hoc'=>3,					
+			);
+			
+			$validation=array(
+					'No validation'=>2,
+					'Validation empirique'=>1,
+					'Validation théorique (formel)'=>3,					
+			);
+			$scope=array(
+					'Exo/Out-place'=>3,
+					'Endo/In-place'=>1,
+					'Endo/Out-place'=>2,					
+			);
+			$orientation=array(
+					'Académie'=>1,
+					'Industrie'=>2				
+			);
+			
+			
+			
+			
+			$all_file="cside/test/classification_edouard.csv";
+			
+			ini_set('auto_detect_line_endings',TRUE);
+				
+			$fp = fopen($all_file, 'rb');
+			$i=1;
+			$last_count=0;
+			$paper=array();
+			$classification=array();
+			$i=0;
+			while ( (($Tline = (fgetcsv($fp,0,";",'"')))) !== false) {
+			//	print_test($Tline);
+				
+				if($i>0){
+					print_test("element:".$i);
+				//$Tline = array_map( "utf8_encode", $Tline );
+				
+				$preview="";
+				$preview=!empty($Tline[1])?"<b>Authors:</b><br/>".$this->mres_escape($Tline[1])." <br/>":"";
+				$preview.=!empty($Tline[7])?"<b>Key words:</b><br/>".$this->mres_escape($Tline[7])." <br/>":"";
+				
+				$paper=array(
+					'id'=>$i,	
+					'bibtexKey'=>'paper_'.$Tline[0],	
+					'title'=>$this->mres_escape($Tline[2]),	
+					'preview'=>$preview,	
+					'abstract'=>$this->mres_escape($Tline[6]),	
+					'doi'=>$Tline[4],	
+					'year'=>$Tline[3],	
+					'added_by'=>1,	
+					'addition_mode'=>'Automatic',	
+					'classification_status'=>'To classify',	
+					'operation_code'=>'1_'.time()	
+						
+						
+				);
+				
+				print_test($paper);
+			//	$res=$this->db_current->insert('paper',$paper);
+			//	print_test($res);
+				
+				$classification=array(
+						'class_paper_id'=>$i,
+						'transfo_kind'=>$transfo_kind[$Tline[10]],
+						'mm_kind'=>$mm_kind[$Tline[12]],
+						'model_kind'=>$model_kind[$Tline[18]],
+						'intent'=>$intent[$Tline[14]],
+						'transfo_langauge'=>$transfo_langauge[$Tline[16]],
+						'validation'=>$validation[$Tline[20]],
+						'scope'=>$scope[$Tline[22]],
+						'orientation'=>$orientation[$Tline[24]],
+						
+						'comment_transfo_kind'=>$this->mres_escape($Tline[11]),
+						'comment_mm_kind'=>$this->mres_escape($Tline[13]),
+						'comment_model_kind'=>$this->mres_escape($Tline[19]),
+						'comment_intent'=>$this->mres_escape($Tline[15]),
+						'comment_transfo_langauge'=>$this->mres_escape($Tline[17]),
+						'comment_validation'=>$this->mres_escape($Tline[21]),
+						'comment_scope'=>$this->mres_escape($Tline[23]),
+						'comment_orientation'=>$this->mres_escape($Tline[25]),
+						'year'=>$Tline[3],
+				);
+				
+				print_test($classification);
+			//	$res=$this->db_current->insert('classification',$classification);
+			//	print_test($res);
+				
+				}
+				$i++;
+				
+			}
+			
+		}
+		
+		
+		public function import_lechanceux(){
+		
+			$template_style = array(
+					'Predefined'=>1,
+					'Output-based'=>2,
+					'Rule-based'=>3,
+			);
+			$design_time = array('General purpose'=>1,
+					'Domain specific'=>2,
+					'Schema'=>3,
+					'Programming Language'=>4);
+			
+			$run_time = array('General purpose'=>1,
+					'Domain specific'=>2,
+					'Structured data'=>3,
+					'Source code'=>4);
+			
+			$output_type = array('Source code'=>1,
+					'Structured data'=>2,
+					'Natural language'=>3);
+			
+			$tool = array('Acceleo'=>1,
+					'Xpand'=>2,
+					'EGL'=>3,
+					'JET'=>4,
+					'MOFScript'=>5,
+					'Other'=>6,
+					'Programmed'=>7,
+					'Simulink TLC'=>8,
+					'StringTemplate'=>9,
+					'T4'=>10,
+					'Unspecified'=>11,
+					'Velocity'=>12,
+					'Rational'=>13,
+					'XSLT'=>14,
+					'Fujaba'=>15,
+					'FreeMarker'=>16,
+					'Rhapsody'=>17,
+					'Xtend'=>18);
+			
+			$mde = array('Yes'=>1,
+					'No'=>0);
+		
+			$context = array('Standalone'=>1,
+					'Intermediate'=>2,
+					'Last'=>3);
+			
+			$validation = array('Benchmark'=>1,
+					'Case study'=>2,
+					'User study'=>3,
+					'No validation'=>4,
+					'Formal'=>3);
+			
+			$scale = array('Small scale'=>1,
+					'Large scale'=>2,
+					'No application'=>3);
+			
+			$domain = array('Software engineering'=>1,
+					'Embedded systems'=>2,
+					'Web technology'=>3,
+					'Networking'=>4,
+					'Aspect-oriented systems'=>5,
+					'Mobile systems'=>6,
+					'Programming languages'=>7,
+					'Testing'=>8,
+					'Other'=>9,
+					'Compilers'=>10,
+					'Bio-medical'=>11,
+					'Distributed systems'=>12,
+					'Simulation '=>13,
+					'Databases'=>14,
+					'Security'=>15,
+					'Artificial intelligence'=>16,
+					'Refactoring'=>17,
+					'Robotics'=>18,
+					'Graphics'=>19);
+			
+			$orientation = array('Academic'=>1,
+					'Industry'=>2);
+			
+			$publication_type = array('C'=>1,
+					'J'=>2,
+					'O'=>3	);
+			
+			$venue_type = array('MDE'=>1,
+					'Other'=>2,
+					'SE'=>3);
+			
+				
+			$all_file="cside/test/classification_lechanceux.csv";
+				
+			ini_set('auto_detect_line_endings',TRUE);
+		
+			$fp = fopen($all_file, 'rb');
+			$i=1;
+			$last_count=0;
+			$paper=array();
+			$classification=array();
+			$i=0;
+			while ( (($Tline = (fgetcsv($fp,0,";",'"')))) !== false) {
+					print_test($Tline);
+				
+				if($i>0){
+					print_test("element:".$i);
+					//$Tline = array_map( "utf8_encode", $Tline );
+		
+					$preview="";
+					//$preview=!empty($Tline[1])?"<b>Authors:</b><br/>".$this->mres_escape($Tline[1])." <br/>":"";
+					//$preview.=!empty($Tline[7])?"<b>Key words:</b><br/>".$this->mres_escape($Tline[7])." <br/>":"";
+		
+					$paper=array(
+							'id'=>$i,
+							'bibtexKey'=>'paper_'.$i,
+							'title'=>$this->mres_escape($Tline[1]),
+							//'preview'=>$preview,
+							//'abstract'=>$this->mres_escape($Tline[6]),
+							//'doi'=>$Tline[4],
+							'year'=>$Tline[2],
+							'added_by'=>1,
+							'addition_mode'=>'Automatic',
+							'classification_status'=>'To classify',
+							'operation_code'=>'1_'.time()
+		
+		
+					);
+		
+					print_test($paper);
+					//	$res=$this->db_current->insert('paper',$paper);
+					//	print_test($res);
+					
+					$classification=array(
+							'class_paper_id'=>$i,
+							'template_style'=>$template_style[$Tline[15]],
+							'design_time'=>$design_time[$Tline[6]],
+							'run_time'=>$run_time[$Tline[13]],
+							'output_type'=>$output_type[$Tline[10]],
+							'tool'=>$tool[$Tline[3]],
+							'mde'=>$mde[$Tline[12]],
+							'context'=>$context[$Tline[5]],
+							'validation'=>$validation[$Tline[18]],
+							'scale'=>$scale[$Tline[8]],
+							'domain'=>$domain[$Tline[17]],
+							'orientation'=>$orientation[$Tline[9]],
+							'publication_type'=>$publication_type[$Tline[19]],
+							'venue_type'=>$venue_type[$Tline[21]],
+		
+							
+							'comment_template_style'=>$this->mres_escape($Tline[16]),
+							'comment_design_time'=>$this->mres_escape($Tline[7]),
+							'comment_run_time'=>$this->mres_escape($Tline[14]),
+							'comment_output_type'=>$this->mres_escape($Tline[11]),
+							'comment_tool'=>$this->mres_escape($Tline[4]),
+							'publication_name'=>$this->mres_escape($Tline[20]),
+							'year'=>$Tline[2],
+					);
+		
+					print_test($classification);
+					//	$res=$this->db_current->insert('classification',$classification);
+					//	print_test($res);
+					
+				}
+				
+				$i++;
+		
+			}
+				
+		}
+		
+		private function mres_escape($value)
+		{
+			$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
+			$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
+		
+			return str_replace($search, $replace, $value);
 		}
 		
 }

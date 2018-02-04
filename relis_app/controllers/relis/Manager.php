@@ -418,7 +418,7 @@ class Manager extends CI_Controller {
 //	$brice=check_operation('add_classification','Add');
 //	print_test($brice);
 	//	print_test(get_table_config('classification'));
-	
+		$project_published=project_published();
 		$ref_table="papers";
 	
 		/*
@@ -634,7 +634,7 @@ class Manager extends CI_Controller {
 			//}
 		}
 
-		if($op_type !='class'){
+		if($op_type !='class' OR $project_published ){
 			$data ['classification_button']="";
 		}
 	
@@ -685,10 +685,11 @@ class Manager extends CI_Controller {
 		}
 	
 		$data['data_assignations']=$T_item_data_assignation;
-		$data['remove_assignation_button']=$T_remove_assignation_button;
-	
-		$data ['add_assignation_buttons']=get_top_button ( 'all', "Assign to a user", 'op/add_element_child/new_assignment_class/'.$ref_id ,' Assign to someone '," fa-plus ","  ",'btn-success' )." ";
-	
+		if(!$project_published){
+			$data['remove_assignation_button']=$T_remove_assignation_button;
+		
+			$data ['add_assignation_buttons']=get_top_button ( 'all', "Assign to a user", 'op/add_element_child/new_assignment_class/'.$ref_id ,' Assign to someone '," fa-plus ","  ",'btn-success' )." ";
+		}
 	
 		}
 	
@@ -700,7 +701,7 @@ class Manager extends CI_Controller {
 		$data ['top_buttons']="";
 	
 		//$data ['add_assignation_buttons']=get_top_button ( 'all', "Assigne to a user", 'relis/manager/new_assignation/'.$ref_id ,' Assigne to someone '," fa-plus ","  ",'btn-success' )." ";
-		
+	if(!$project_published){
 	if($op_type=='class'){
 		if(!$paper_excluded){
 	
@@ -730,6 +731,13 @@ class Manager extends CI_Controller {
 		}
 		//$data ['classification_button'].=create_button ( 'Not correct', 'relis/manager/qa_validate/'.$ref_id.'/0','Not correct',' btn-danger');
 		
+	}
+	}else{
+		if($op_type=='class'){
+			$data ['page_title'] = lng('Paper');
+		}else{
+			$data ['page_title'] = lng('Paper - Validation');
+		}
 	}
 		$data['op_type']=$op_type;
 		$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
@@ -2055,14 +2063,14 @@ class Manager extends CI_Controller {
 	
 		$table_ref="papers";
 		$this->db2 = $this->load->database(project_db(), TRUE);
-		$sql="SELECT id,bibtexKey,title,doi,preview,bibtex FROM `paper`WHERE `paper_active` =1";
+		$sql="SELECT id,bibtexKey,title,doi,preview,abstract,year,bibtex FROM  paper WHERE paper_active =1 AND paper_excluded=0";
 		$data=$this->db2->query ( $sql );
 		//	mysqli_next_result( $this->db2->conn_id );
 		$result=$data->result_array();
 		//print_test($result);
 	
 	
-		$array_header=array('#',"key",'Title','Link','Abstract','Preview');
+		$array_header=array('#',"key",'Title','Link','Preview','Abstract','Year','Bibtex');
 		
 		array_unshift($result, $array_header);
 		
@@ -3663,7 +3671,7 @@ class Manager extends CI_Controller {
 	 * Input:	$display_type: type d'affishage si la valeur est 'det' lhystorique du papier sera affiché
 	 */
 	public function display_paper_screen($ref_id,$display_type='det') {
-	
+		$project_published=project_published();
 	
 		//	print_test(get_paper_screen_result($ref_id));
 	
@@ -3776,7 +3784,7 @@ class Manager extends CI_Controller {
 		$res_screen=get_paper_screen_status_new($ref_id,$screening_phase,'all');
 	//	print_test($res_screen);
 		
-		if(trim($res_screen['screening_result'])=='In conflict'){
+		if(trim($res_screen['screening_result'])=='In conflict' AND !$project_published){
 			$my_paper=FALSE;
 			foreach ($res_screen['screenings'] as $key => $value) {
 				if(has_usergroup(1) OR is_project_creator(active_user_id() , project_db()) OR $value['user_id']==active_user_id()){
@@ -3791,7 +3799,9 @@ class Manager extends CI_Controller {
 			
 			}
 			
-			if(has_usergroup(1) OR is_project_creator(active_user_id() , project_db()) )
+			if((has_usergroup(1) 
+					OR is_project_creator(active_user_id() , project_db()))
+					AND !$project_published)
 			$data ['assign_new_button'] =get_top_button ( 'add', 'Add a reviewer', 'op/add_element_child/add_reviewer/'.$ref_id, 'Add a reviewer')." ";
 	
 		$data['screenings']=$res_screen['screenings'];
@@ -4015,7 +4025,7 @@ class Manager extends CI_Controller {
 	}
 	
 	
-	public function screen_result($type=1){
+	public function screen_result($type=1,$api=0){
 		
 		
 		$users=$this->manager_lib->get_reference_select_values('users;user_name');
@@ -4229,13 +4239,15 @@ class Manager extends CI_Controller {
 		$data['project_perspective']='screening';
 	
 		$data ['page'] = 'relis/screen_result';
-	
-	
-	
+		
+		if($api)
+			print_test($data);
+		else{
 		/*
 		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 		 */
 		$this->load->view ( 'body', $data );
+		}
 	}
 	
 	public function validate_screen_set($data=""){
@@ -5482,7 +5494,7 @@ class Manager extends CI_Controller {
 		
 		
 		$data =$this->get_qa_result($type,$id,'QA',True,$status);
-	//	print_test($data);
+		//print_test($data);
 		if($type=='id' AND !empty($id)){
 			$data ['top_buttons'] = get_top_button ( 'close', 'Close', 'relis/manager/qa_conduct_result' );
 		}else{
@@ -5537,14 +5549,15 @@ class Manager extends CI_Controller {
 		}
 	//	print_test($data);
 		$data ['top_buttons']="";
-		if($Included){
-			$data ['top_buttons'].=get_top_button ( 'all', "Exclude the paper", 'relis/manager/qa_exlusion/'.$id ,'Exclude'," fa-minus",'','btn-danger' )." ";
+		if(! project_published()){
+			if($Included){
+				$data ['top_buttons'].=get_top_button ( 'all', "Exclude the paper", 'relis/manager/qa_exlusion/'.$id ,'Exclude'," fa-minus",'','btn-danger' )." ";
+					
+			}else{
+				$data ['top_buttons'].= get_top_button ( 'all', 'Cancel the exclusion', 'relis/manager/qa_exlusion/'.$id."/0" , 'Cancel the exclusion'," fa-undo",'','btn-dark')." "  ;
 				
-		}else{
-			$data ['top_buttons'].= get_top_button ( 'all', 'Cancel the exclusion', 'relis/manager/qa_exlusion/'.$id."/0" , 'Cancel the exclusion'," fa-undo",'','btn-dark')." "  ;
-			
+			}
 		}
-		
 		$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'relis/manager/qa_conduct_result' );
 		
 		$this->session->set_userdata('after_save_redirect',"relis/manager/qa_conduct_detail/$id");
@@ -6090,13 +6103,19 @@ function qa_exlusion($paper_id,$op=1){
  					AND !empty($Tres['entry']['entrykey'])){
  						
  				//bibtex decoded
+ 						$year=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
+ 				if(!empty($Tres['venue_full'])){
+ 					
+ 					$venue_id=$this->add_venue($Tres['venue_full'],$year);
+ 					$paper_array['venueId']=$venue_id;
+ 				}
  				$paper_array['bibtexKey']=$Tres['entry']['entrykey'];
  				$paper_array['title']=!empty($Tres['entry']['title']) ? $Tres['entry']['title'] : "";
  				$paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
  				$paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
  				$paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
  				$paper_array['doi']=!empty($Tres['entry']['paper']) ? $Tres['entry']['paper'] : "";
- 				$paper_array['year']=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
+ 				$paper_array['year']=$year;
  				$paper_array['authors']=!empty($Tres['authors']) ? $Tres['authors']: "";
  			
  			
@@ -6116,7 +6135,33 @@ function qa_exlusion($paper_id,$op=1){
  		} else {
  
  			//echo json_last_error();
- 			$data['message_error'].="JSON Error : ".json_last_error().".<br/>";
+ 			$json_errodr="";
+ 			switch (json_last_error()) {
+ 				case JSON_ERROR_NONE:
+ 					$json_error= 'No errors';
+ 					break;
+ 				case JSON_ERROR_DEPTH:
+ 					$json_error= 'Maximum stack depth exceeded';
+ 					break;
+ 				case JSON_ERROR_STATE_MISMATCH:
+ 					$json_error= 'Underflow or the modes mismatch';
+ 					break;
+ 				case JSON_ERROR_CTRL_CHAR:
+ 					$json_error= 'Unexpected control character found';
+ 					break;
+ 				case JSON_ERROR_SYNTAX:
+ 					$json_error= 'Syntax error, malformed JSON';
+ 					break;
+ 				case JSON_ERROR_UTF8:
+ 					$json_error= 'Malformed UTF-8 characters, possibly incorrectly encoded';
+ 					break;
+ 				default:
+ 					$json_error= 'Unknown error';
+ 					break;
+ 			}
+ 			
+ 			
+ 			$data['message_error'].="JSON Error : ".$json_error.".<br/>";
  			$this->add_paper_bibtex($data);
  		}
  
@@ -6216,6 +6261,32 @@ function qa_exlusion($paper_id,$op=1){
 	 }
  
  }
+ 
+ private function add_venue($venue,$year=0) {
+ 	
+ 	
+ 	
+ 	$res = $this->db_current->get_where('venue',
+ 			array('venue_fullName' =>$venue,'venue_active'=>1))
+ 			->row_array();
+ 	
+ 			$array_venue=array('venue_fullName'=>$venue);
+ 			if(!empty($year)){
+ 				$array_venue['venue_year']=$year;
+ 			}
+ 			if(empty($res['venue_id'])){
+ 				
+ 				$this->db_current->insert('venue', $array_venue);
+ 				return $venue_id=$this->db_current->insert_id();
+ 			}else{
+ 				return $res['venue_id'];
+ 			}
+ 			
+ 			
+ 			
+	 }
+ 
+ 
  
  
 }

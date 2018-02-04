@@ -132,6 +132,23 @@ function get_project() {
 	   			'on_edit'=>'not_set',
 	   			'on_list'=>'show',
 	   	);
+	   	$fields['project_public']=array(
+	   			'field_title'=>'Published',
+	   			'field_type'=>'text',
+	   	//		'field_value'=>'0_1',
+	   			'field_size'=>'1',
+	   			'field_value'=>'0',
+	   			'default_value'=>'0',
+	   			'mandatory'=>' mandatory ',
+	   			'input_type'=>'select',
+	   			'input_select_source'=>'yes_no',
+	   			'input_select_values'=>'',
+	   			
+	   			
+	   			'on_add'=>'not_set',
+	   			'on_edit'=>'not_set',
+	   			'on_list'=>'show'
+	   	);
 	   	$fields['project_active']=array(
 	   			'field_title'=>'Active',
 	   			'field_type'=>'int',
@@ -301,6 +318,7 @@ function get_project() {
 						'project_description'=>array(),
 	   					'project_creator'=>array(),
 	   					'creation_time'=>array(),
+	   					'project_public'=>array(),
 						
 						'project_icon'=>array(),
 						'user_projects'=>array(

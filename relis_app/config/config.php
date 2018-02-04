@@ -258,7 +258,7 @@ $config['proxy_ips'] = '';
 // My configurations
 
 $config['rec_per_page'] = '50'; 
-$config['free_controllers'] = array('0' => 'auth');
+$config['free_controllers'] = array('0' => 'auth','1' => 'api');
 
 
 //For image upload
@@ -296,7 +296,10 @@ $config['root_path'] = "C:/xampp/htdocs/relis/relis_dev";
 //$config['screening_conflict_resolution'] = "Majority";//can also have Unanimity
 
 // Common configurations in relis
-$config['common_relis_configs'] = array('assignation','author','config','exclusion','papers','paper_author','ref_exclusioncrieria','str_mng','venue','assignment_screen','screening','screening_validate','assignment_screen_validate','operations');
+$config['common_relis_configs'] = array('assignation','author','config','exclusion','papers',
+								'paper_author','ref_exclusioncrieria','str_mng','venue',
+								'assignment_screen','screening','screening_validate',
+									'assignment_screen_validate','operations');
 
 $config['project_specific_config_folder']="relis_app/libraries/table_config/project/";
 

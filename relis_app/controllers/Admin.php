@@ -46,10 +46,10 @@ class Admin extends CI_Controller {
 			$configurations=array('users','usergroup','project','user_project','logs','str_mng','config_admin','debug','user_creation');
 			$data['left_menu_admin']=True;
 		}else{
-			$configurations=array('config','exclusioncrieria','papers_sources',
+			$configurations=array('config','exclusioncrieria','inclusioncriteria','research_question','papers_sources',
 					'search_strategy','author','venue','papers','paper_author',
 					'screen_phase','screening','screen_decison','str_mng','operations'
-					,'qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug');
+					,'qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug','affiliation');
 		}
 		
 		 foreach ($configurations as $key => $value_config) {
@@ -298,5 +298,32 @@ class Admin extends CI_Controller {
 		echo anchor('admin/list_configurations',"<h1>Back</h1>");
 	}
 	
+	
+	public function publish_project($project_id=0,$operation=1){
+
+			if(empty($project_id)){
+				$project_id=active_project_id();
+				
+			}
+		if(!empty($project_id)){
+			$projet_label= project_db();
+			$op=($operation==1)?1:0;
+			$sql="UPDATE  projects SET project_public =  $op WHERE  project_id = $project_id ";
+			$res_sql = $this->manage_mdl->run_query($sql,false,'default');
+			//echo  $sql;
+			//print_test($res_sql);
+			if($operation == 1){
+				set_top_msg("Project $projet_label published");
+				set_log('publish', "Project $projet_label published");
+			}else{
+				set_top_msg("Project $projet_label reopened");
+				set_log('publish', "Project $projet_label reopened");
+			}
+			
+		}else{
+			
+		}
+		redirect('manager/projects_list');
+	}
 	
 }

@@ -59,6 +59,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 $autoload['libraries'] = array('database','profiler', 'session','table','bm_lib','table_ref_lib','manage_stored_procedure_lib','user_agent','entity_config_lib','entity_configuration_lib','manager_lib','biblerproxy_lib');
+//$autoload['libraries'] = array('database','session','table','bm_lib','table_ref_lib','manage_stored_procedure_lib','user_agent','entity_config_lib','entity_configuration_lib','manager_lib','biblerproxy_lib');
 
 /*
 | -------------------------------------------------------------------

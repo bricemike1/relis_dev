@@ -80,3 +80,7 @@ div.login_description{
  .login_content h1{
  font-size:35px;
  }
+ 
+ .publishedProject{
+  border:3px solid #74ec76;
+  }

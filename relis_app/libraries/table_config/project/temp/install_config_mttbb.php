@@ -1,12 +1,12 @@
-<?php //mt_2
-function get_classification_mt_2(){
+<?php //mttbb
+function get_classification_mttbb(){
 $reference_tables=array();//from nowit will worklike this
 $config=array();
 $result['class_action']='override';
 $result['screen_action']='override';
 $result['qa_action']='override';
-$result['project_title']='Model transformation test schema';
-$result['project_short_name']='mt_2';
+$result['project_title']='Model transformation test dslforge';
+$result['project_short_name']='mttbb';
 $config['classification']['table_name']='classification';
 $config['classification']['config_id']='classification';
 $config['classification']['table_id']='class_id';
@@ -305,23 +305,34 @@ $config['classification']['fields'][ 'target_language']=array(
  		
  		
 $config['classification']['fields'][ 'scope']=array( 		
-	'category_type'=>'StaticCategory',		
+	'category_type'=>'IndependantDynamicCategory',		
  	'field_title'=>'Scope',	
- 	'field_type'=>'text',
+ 	'field_type'=>'int',
+ 	'field_size'=>11,
  	//'field_value'=>'normal',
- 	'number_of_values'=>'1',// a  verifier
- 	'field_size'=>20,
+ 	'number_of_values'=>'1',//a verifier
+ 	
  	'input_type'=>'select',
- 	'input_select_source'=>'array',
- 	'input_select_values'=>array(
- 	'Exogenous'=>"Exogenous",
- 	'Inplace'=>"Inplace",
- 	'Outplace'=>"Outplace",
- 	),
+ 	'input_select_source'=>'table',
+ 	'input_select_values'=>'Scope',
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'on_list'=>'show'				
- 	);   
+ 				);
+ 	$reference_tables['Scope']['ref_name'] ='Scope';   
+ 	$initial_values=array();
+ 	array_push($initial_values, "Exogenous");
+ 	array_push($initial_values, "Inplace");
+ 	array_push($initial_values, "Outplace");
+ 	if(empty($reference_tables['Scope']['values'])){
+ 		$reference_tables['Scope']['values'] =	$initial_values;
+ 	}else{
+ 		foreach ($initial_values as $key => $value) {
+ 			if (!in_array($value, $reference_tables['Scope']['values'] )){
+ 				array_push($reference_tables['Scope']['values'],$value);
+ 			}
+ 		}		
+ 	}
  		
  		
 $config['intent']['table_name']='intent';
@@ -422,7 +433,7 @@ $config['intent']['fields'][ 'name_used']=array(
  	'input_type'=>'text',
  	'field_size'=>100,
  	'field_type'=>'text',
- 	//'number_of_values'=>'',//a verifier
+ 	//'number_of_values'=>'0',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -497,7 +508,7 @@ $config['intent']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'',//a verifier
+ 	//'number_of_values'=>'0',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -530,7 +541,7 @@ $config['classification']['fields'][ 'intent']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  	//'field_value'=>'normal',
- 	'number_of_values'=>'10',//a verifier
+ 	'number_of_values'=>'2',//a verifier
  	
  	'mandatory'=>' mandatory ',
  	
@@ -641,12 +652,12 @@ $config['intent_relation']['fields'][ 'intent_1']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  //	'field_value'=>'normal',
- 	'number_of_values'=>'1',
+ 	'number_of_values'=>'0',
  	'mandatory'=>' mandatory ',
  	
  	'input_type'=>'select',
  	'input_select_source'=>'table',
- 	'input_select_values'=>'intent',//? corriger seul les category sur le root sont support?s pour le moment
+ 	'input_select_values'=>'intent',//à corriger seul les category sur le root sont supportés pour le moment
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'compute_result'=>'no',
@@ -661,12 +672,12 @@ $config['intent_relation']['fields'][ 'intent_2']=array(
  	'field_type'=>'int',
  	'field_size'=>11,
  //	'field_value'=>'normal',
- 	'number_of_values'=>'1',
+ 	'number_of_values'=>'0',
  	'mandatory'=>' mandatory ',
  	
  	'input_type'=>'select',
  	'input_select_source'=>'table',
- 	'input_select_values'=>'intent',//? corriger seul les category sur le root sont support?s pour le moment
+ 	'input_select_values'=>'intent',//à corriger seul les category sur le root sont supportés pour le moment
  	'on_add'=>'enabled',
  	'on_edit'=>'enabled',
  	'compute_result'=>'no',
@@ -683,7 +694,7 @@ $config['intent_relation']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'',//a verifier
+ 	//'number_of_values'=>'0',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -786,6 +797,27 @@ $config['classification']['fields'][ 'bidirectional']=array(
  	'on_list'=>'show'				
  	);   	
 
+$config['classification']['fields'][ 'number_citation']=array( 		
+	'category_type'=>'FreeCategory',		
+ 	'field_title'=>'Number of citations',
+ 	'input_type'=>'text',
+ 	'field_size'=>20,
+ 	'field_type'=>'int',
+ 	//'number_of_values'=>'1',//a verifier
+ 	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
+ 	//'field_value'=>'normal',
+ 	
+
+ 	'pattern'=>'',
+ 	
+ 	'initial_value'=>'',
+ 	'field_value'=>'',
+ 	
+ 	'on_add'=>'enabled',
+ 	'on_edit'=>'enabled',
+ 	'on_list'=>'show'				
+ 	);   	
+
 $config['classification']['fields'][ 'year']=array( 		
 	'category_type'=>'FreeCategory',		
  	'field_title'=>'Targeted year',
@@ -807,49 +839,6 @@ $config['classification']['fields'][ 'year']=array(
  	'on_list'=>'show'				
  	);   	
 
-$config['classification']['fields'][ 'valeur']=array( 		
-	'category_type'=>'FreeCategory',		
- 	'field_title'=>'Test real',
- 	'input_type'=>'text',
- 	'field_size'=>11,
- 	'field_type'=>'real',
- 	//'number_of_values'=>'1',//a verifier
- 	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
- 	//'field_value'=>'normal',
- 	
-
- 	'pattern'=>'',
- 	
- 	'initial_value'=>'',
- 	'field_value'=>'',
- 	
- 	'on_add'=>'enabled',
- 	'on_edit'=>'enabled',
- 	'on_list'=>'show'				
- 	);   	
-
-$config['classification']['fields'][ 'date_extra']=array( 		
-	'category_type'=>'FreeCategory',		
- 	'field_title'=>'Date extraction',
- 	'input_type'=>'text',
- 	'field_size'=>20,
- 	'field_type'=>'text',
- 	'input_type'=>'date',
- 	//'number_of_values'=>'',//a verifier
- 	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
- 	//'field_value'=>'normal',
- 	
-
- 	'pattern'=>'',
- 	
- 	'initial_value'=>'',
- 	'field_value'=>'',
- 	
- 	'on_add'=>'enabled',
- 	'on_edit'=>'enabled',
- 	'on_list'=>'show'				
- 	);   	
-
 $config['classification']['fields'][ 'note']=array( 		
 	'category_type'=>'FreeCategory',		
  	'field_title'=>'Note',
@@ -857,7 +846,7 @@ $config['classification']['fields'][ 'note']=array(
  	'field_size'=>500,
  	'field_type'=>'text',
  	'input_type'=>'textarea',
- 	//'number_of_values'=>'',//a verifier
+ 	//'number_of_values'=>'0',//a verifier
  	'number_of_values'=>'1',//tous les Freecategory ont une seule valeur
  	//'field_value'=>'normal',
  	
@@ -921,6 +910,43 @@ $result[ 'reference_tables' ] =$reference_tables;
 
 //QA area
 
+ 		
+$qa=array();
+$qa['cutt_off_score']='2';
+$qa['questions']=array();
+  array_push($qa['questions'], array(
+  										'title' =>"Question 1",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 2",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 3",
+  										)
+  );
+  array_push($qa['questions'], array(
+  										'title' =>"Question 4",
+  										)
+  );
+$qa['responses']=array();
+   array_push($qa['responses'], array(
+   										'title' =>"Yes",
+   										'score' =>"2",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"Partially",
+   										'score' =>"1",
+   										)
+   );
+   array_push($qa['responses'], array(
+   										'title' =>"No",
+   										'score' =>"0",
+   										)
+   );
+$result[ 'qa' ]=$qa; 		
 
 //QA area
 
@@ -932,17 +958,6 @@ $result[ 'reference_tables' ] =$reference_tables;
 
 //REPORTING
 $report=array();
-$report['year']['type']='simple';
-$report['year']['title']='Per year'; 		
-$report['year']['id']='year';
-$report['year']['link']='false'; 
-$report['year']['values']['field']='year';
-$report['year']['values']['style']='select';
-$report['year']['values']['title']='Targeted year';  
-$charts=array();
- 	array_push($charts, "line");
- 	array_push($charts, "pie");
-$report['year']['chart']=$charts;
 $report['domain']['type']='simple';
 $report['domain']['title']='Domain'; 		
 $report['domain']['id']='domain';
@@ -953,7 +968,6 @@ $report['domain']['values']['title']='Domain';
 $charts=array();
  	array_push($charts, "pie");
  	array_push($charts, "bar");
- 	array_push($charts, "line");
 $report['domain']['chart']=$charts;
 $report['year_domain']['type']='compare';
 $report['year_domain']['title']='Domain per year'; 		
@@ -968,32 +982,7 @@ $report['year_domain']['reference']['field']='year';
   $charts=array();
    	array_push($charts, "line");
    	array_push($charts, "bar");
-   	array_push($charts, "pie");
   $report['year_domain']['chart']=$charts;
-$report['trans_language']['type']='simple';
-$report['trans_language']['title']='Transformation language'; 		
-$report['trans_language']['id']='trans_language';
-$report['trans_language']['link']='false'; 
-$report['trans_language']['values']['field']='trans_language';
-$report['trans_language']['values']['style']='select';
-$report['trans_language']['values']['title']='Transformation Language';  
-$charts=array();
- 	array_push($charts, "pie");
- 	array_push($charts, "bar");
- 	array_push($charts, "line");
-$report['trans_language']['chart']=$charts;
-$report['scope']['type']='simple';
-$report['scope']['title']='Scope'; 		
-$report['scope']['id']='scope';
-$report['scope']['link']='false'; 
-$report['scope']['values']['field']='scope';
-$report['scope']['values']['style']='select';
-$report['scope']['values']['title']='Scope';  
-$charts=array();
- 	array_push($charts, "pie");
- 	array_push($charts, "bar");
- 	array_push($charts, "line");
-$report['scope']['chart']=$charts;
 $result[ 'report' ]=$report; 		
 //REPORTING
 

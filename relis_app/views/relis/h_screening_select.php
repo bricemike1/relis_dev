@@ -14,6 +14,12 @@
                 <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
                   <div class="x_title">
                     <h3> <?php echo lng('Project').' : '.$configuration['project_title'] ?> </h3>
+                     <?php 
+                    if(isset($top_buttons)){
+                    	echo "<ul class='nav navbar-right panel_toolbox'>$top_buttons</ul>";
+                    
+                    }                    
+                    ?>
                     <div class="clearfix"></div>
                   </div>
 

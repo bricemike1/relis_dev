@@ -37,7 +37,11 @@
     ReLiS allows the user to follow a systematic process and automate the review process as much as possible .
   
   </p>
-  
+  <div class="row">
+  <br/>
+  <h4>Process overview</h4>
+      <iframe width="90%" height="315" src="https://www.youtube.com/embed/U5zOmk2vWy8" frameborder="0" allowfullscreen></iframe>
+      </div>
   </div>
       
   <div id="wrapper" class="col-md-5 col-sm-5 col-xs-12">
@@ -91,6 +95,7 @@
       <div class="clearfix"></div>
         <div class="separator"> </div>
       </div>
+      
       <div class="row">
 		
 		<div class="col-md-4 col-sm-4 col-xs-12">

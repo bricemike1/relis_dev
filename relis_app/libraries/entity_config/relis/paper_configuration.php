@@ -498,7 +498,7 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 								'trim'=>trim_nbr_car()
 							)
 					),
-					//'authors'=>array(),
+					'authors'=>array(),
 					'screening_status'=>array('field_title'=>'Decision'),
 					 
 			),

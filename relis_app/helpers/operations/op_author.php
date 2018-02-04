@@ -8,6 +8,23 @@ function get_operations_author() {
 			'operation_id'=>'list_authors'
 	);
 	
+	$operations['list_first_authors']=array(
+			'type'=>'List',
+			'tab_ref'=>'author',
+			'operation_id'=>'list_first_authors'
+	);
+	
+	$operations['list_first_authors_class']=array(
+			'type'=>'List',
+			'tab_ref'=>'author',
+			'operation_id'=>'list_first_authors_class'
+	);
+	
+	$operations['list_authors_class']=array(
+			'type'=>'List',
+			'tab_ref'=>'author',
+			'operation_id'=>'list_authors_class'
+	);
 	$operations['add_author']=array(
 			'type'=>'Add',
 			'tab_ref'=>'author',

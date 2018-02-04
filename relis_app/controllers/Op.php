@@ -17,7 +17,8 @@ class Op extends CI_Controller {
 	 * 			$page: la page affiché : ulilisé dans la navigation
 	 */
 	public function entity_list($operation_name,$val = "_", $page = 0 ,$dynamic_table=1){
-			
+		$project_published=project_published();
+		//print_test($project_published);
 		$op=check_operation($operation_name,'List');
 		//print_test($op);
 		$ref_table=$op['tab_ref'];
@@ -193,7 +194,7 @@ class Op extends CI_Controller {
 						break;
 					}
 					
-					if($push_link)
+					if($push_link AND ( !$project_published OR $link_type=='view' ))
 					array_push($list_links, $link);
 						
 						
@@ -559,15 +560,18 @@ class Op extends CI_Controller {
 							// récuperations des valeurs de cet element
 							$M_values=$this->manager_lib->get_element_multi_values($ref_table_config['fields'][$v_field]['input_select_values'],$ref_table_config['fields'][$v_field]['input_select_key_field'],$data ['list'] [$key] [$table_id]);
 							$S_values="";
+							$Array_values=array();
 							foreach ($M_values as $k_m => $v_m) {
 								if(isset($dropoboxes[$v_field][$v_m]) ){
 									$M_values[$k_m]=$dropoboxes[$v_field][$v_m];
 								}
 	
 								$S_values.=empty($S_values)?$M_values[$k_m]:" | ".$M_values[$k_m];
+								
+								array_push($Array_values, $M_values[$k_m]);
 							}
 											
-							$element_array[$v_field]=$S_values;
+							$element_array[$v_field]=$Array_values;
 						}
 	
 					}
@@ -3453,6 +3457,7 @@ class Op extends CI_Controller {
 	}
 	
 	private function create_top_buttons($top_links,$current_element=0){
+		$project_published=project_published();
 		//print_test($top_links);
 		$top_buttons="";
 		foreach ($top_links as $key => $value) {
@@ -3475,8 +3480,9 @@ class Op extends CI_Controller {
 						
 					}
 					
-					
+					if(!$project_published  OR (in_array($key,array('all_published','close','back')))){
 						$top_buttons.= get_top_button ( $type, $title, $url , $label, $icon);
+					}
 			}	
 		}
 		

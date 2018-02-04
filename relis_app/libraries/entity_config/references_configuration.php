@@ -1,6 +1,6 @@
 <?php 
 
-function get_reference($table,$title,$config_id) {
+function get_reference($table,$title,$config_id,$value_label="Value",$description_label="Description") {
 
 	$config['config_id']=$config_id;
 	$config['table_name']=$table;
@@ -27,7 +27,7 @@ function get_reference($table,$title,$config_id) {
 	 
 	 
 	$fields['ref_value']=array(
-			'field_title'=>'Value',
+			'field_title'=>$value_label,
 			'field_type'=>'text', 
 			'field_size'=>100,  
 			'input_type'=>'text',
@@ -35,9 +35,9 @@ function get_reference($table,$title,$config_id) {
 	);
 	 
 	$fields['ref_desc']=array(
-			'field_title'=>'Description',
+			'field_title'=>$description_label,
 			'field_type'=>'text', 
-			'field_size'=>100,  
+			'field_size'=>1000,  
 			'input_type'=>'textarea',
 	);
 	 

@@ -222,7 +222,7 @@ function line_graph($data) {
 
 Highcharts.chart('<?php echo $id_field;?>', {
 	 chart: {
-	        type: 'line'
+	        type: 'spline'
 	    },
     title: {
         text: ''
@@ -351,7 +351,7 @@ function line_graph_multi($data) {
 
 Highcharts.chart('<?php echo $id_field;?>', {
 	 chart: {
-	        type: 'line'
+	        type: 'spline'
 	    },
     title: {
         text: ''

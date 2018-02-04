@@ -106,8 +106,8 @@ function get_logs() {
 					'log_type'=>array('mandatory'=>'','field_state'=>'hidden'),
 					'log_user_id'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 					'log_event'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
-					'log_ip_address'=>array('mandatory'=>'','field_state'=>'enabled')
-									
+					'log_ip_address'=>array('mandatory'=>'','field_state'=>'enabled'),
+					'log_publish'=>array('mandatory'=>'','field_state'=>'hidden')
 					),
 				
 				'top_links'=>array(
@@ -197,7 +197,14 @@ function get_logs() {
 								)
 												
 				),
-				
+				'conditions'=>array('log_publish'=>array(
+												'field'=>'log_publish',
+												'value'=>'1',
+												'evaluation'=>'',
+												'add_on_generation'=>TRUE,
+												'parameter_type'=>'VARCHAR(3)'
+												),
+				),
 				
 				'top_links'=>array(
 							'clear_logs'=>$clear_logs,

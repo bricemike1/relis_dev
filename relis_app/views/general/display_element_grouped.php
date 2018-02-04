@@ -39,7 +39,8 @@
                  
                   <?php
                  
-                 
+                  $project_published=project_published();
+                  
                   if(!empty($table_config['current_operation']) AND !empty($table_config['operations'][$table_config['current_operation']]['fields_groups'])){
                  // print_test($table_config);
                   $field_groups=$table_config['operations'][$table_config['current_operation']]['fields_groups'];
@@ -58,7 +59,7 @@
                   	//echo "<th style='width:20%'><u>".$value_G['title']."</u></th><td></td>";
                   //	echo "</tr>";
                   $title_but="";
-                  if(!empty($value_G['edit'])){
+                  if(!empty($value_G['edit']) AND !$project_published){
                   	$title_but=get_top_button('edit','Edit',$value_G['edit'],'Edit');
                   	$title_but="<ul class='nav navbar-right panel_toolbox'>$title_but</ul>";
                   }

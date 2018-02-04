@@ -31,18 +31,36 @@ function get_author() {
 	);
 	
 	$fields['author_desc']=array(
-			'field_title'=>'Description',
+			'field_title'=>'Affiliation',
 			'field_type'=>'text',	   						
 			'field_size'=>200,	   			
 			'input_type'=>'text', 
 			'input_type'=>'textarea'
 	);
-	
+	$fields['author_desc']=array(
+			'field_title'=>'Affiliation',
+			'field_type'=>'int',
+			'field_size'=>11,
+	   		'mandatory'=>' mandatory ',
+	   		'input_type'=>'select',
+	   		'input_select_source'=>'table',
+	   		'input_select_values'=>'affiliation;ref_value',
+	);
 	
 	$fields['author_picture']=array(
 			'field_title'=>'Picture',
 			'field_type'=>'image',
 			'input_type'=>'image',
+	);
+	$fields['paper_nbr']=array(
+			'field_title'=>'Number of papers',
+			'field_type'=>'int',
+			'field_size'=>11,
+			'field_value'=>'normal',			
+			'input_type'=>'text',
+			'not_in_db'=>True,
+			
+			
 	);
 	
 	$fields['author_active']=array(
@@ -54,6 +72,40 @@ function get_author() {
 	);
 	$config['fields']=$fields;
 	
+	$table_views=array();
+	
+	
+	$table_views['view_all_authors']=array(
+			'name'=>'view_all_authors',
+			'desc'=>'',
+			
+			'script'=>'
+			select A.* , COUNT(Q.paperId) as paper_nbr FROM author A LEFT JOIN paperauthor Q ON (Q.authorId=A.author_id AND Q.paperauthor_active=1) INNER JOIN paper P ON(Q.paperId=P.id AND P.paper_active=1 )  WHERE author_active=1 GROUP BY A.author_id '	
+	);
+	
+	$table_views['view_authors_class']=array(
+			'name'=>'view_authors_class',
+			'desc'=>'',
+			
+			'script'=>'
+			select A.* , COUNT(Q.paperId) as paper_nbr FROM author A LEFT JOIN paperauthor Q ON (Q.authorId=A.author_id AND Q.paperauthor_active=1) INNER JOIN paper P ON(Q.paperId=P.id AND P.paper_active=1 AND P.classification_status <> \'Waiting\' AND P.paper_excluded=0)  WHERE author_active=1 GROUP BY A.author_id '	
+	);
+	
+	$table_views['view_first_authors']=array(
+			'name'=>'view_first_authors',
+			'desc'=>'',
+			
+			'script'=>'
+			select A.* , COUNT(Q.paperId) as paper_nbr FROM author A LEFT JOIN paperauthor Q ON (Q.authorId=A.author_id AND Q.paperauthor_active=1 AND Q.author_rank=1 ) INNER JOIN paper P ON(Q.paperId=P.id AND P.paper_active=1)  WHERE author_active=1 GROUP BY A.author_id '	
+	);
+	$table_views['view_first_authors_class']=array(
+			'name'=>'view_first_authors_class',
+			'desc'=>'',
+			
+			'script'=>'
+			select A.* , COUNT(Q.paperId) as paper_nbr FROM author A LEFT JOIN paperauthor Q ON (Q.authorId=A.author_id AND Q.paperauthor_active=1 AND Q.author_rank=1) INNER JOIN paper P ON(Q.paperId=P.id AND P.paper_active=1 AND P.classification_status <> \'Waiting\' AND P.paper_excluded=0 )  WHERE author_active=1 GROUP BY A.author_id '	
+	);
+	$config['table_views']=$table_views;
 	
 	$operations['add_author']=array(
 			'operation_type'=>'Add',
@@ -128,25 +180,31 @@ function get_author() {
 	$operations['list_authors']=array(
 			'operation_type'=>'List',
 			'operation_title'=>'List authors',
-			'operation_description'=>'List authors',
-			'page_title'=>'List authors',
-	
+			'page_title'=>'All authors',
+			'table_name'=>'view_all_authors',
+			
 			//'page_template'=>'list',
-	
+			
 			'data_source'=>'get_list_authors',
 			'generate_stored_procedure'=>True,
 				
 			'fields'=>array(
-					'author_id'=>array(),
-					'author_name'=>array(),
-					'author_desc'=>array()
+					//'author_id'=>array(),
+					//'author_name'=>array(),
+					'author_name'=>array('link'=>array(
+								'url'=>'op/display_element/detail_author/',
+								'id_field'=>'author_id',
+								'trim'=>'0'
+							)),
+					'author_desc'=>array(),
+					'paper_nbr'=>array()
 						
 			),
 			'order_by'=>'author_name ASC ',
 			//'search_by'=>'author_name',
 		
 			'list_links'=>array(
-					'view'=>array(
+					/*'view'=>array(
 							'label'=>'View',
 							'title'=>'Disaly element',
 							'icon'=>'folder',
@@ -163,7 +221,7 @@ function get_author() {
 							'title'=>'Delete the user',
 							'url'=>'op/delete_element/remove_author/'
 					)
-	
+					*/
 			),
 	
 			'top_links'=>array(
@@ -182,6 +240,52 @@ function get_author() {
 	
 			),
 	);
+	
+	
+	$operations['list_first_authors']=array(
+			'operation_type'=>'List',
+			'operation_title'=>'List of first authors',
+			'page_title'=>'First authors',
+			'table_name'=>'view_first_authors',
+			'data_source'=>'get_list_first_authors',
+			'generate_stored_procedure'=>True,
+				
+			'fields'=>array(
+					//'author_id'=>array(),
+					//'author_name'=>array(),
+					'author_name'=>array('link'=>array(
+								'url'=>'op/display_element/detail_author/',
+								'id_field'=>'author_id',
+								'trim'=>'0'
+							)),
+					'author_desc'=>array(),
+					'paper_nbr'=>array()
+						
+			),
+			'order_by'=>'author_name ASC ',
+			
+			'list_links'=>array(),
+			'top_links'=>array(
+					
+					'back'=>array(
+							'label'=>'',
+							'title'=>'Close',
+							'icon'=>'add',
+							'url'=>'home',
+					)
+	
+			),
+	);
+	
+	$operations['list_authors_class']=$operations['list_first_authors'];
+	$operations['list_authors_class']['page_title']='All authors in classification';
+	$operations['list_authors_class']['table_name']='view_authors_class';
+	$operations['list_authors_class']['data_source']='get_list_authors_class';
+	
+	$operations['list_first_authors_class']=$operations['list_first_authors'];
+	$operations['list_first_authors_class']['page_title']='First authors in classification';
+	$operations['list_first_authors_class']['table_name']='view_first_authors_class';
+	$operations['list_first_authors_class']['data_source']='get_list_first_authors_class';
 	
 	$operations['detail_author']=array(
 			'operation_type'=>'Detail',
@@ -206,6 +310,12 @@ function get_author() {
 							'title'=>'Edit',
 							'icon'=>'edit',
 							'url'=>'op/edit_element/edit_author/~current_element~',
+					),
+					'delete'=>array(
+							'label'=>'',
+							'title'=>'Delete',
+							'icon'=>'trash',
+							'url'=>'op/delete_element/remove_author/~current_element~',
 					),
 					'back'=>array(
 							'label'=>'',

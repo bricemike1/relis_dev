@@ -1693,7 +1693,7 @@ class Manager extends CI_Controller {
 	//	$this->session->set_userdata('project_db',$projet_label);
 		$this->session->set_userdata('project_id',FALSE);
 		$this->session->set_userdata('project_title','');
-		
+		$this->session->set_userdata('project_public','');
 		
 		$config="project";
 		$this->session->set_userdata('project_db','default');
@@ -1750,6 +1750,7 @@ class Manager extends CI_Controller {
 			$this->session->set_userdata('project_db',$item_data['project_label']);
 			$this->session->set_userdata('project_id',$project_id);
 			$this->session->set_userdata('project_title',$item_data['project_title']);
+			$this->session->set_userdata('project_public',$item_data['project_public']);
 			$this->session->set_userdata('working_perspective','screen');
 			$this->session->set_userdata('current_screen_phase',0);
 			}	

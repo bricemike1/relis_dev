@@ -56,8 +56,8 @@ class Install extends CI_Controller {
 	}
 	
 	public function install_form_editor(){
-		
-		
+		$project_published=project_published();
+		$data['project_published']=$project_published;
 		//$dir=$this->config->item('editor_generated_path');
 		//$editor_url=$this->config->item('editor_url');
 		
@@ -112,9 +112,10 @@ class Install extends CI_Controller {
 		
 		$data ['page_title'] = lng('Update project');
 		$editor_url=$this->config->item('editor_url');
+		$data ['top_buttons']="";
+		if(!$project_published)
+		$data ['top_buttons'] .= get_top_button ( 'all', 'Upload configuration file', 'install/install_form','Upload configuration file',' fa-upload','',' btn-info ' );
 		
-		
-		$data ['top_buttons'] = get_top_button ( 'all', 'Upload configuration file', 'install/install_form','Upload configuration file',' fa-upload','',' btn-info ' );
 		$data ['top_buttons'] .= "<li>".anchor('install/relis_editor','<button class="btn btn-primary">  Open editor </button></li>','title="Open editor"')."</li>" ;
 		$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
 		$data ['page'] = 'install/frm_install_editor';
@@ -1240,7 +1241,7 @@ class Install extends CI_Controller {
 	
 		if($config=='init'){
 			$old_configs=array('exclusion','papers');
-			$new_configs=array('exclusioncrieria','papers_sources','search_strategy','papers','author'
+			$new_configs=array('exclusioncrieria','inclusioncriteria','research_question','affiliation','papers_sources','search_strategy','papers','author'
 					,'paper_author','venue','screen_phase','screening','screen_decison','str_mng'
 					,'config','operations','qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug');
 			
@@ -1445,7 +1446,7 @@ class Install extends CI_Controller {
 	//	$configs=array('assignment_screen','screening','assignment_screen_validate','screening_validate','operations');
 		
 		if($config=='init'){
-			$configs=array('config','exclusioncrieria','papers_sources','search_strategy','papers','author'
+			$configs=array('config','exclusioncrieria','inclusioncriteria','research_question','affiliation','papers_sources','search_strategy','papers','author'
 					,'paper_author','venue','screen_phase','screening','screen_decison'
 					,'operations','qa_questions','qa_responses','qa_result','qa_assignment'
 					,'qa_validation_assignment','assignation','debug');
@@ -1471,7 +1472,7 @@ class Install extends CI_Controller {
 	
 	private function populate_common_tables_views($target_db='current'){
 		$target_db=($target_db=='current')?project_db():$target_db;
-		$configs=array('papers','assignation','qa_assignment');
+		$configs=array('papers','assignation','qa_assignment','author');
 		foreach ($configs as $key => $value) {
 			$table_configuration=get_table_configuration($value);
 			if(!empty($table_configuration['table_views'])){

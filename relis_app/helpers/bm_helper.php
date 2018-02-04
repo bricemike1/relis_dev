@@ -873,6 +873,25 @@ function user_project($project_id , $user=0,$user_role=""){
 		
 	}
 	
+	function project_published($project_id='current' ){
+		$ci = get_instance ();
+		if($project_id=='current'){
+			$project_id=active_project_id();// active project
+		}
+		
+		$sql="SELECT  	project_public FROM projects 
+			WHERE  project_id='$project_id' ";
+		//echo $sql;
+		$res = $ci->db->query($sql)->row_array();
+		//print_test($res);
+		if($res['project_public']){
+			return TRUE;
+		}else{
+			return FALSE;
+		}
+	
+	}
+	
 	function has_usergroup($usergroup_id , $user=0){
 		$ci = get_instance ();
 	
@@ -1441,8 +1460,9 @@ function user_project($project_id , $user=0,$user_role=""){
 			//---------
 			$res_assignment[$key]['user_name']=$users[$value['user_id']];
 			$reviewers .=$users[$value['user_id']]." | ";
-				
-			$res_assignment[$key]['exclusion_criteria']=empty($value['exclusion_criteria'])?"":$criteria[$value['exclusion_criteria']];
+			
+			
+			$res_assignment[$key]['exclusion_criteria']=empty($criteria[$value['exclusion_criteria']])?"":$criteria[$value['exclusion_criteria']];
 			//----------
 			//$ass_type=$value['assignment_type'];
 			${$value['assignment_type']}['number']++;

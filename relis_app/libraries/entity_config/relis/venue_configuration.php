@@ -23,13 +23,7 @@ function get_venue() {
 	   	);
 	   	
 	   	
-	   	$fields['venue_abbreviation']=array(
-	   			'field_title'=>'Abreviation',
-	   			'field_type'=>'text',	   						
-				'field_size'=>20,	   			
-				'input_type'=>'text', 
-				'mandatory'=>' mandatory '
-	   	);
+	   
 	   	
 	   	$fields['venue_fullName']=array(
 	   			'field_title'=>'Full name',
@@ -44,6 +38,13 @@ function get_venue() {
 	   			'field_type'=>'int',	   						
 				'field_size'=>4,	   			
 				'input_type'=>'text'
+	   	);
+		$fields['venue_abbreviation']=array(
+	   			'field_title'=>'Abreviation',
+	   			'field_type'=>'text',	   						
+				'field_size'=>20,	   			
+				'input_type'=>'text', 
+				//'mandatory'=>' mandatory '
 	   	);
 	   	$fields['venue_volume']=array(
 	   			'field_title'=>'Volume',
@@ -85,11 +86,11 @@ function get_venue() {
 	   	
 	   			'fields'=>array(
 	   					'venue_id'=>array('mandatory'=>'','field_state'=>'hidden'),
-	   					'venue_abbreviation'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					//'venue_abbreviation'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'venue_fullName'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'venue_year'=>array('mandatory'=>'','field_state'=>'enabled'),
-	   					'venue_volume'=>array('mandatory'=>'','field_state'=>'enabled'),
-	   					'venue_totalNumPapers'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   				//	'venue_volume'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   				//	'venue_totalNumPapers'=>array('mandatory'=>'','field_state'=>'enabled'),
 	   	
 	   			),
 	   	
@@ -124,11 +125,11 @@ function get_venue() {
 	   	
 	   			'fields'=>array(
 	   					'venue_id'=>array('mandatory'=>'','field_state'=>'hidden'),
-	   					'venue_abbreviation'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					//'venue_abbreviation'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'venue_fullName'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
 	   					'venue_year'=>array('mandatory'=>'','field_state'=>'enabled'),
-	   					'venue_volume'=>array('mandatory'=>'','field_state'=>'enabled'),
-	   					'venue_totalNumPapers'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   					//'venue_volume'=>array('mandatory'=>'','field_state'=>'enabled'),
+	   					//'venue_totalNumPapers'=>array('mandatory'=>'','field_state'=>'enabled'),
 	   	
 	   			),
 	   	
@@ -149,7 +150,7 @@ function get_venue() {
 	   			'operation_type'=>'List',
 	   			'operation_title'=>'List venues',
 	   			'operation_description'=>'List venues',
-	   			'page_title'=>'List venues',
+	   			'page_title'=>'Venues',
 	   	
 	   			//'page_template'=>'list',
 	   	
@@ -157,12 +158,12 @@ function get_venue() {
 	   			'generate_stored_procedure'=>True,
 	   	
 	   			'fields'=>array(
-	   					'venue_id'=>array(),
-	   					'venue_abbreviation'=>array(),
+	   					//'venue_id'=>array(),
+	   					//'venue_abbreviation'=>array(),
 	   					'venue_fullName'=>array(),
 	   					'venue_year'=>array(),
-	   					'venue_volume'=>array(),
-	   					'venue_totalNumPapers'=>array()
+	   					//'venue_volume'=>array(),
+	   					//'venue_totalNumPapers'=>array()
 	   	
 	   			),
 	   			'order_by'=>'venue_abbreviation ASC ',
@@ -175,12 +176,12 @@ function get_venue() {
 	   							'icon'=>'folder',
 	   							'url'=>'op/display_element/detail_venue/',
 	   					),
-	   					'edit'=>array(
+	   				/*	'edit'=>array(
 	   							'label'=>'Edit',
 	   							'title'=>'Edit',
 	   							'icon'=>'edit',
 	   							'url'=>'op/edit_element/edit_venue/',
-	   					),
+	   					),*/
 	   					'delete'=>array(
 	   							'label'=>'Delete',
 	   							'title'=>'Delete the user',
@@ -217,11 +218,11 @@ function get_venue() {
 	   	
 	   			'fields'=>array(
 	   					
-	   					'venue_abbreviation'=>array(),
+	   					//'venue_abbreviation'=>array(),
 	   					'venue_fullName'=>array(),
 	   					'venue_year'=>array(),
-	   					'venue_volume'=>array(),
-	   					'venue_totalNumPapers'=>array()
+	   				//	'venue_volume'=>array(),
+	   				//	'venue_totalNumPapers'=>array()
 	   						
 	   			),
 	   	
