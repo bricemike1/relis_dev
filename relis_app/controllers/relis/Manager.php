@@ -1680,9 +1680,36 @@ class Manager extends CI_Controller {
 		$headder=array('Row','Field1','Field2','Field3','Field4','Field5','Field6');
 			
 			
-		$data ['page_title'] = lng('Import papers');
+		$data ['page_title'] = lng('Import papers - CSV');
+	//	$data ['top_buttons'] = get_top_button ( 'all', 'Import BibTeX', 'relis/manager/import_bibtext','Import BibTeX','fa-upload' );
 		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
 		$data ['page'] = 'relis/import_papers_1';
+	
+	
+	
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
+	public function import_endnote(){
+		
+		$this->import_bibtext('endnote');
+	}
+	
+	public function import_bibtext($format='bibtex'){
+		$headder=array('Row','Field1','Field2','Field3','Field4','Field5','Field6');
+			
+		$data['import_format']=	$format;
+		if(!empty($format) AND $format=='endnote'){
+			$data ['page_title'] = lng('Import papers - Endnote');
+		}else{
+			$data ['page_title'] = lng('Import papers - BibTeX');
+		}
+		
+		//$data ['top_buttons'] = get_top_button ( 'all', 'Import CSV', 'relis/manager/import_papers','Import CSV','fa-upload' );
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+		$data ['page'] = 'relis/import_bibtex_1';
 	
 	
 	
@@ -1698,6 +1725,81 @@ class Manager extends CI_Controller {
 		$replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
 	
 		return str_replace($search, $replace, $value);
+	}
+	
+	public function import_papers_save_bibtext(){
+		$post_arr = $this->input->post ();
+		
+		
+		//use save bibtext to get the right answer
+		
+		$data_array=json_decode($post_arr['data_array'],True);
+		//print_test($data_array); exit;
+		
+		$papers_sources = (!empty($post_arr['papers_sources'])?$post_arr['papers_sources']:NULL);
+		$search_strategy = (!empty($post_arr['search_strategy'])?$post_arr['search_strategy']:NULL);
+	//	$paper_start_from = ((!empty($post_arr['paper_start_from']) AND is_numeric($post_arr['paper_start_from']))?$post_arr['paper_start_from']:2);
+	
+		$active_user=active_user_id();
+		$added_active_phase=get_active_phase();
+		$operation_code=active_user_id()."_".time();
+	
+		$default_key_prefix= get_appconfig_element('key_paper_prefix');
+		$default_key_prefix=($default_key_prefix=='0')?'':$default_key_prefix;
+	
+		$default_key_serial= get_appconfig_element('key_paper_serial');
+		$serial_key=$default_key_serial;
+	
+		//set classification status
+		if(get_appconfig_element('screening_on')){
+				
+			$classification_status='Waiting';
+			$screening_status='Pending';
+		}else{
+			$classification_status='To classify';
+				
+			$screening_status='Included';
+		}
+	
+		//echo $classification_status;
+		//exit;
+		$i=1;
+		$imported=0;
+		$exist=0;
+		foreach ($data_array as $key => $paper) {
+			$paper['operation_code']=$operation_code;			
+			$res=$this->insert_paper_bibtext($paper);
+			if($res=='1'){
+				$imported ++;
+			}else{
+				$exist++;
+				
+			}
+			
+	
+		}
+	
+		
+			// update the operation tab
+		$operation_arr=array('operation_code'=>$operation_code,
+				'operation_type'=>'import_paper',
+				'user_id'=>active_user_id(),
+				'operation_desc'=>'Paper import before screening'
+	
+		);
+		$res2 = $this->manage_mdl->add_operation($operation_arr);
+	
+		if(!empty($imported))
+		{
+			set_top_msg(" $imported papers imported successfully");
+		}
+	
+		if(!empty($exist))
+		{
+			set_top_msg(" $exist papers already exist",'error');
+		}
+		redirect('home/screening');
+	
 	}
 	
 	public function import_papers_save_csv(){
@@ -1809,6 +1911,100 @@ class Manager extends CI_Controller {
 		redirect('home/screening');
 		
 	}
+	
+	//Load a bibtext file connect to bibler to get the JSON
+	
+	public function import_papers_load_bibtext(){
+		$post_arr = $this->input->post ();
+		
+		$error_array=array();
+		$success_array=array();
+		$array_tab_preview=array();
+		$array_tab_values=array();
+		
+		if(!empty($post_arr['from_endnote'])){
+			$redirect="relis/manager/import_endnote";
+		}else{
+			$redirect="relis/manager/import_bibtext";
+		}
+		
+		//exit;
+		if(empty($_FILES["paper_file"]['tmp_name'])){
+			echo set_top_msg(lng_min("No file selected") , 'error');
+			
+			redirect($redirect);
+			
+			exit;
+		}
+		if ($_FILES["paper_file"]["error"] > 0)
+		{
+			//echo "Error: " . $_FILES["file"]["error"] . "<br />";
+			echo set_top_msg("Error: " . file_upload_error($_FILES["install_config"]["error"]) , 'error');
+			array_push($error_array,"Error: " . file_upload_error($_FILES["install_config"]["error"]));
+			redirect($redirect);
+				
+			exit;
+		}
+		else
+		{
+			$bibtextString=file_get_contents($_FILES["paper_file"]['tmp_name']);
+			
+			//Call bibler to convert into json and return then conert into array			
+			
+			if(!empty($post_arr['from_endnote'])){
+				$Tpapers=$this->get_bibler_result($bibtextString,"endnote");
+			}else{
+				$Tpapers=$this->get_bibler_result($bibtextString,"multi_bibtex");
+			}
+		//	print_test(count($Tpapers['paper_array']));
+			
+			
+	//		vv
+			
+			
+			
+			$data['json_values']=$json_papers=json_encode($Tpapers['paper_array']);;
+			
+			// convert json into array
+			/////$T_papers=json_decode($bibtextString);
+			//z
+			$data['uploaded_papers']=$Tpapers['paper_preview_sucess'];
+			$data['uploaded_papers_error']=$Tpapers['paper_preview_error'];
+			
+			$data['number_of_papers']=count($Tpapers['paper_array']);
+
+			
+	
+		}
+	
+			
+		
+		if(get_appconfig_element('source_papers_on')){
+			
+			$data['source_papers']= $this->manager_lib->get_reference_select_values('papers_sources;ref_value',True,False);
+			//print_test($data['source_papers']);
+		}
+		
+		
+		if(get_appconfig_element('search_strategy_on')){
+			$data['search_strategy']= $this->manager_lib->get_reference_select_values('search_strategy;ref_value',True,False);
+			//print_test($data['search_strategy']);
+		}
+		
+		$data ['page_title'] = lng('Import papers - BibTeX');
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
+		$data ['page'] = 'relis/import_bibtext_2';
+	
+	
+	
+		/*
+		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
+		 */
+		$this->load->view ( 'body', $data );
+	}
+	
+	
+	
 	public function import_papers_load_csv(){
 	
 		$error_array=array();
@@ -2056,19 +2252,25 @@ class Manager extends CI_Controller {
 		$this->load->view ( 'body', $data );
 	}
 	
+	public function download($file_name){
+		$url=base_url()."cside/export_r/".$file_name;
+		header("Content-Type: application/octet-stream");
+		header("Content-Transfer-Encoding: Binary");
+		header("Content-disposition: attachment; filename=\"".$file_name."\"");
+		echo readfile($url);
 	
+		//header("Location: $url");
+	}
 	
 	public function result_export_papers(){
-		//get classification
 	
 		$table_ref="papers";
 		$this->db2 = $this->load->database(project_db(), TRUE);
-		$sql="SELECT id,bibtexKey,title,doi,preview,abstract,year,bibtex FROM  paper WHERE paper_active =1 AND paper_excluded=0";
+		$sql="SELECT id,bibtexKey,title,doi,preview,abstract,year,bibtex
+				FROM  paper WHERE paper_active =1 AND paper_excluded=0";
 		$data=$this->db2->query ( $sql );
-		//	mysqli_next_result( $this->db2->conn_id );
 		$result=$data->result_array();
-		//print_test($result);
-	
+		
 	
 		$array_header=array('#',"key",'Title','Link','Preview','Abstract','Year','Bibtex');
 		
@@ -2080,9 +2282,49 @@ class Manager extends CI_Controller {
 		$stream = fopen('data://text/plain,' . "", 'w+');
 	
 		// Iterate over the data, writting each line to the text stream
-		$f_new = fopen("cside/export_r/export_paper_".project_db().".csv", 'w+');
+		$f_new = fopen("cside/export_r/relis_paper_".project_db().".csv", 'w+');
 		foreach ($result as $val) {
 			fputcsv($f_new, $val,get_appconfig_element('csv_field_separator_export'));
+		}
+	
+		fclose($f_new);
+		
+		set_top_msg(lng_min('File generated'));
+	
+		redirect('relis/manager/result_export');
+	
+	}
+	
+	
+	public function result_export_papers_bib(){
+		//get classification
+	
+		$table_ref="papers";
+		$this->db2 = $this->load->database(project_db(), TRUE);
+		$sql="SELECT id,bibtexKey,title,doi,preview,abstract,year,bibtex FROM  paper WHERE paper_active =1 AND paper_excluded=0";
+		$data=$this->db2->query ( $sql );
+		//	mysqli_next_result( $this->db2->conn_id );
+		$result=$data->result_array();
+		//print_test($result);
+	
+	
+		//$array_header=array('#',"key",'Title','Link','Preview','Abstract','Year','Bibtex');
+		
+		//array_unshift($result, $array_header);
+		
+	
+	
+		// Create a stream opening it with read / write mode
+		$stream = fopen('data://text/plain,' . "", 'w+');
+	
+		// Iterate over the data, writting each line to the text stream
+		$f_new = fopen("cside/export_r/relis_paper_bibtex_".project_db().".bib", 'w+');
+		foreach ($result as $val) {
+			//print_test($val);
+			if(!empty($val['bibtex'])){
+				fputs($f_new, $val['bibtex']."\n");
+				
+			}
 		}
 	
 		// Rewind the stream
@@ -2237,7 +2479,7 @@ class Manager extends CI_Controller {
 		}
 		
 		// Iterate over the data, writting each line to the text stream
-		$f_new = fopen("cside/export_r/export_classification_".project_db().".csv", 'w+');
+		$f_new = fopen("cside/export_r/relis_classification_".project_db().".csv", 'w+');
 		foreach ($list_to_display as $val) {
 			fputcsv($f_new, $val,get_appconfig_element('csv_field_separator_export'));
 		}
@@ -5549,7 +5791,7 @@ class Manager extends CI_Controller {
 		}
 	//	print_test($data);
 		$data ['top_buttons']="";
-		if(! project_published()){
+		if(! project_published() AND can_manage_project()){
 			if($Included){
 				$data ['top_buttons'].=get_top_button ( 'all', "Exclude the paper", 'relis/manager/qa_exlusion/'.$id ,'Exclude'," fa-minus",'','btn-danger' )." ";
 					
@@ -5574,13 +5816,19 @@ class Manager extends CI_Controller {
 		
 		//$type="all";
 		$data =$this->get_qa_result($type);
+		//print_test($data);
 		$qa_cutt_off_score=get_appconfig_element('qa_cutt_off_score');
 		$data['qa_cutt_off_score']=$qa_cutt_off_score;
 		//print_test($data);
 		$data ['top_buttons']="";
 		
-		//if(can_manage_project())
-		//$data ['top_buttons'].=get_top_button ( 'all', "Exclude low quality papers", 'relis/manager/exclude_low_quality' ,'Exclude low quality'," fa-minus",'','btn-danger' )." ";
+		
+		if(! project_published() AND can_manage_project() AND $type=='all'){
+			$data ['top_buttons'].=get_top_button( 'all', "Exclude low quality papers", 
+					'relis/manager/qa_exclude_low_quality_validation' ,'Exclude low quality',
+					" fa-minus",'','btn-danger' )." ";
+		}
+		
 			
 		$data ['top_buttons'] .= get_top_button ( 'close', 'Close', 'home' );
 	
@@ -5602,10 +5850,7 @@ class Manager extends CI_Controller {
 		 
 	}
 	
-	public function exclude_low_quality(){
-		//s
-		
-	}
+	
 	
 	
 	
@@ -5823,6 +6068,60 @@ function qa_exlusion($paper_id,$op=1){
 		redirect($after_after_save_redirect);
 	
 	}
+	//exclude all papers with low quality
+	function qa_exclude_low_quality(){
+		//s
+		$qa_result =$this->get_qa_result('all');
+		//print_test($qa_result);
+		$qa_cutt_off_score=get_appconfig_element('qa_cutt_off_score');
+		$excluded=0;
+		if(!empty($qa_result['qa_list'])){
+			foreach ($qa_result['qa_list'] as $key => $value) {
+				if($value['q_result_score']<$qa_cutt_off_score){
+					$this->db_current->update('paper',
+							array('screening_status'=>'Excluded_QA',
+									'classification_status'=>'Waiting'),
+							array('id'=>$value['paper_id']));
+						$excluded ++;
+					
+				}
+			}
+		}
+		if($excluded>0){
+			set_top_msg("Completed ".$excluded ." paper(s) excluded");
+		}
+		else {
+			set_top_msg("No paper to exclude!");
+		}
+		
+		$after_after_save_redirect="relis/manager/qa_conduct_result";
+		redirect($after_after_save_redirect);
+	
+	}
+	
+	function qa_exclude_low_quality_validation(){
+	
+		$data ['page'] = 'install/frm_install_result';
+		//$data['left_menu_admin']=True;
+	
+		$data['array_warning']=array('You want to delete All papers with low quality : The opération cannot be undone !');
+		$data['array_success']=array();
+		$data ['next_operation_button']="";
+	
+	
+	
+		$data ['page_title'] = lng('Exclude low quality papers');
+	
+	
+		$data ['next_operation_button'] =" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue to delete', 'relis/manager/qa_exclude_low_quality','Continue','','',' btn-success ',FALSE );
+		$data ['next_operation_button'] .= get_top_button ( 'all', 'Cancel', 'relis/manager/qa_conduct_result','Cancel','','',' btn-danger ',FALSE );
+	
+	
+		$this->load->view ( 'body', $data );
+	
+	
+	}
+	
 	
 	function qa_validate($paper_id,$op=1){
 	
@@ -6023,7 +6322,7 @@ function qa_exlusion($paper_id,$op=1){
  public function add_paper_bibtex($data=array()){
  		
  	$data ['top_buttons'] = get_top_button ( 'close', 'Back', 'op/entity_list/list_all_papers' );
- 	$data['title']='Add paper using bibtex';
+ 	$data['title']='Add BibTeX';
  	
  	$data['page']='relis/bibtex_form';
  	$this->load->view('body',$data);
@@ -6032,7 +6331,266 @@ function qa_exlusion($paper_id,$op=1){
  //save paper from bibtex
  
  
+ private function get_bibler_result($bibtex,$operation="single"){
+ 	
+ 	$bibtexz='
+@article{kitchenham2009systematic,
+	title={Systematic literature reviews in software engineering--a systematic literature review},
+	author={Kitchenham, Barbara and Brereton, O Pearl and Budgen, David and Turner, Mark and Bailey, John and Linkman, Stephen},
+	journal={Information and software technology},
+	volume={51},
+	number={1},
+	pages={7--15},
+	year={2009},
+	publisher={Elsevier}
+} 			
+ 			
+@article{Syriani201843,
+title = "Systematic mapping study of template-based code generation ",
+journal = "Computer Languages, Systems and Structures ",
+volume = "52",
+number = "",
+pages = "43 - 62",
+year = "2018",
+note = "",
+issn = "1477-8424",
+doi = "https://doi.org/10.1016/j.cl.2017.11.003",
+url = "https://www.sciencedirect.com/science/article/pii/S1477842417301239",
+author = "Eugene Syriani and Lechanceux Luhunu and Houari Sahraoui",
+keywords = "Code generation",
+keywords = "Systematic mapping study",
+keywords = "Model-driven engineering "
+
+}
+ 			
+ 			 			
+@article{kitchenham2010systematic,
+  title={Systematic literature reviews in software engineering--a tertiary study},
+  author={Kitchenham, Barbara and Pretorius, Rialette and Budgen, David and Brereton, O Pearl and Turner, Mark and Niazi, Mahmood and Linkman, Stephen},
+  journal={Information and Software Technology},
+  volume={52},	
+  number={8},
+  pages={792--805},
+  year={2010},
+  publisher={Elsevier}
+}
+ 			';
+ //clean the bibtex content
+ 	$bibtex=strstr($bibtex,'@');
+ 	$bibtex=str_replace("\'", "", $bibtex);
+ 	$bibtex=str_replace("'", " ", $bibtex);
+// 	$bibtex=str_replace('"', '\"' ,$bibtex);
+//echo $bibtex;
+ 	$error=1;
+ 	$error_msg="";
+ 	$paper_array=array();
+ 	$paper_preview_sucess=array();//for import only
+ 	$paper_preview_error=array();//for import only
+ 	$init_time=microtime ();
+ 	$i=1;
+ 	$res="init";
+ 	while($i<10){ //up to ten attempt to connect to server if the connection does not work
+ 		if($operation =='single'){
+ 			
+ 			$res=$this->biblerproxy_lib->createentryforreliS($bibtex);
+ 		}
+ 		elseif($operation =='endnote'){
+ 			$res=$this->biblerproxy_lib->importendnotestringforrelis($bibtex);
+ 			
+ 		} 		
+ 		else{
+ 			$res=$this->biblerproxy_lib->importbibtexstringforrelis($bibtex);			
+ 		}
+ 		
+ 	
+ 		$correct=False;
+ 		//if there is an error messag in the result retry
+ 		if (strpos($res, 'Internal Server Error') !== false OR empty($res) ){ 			
+ 			$i++;
+ 		}else{
+ 			//if there no error messag in the result retry
+ 			$correct=True;
+ 			$i=20;
+ 		}
+ 		//usleep(500);
+ 	
+ 	}
+ 	
+ 	$end_time=microtime ();
+ 	ini_set('auto_detect_line_endings',TRUE);
+ 	if($correct){
+ 		// some result cleanning
+ 		$res=str_replace("True,", "'True',", $res);
+ 		$res=str_replace("False,", "'False',", $res);
+ 		$res=str_replace('"', '' ,$res);
+ 		$res = $this->biblerproxy_lib->fixJSON($res);
+
+ 		$Tres = json_decode($res,True);
+
+ 		if (json_last_error() === JSON_ERROR_NONE) {
+
+ 			if($operation =='single'){
+ 			$result['bibtext']=$bibtex;
+ 			$paper_array=array();
+	 			if(!empty($Tres['result_code'])
+	 				AND !empty($Tres['entry']['entrykey'])){
+	 				$error=0;	
+	 						
+	 				$year=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
+	 				
+	 				$paper_array['bibtexKey']=$Tres['entry']['entrykey'];
+	 				$paper_array['title']=!empty($Tres['entry']['title']) ? $Tres['entry']['title'] : "";
+	 				$paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
+	 				$paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
+	 				$paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
+	 				$paper_array['doi']=!empty($Tres['entry']['paper']) ? $Tres['entry']['paper'] : "";
+	 				$paper['venue']=!empty($value['venue_full']) ? $value['venue_full'] : "";	 				
+	 				$paper_array['year']=$year;
+	 				$paper_array['authors']=!empty($Tres['authors']) ? $Tres['authors']: "";
+	 	
+	 			}else{
+	 				$error_msg.="Error: check your Bibtext .<br/>".!empty($Tres['result_msg']) ? $Tres['result_msg'] : "";;
+	 	
+	 			}
+ 			}else{
+ 				if(empty($Tres['error']) AND !empty( $Tres['papers'] )){
+ 					
+ 			
+ 					//exit;
+ 					$paper=array();
+ 					$i_ok=1;
+ 					$i_Nok=1;
+ 					
+ 					
+ 					
+ 					foreach ($Tres['papers'] as $key => $value) {
+ 						if(!empty($value['entry']['entrykey'])){
+ 						if(!empty($value['result_code'])){
+ 							
+ 									$error=0;
+ 										
+ 									$year=!empty($value['entry']['year']) ? $value['entry']['year'] : "";
+ 									
+ 								/*	if(!empty($value['venue_full'])){
+ 										$venue_id=$this->add_venue($value['venue_full'],$year);
+ 										$paper['venueId']=$venue_id;
+ 									}*/
+ 									$paper['bibtexKey']=$value['entry']['entrykey'];
+ 									$paper['title']=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
+ 									$paper['preview']=!empty($value['preview']) ? $value['preview'] : "";
+ 									$paper['bibtex']=!empty($value['bibtex']) ? $value['bibtex']: "";
+ 									$paper['abstract']=!empty($value['entry']['abstract']) ? $value['entry']['abstract'] : "";
+ 									$paper['doi']=!empty($value['entry']['paper']) ? $value['entry']['paper'] : "";
+ 									$paper['venue']=!empty($value['venue_full']) ? $value['venue_full'] : "";
+ 									$paper['year']=$year;
+ 									$paper['authors']=!empty($value['authors']) ? $value['authors']: "";
+ 					
+ 									array_push($paper_array, $paper);
+ 									array_push($paper_preview_sucess, array('i'=>$i_ok,'preview'=>$paper['preview']));
+ 									$i_ok++;
+ 						}else{
+ 							$preview=!empty($value['preview']) ? $value['preview'] : "";
+ 							array_push($paper_preview_error, array('i'=>$i_Nok,'preview'=>$preview,
+ 									'msg'=> $value['result_msg'] ));
+ 							$i_Nok++;
+ 						}
+ 					}
+ 					}
+ 				}else{
+ 					$error_msg.="Error: No papers found.<br/>";
+ 					$error=0;
+ 				}
+ 				
+ 				//$paper_array=$Tres;
+ 			}
+ 			
+ 		} else{
+ 			
+ 			$json_error="";
+ 			switch (json_last_error()) {
+ 				case JSON_ERROR_NONE:
+ 					$json_error= 'No errors';
+ 					break;
+ 				case JSON_ERROR_DEPTH:
+ 					$json_error= 'Maximum stack depth exceeded';
+ 					break;
+ 				case JSON_ERROR_STATE_MISMATCH:
+ 					$json_error= 'Underflow or the modes mismatch';
+ 					break;
+ 				case JSON_ERROR_CTRL_CHAR:
+ 					$json_error= 'Unexpected control character found';
+ 					break;
+ 				case JSON_ERROR_SYNTAX:
+ 					$json_error= 'Syntax error, malformed JSON';
+ 					break;
+ 				case JSON_ERROR_UTF8:
+ 					$json_error= 'Malformed UTF-8 characters, possibly incorrectly encoded';
+ 					break;
+ 				default:
+ 					$json_error= 'Unknown error';
+ 					break;
+ 			}
+ 	
+ 			$error_msg.="JSON Error : ".$json_error.".<br/>";
+ 			
+ 		}
+ 	
+ 	}else{
+ 		$error_msg.="Unable to connect to Bibler web service.<br/>";
+ 		$this->add_paper_bibtex($data);			
+ 	}
+ 	$result['error']=$error;
+ 	$result['error_msg']=$error_msg;
+ 	$result['paper_array']=$paper_array;
+ 	$result['paper_preview_sucess']=$paper_preview_sucess;
+ 	$result['paper_preview_error']=$paper_preview_error;
+ 	return $result;
+ 	
+ }
+ 
+ 
  public function  save_bibtex_paper(){
+ 
+ 	
+ 	$post_arr = $this->input->post ();
+ 	$data['message_error']="";
+ 	$data['message_success']="";
+ 	if(empty($post_arr['bibtext']))
+ 	{
+ 		$data['message_error'].="Bibtex field empty.<br/>";
+ 		$this->add_paper_bibtex($data);
+ 	}else
+ 	{
+ 		$bibtex=$post_arr['bibtext'];
+ 	
+ 		$bibtex_result=$this->get_bibler_result($bibtex);
+ 	//	print_r($bibtex_result);
+ 		if(!empty($bibtex_result['bibtext']))
+ 		{
+ 			$data['bibtext']=$bibtex_result['bibtext'];
+ 		}
+ 	//	print_test($bibtex_result);exit;
+ 		if(empty($bibtex_result['error']) AND !empty($bibtex_result)){
+ 			$insert_res=$this->insert_paper_bibtext($bibtex_result['paper_array']);
+ 			if($insert_res==1){
+ 				$data['message_success'].="Paper added";
+ 			}else{
+ 				$data['message_error'].=$insert_res;
+ 			}
+ 		}else{
+ 			$data['message_error'].=$bibtex_result['error_msg'];
+ 		}
+ 		
+ 		$this->add_paper_bibtex($data);
+ 
+
+ 	
+ 	}
+ 
+ }
+ 
+ 
+ public function  save_bibtex_paper_saved(){
  
  	
  	$post_arr = $this->input->post ();
@@ -6181,6 +6739,7 @@ function qa_exlusion($paper_id,$op=1){
  	//print_test($paper_array);
  	$authors=$paper_array['authors'];
  	unset($paper_array['authors']);
+ 	
  	$bibtexKey=$paper_array['bibtexKey'];
  	$exist=False;
  	$stopsearch=False;
@@ -6206,6 +6765,14 @@ function qa_exlusion($paper_id,$op=1){
  	
  	
 	if(!$exist){
+		
+		//add venue
+		if(!empty($paper_array['venue'])){
+			$venue_id=$this->add_venue($paper_array['venue'],$paper_array['year']);
+			$paper_array['venueId']=$venue_id;
+			
+		}
+		unset($paper_array['venue']);
 		$paper_array['added_by']=active_user_id();
 		$paper_array['bibtexKey']=$bibtexKey;
 		//set classification status

@@ -24,22 +24,42 @@ class Auth extends CI_Controller {
 			redirect('home');
 		}else
 		{
-			/*
-			 * For first connection create stored procedure for admin database
-			 * 
-			 */
-			
-			/* Affichage du formulaire de connexion 
-			 * 
-			 * */
-		
-		$data['page']='login';
-		
 		/*
 		 * Chargement de la vue d'authentification
 		 */
-		$this->load->view('login',$data);
+		$data['page']='h_home';
+		$this->load->view('h_body',$data);
 		}	
+	}
+	
+	
+	public function login()
+	{
+	
+	
+		
+	
+			$data['page']='h_login';
+	
+			/*
+			 * Chargement de la vue d'authentification
+			 */
+			$this->load->view('h_body',$data);
+		
+	}
+	public function help()
+	{
+	
+	
+		
+	
+			$data['page']='h_help';
+	
+			/*
+			 * Chargement de la vue d'authentification
+			 */
+			$this->load->view('h_body',$data);
+		
 	}
 	
 	
@@ -65,7 +85,8 @@ class Auth extends CI_Controller {
 			/*
 			 * Si toutes les valeurs ne sont pas saisies  retour vers le formulaire de connexion
 			 */
-			$this->load->view('login');
+			$data['page']='h_login';
+			$this->load->view('h_body',$data);
 		}
 		else
 		{
@@ -81,7 +102,8 @@ class Auth extends CI_Controller {
 					
 					
 				$data['err_msg'] = 'Username or Password not correct !';
-				$this->load->view('login',$data);
+				$data['page']='h_login';
+				$this->load->view('h_body',$data);
 					
 			}
 			else{
@@ -332,9 +354,9 @@ class Auth extends CI_Controller {
 			redirect('home');
 		}else
 		{
-			$data['page']='login';
+			$data['page']='h_create_user';
 	
-			$this->load->view('create_user',$data);
+			$this->load->view('h_body',$data);
 		}
 	}
 		
@@ -394,9 +416,6 @@ class Auth extends CI_Controller {
 						'confirmation_expiration'=>time() + 86400,
 						'confirmation_try'=>0,
 				));
-				
-				
-				
 				//send message for confirmationm
 				
 				$message="
@@ -416,14 +435,7 @@ class Auth extends CI_Controller {
 				echo "Correct ready to save and validate";
 			}
 			
-		}
-		
-		
-		
-		
-		
-		
-	
+		}	
 	}
 	
 	

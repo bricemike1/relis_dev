@@ -323,3 +323,7 @@ $config['project_db_host'] = "localhost";
  
 
 $config['base_url'] = "http://localhost/relis/relis_dev";
+
+
+//Licence
+// https://www.gnu.org/copyleft/gpl.html

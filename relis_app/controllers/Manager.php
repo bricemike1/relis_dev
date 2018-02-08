@@ -2366,7 +2366,7 @@ class Manager extends CI_Controller {
 		$data ['page_title'] = lng('Clear logs ');
 	
 	
-		$data ['next_operation_button'] =" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue uninstall', 'manager/clear_papers','Continue to delete','','',' btn-success ',FALSE );
+		$data ['next_operation_button'] =" &nbsp &nbsp &nbsp". get_top_button ( 'all', 'Continue to delete', 'manager/clear_papers','Continue to delete','','',' btn-success ',FALSE );
 		$data ['next_operation_button'] .= get_top_button ( 'all', 'Cancel', 'op/entity_list/list_all_papers','Cancel','','',' btn-danger ',FALSE );
 		
 	

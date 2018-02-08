@@ -581,7 +581,7 @@ function top_msg() {
 		
 		<?php 
 		$ci->session->set_userdata ( 'msg_err', '' );
-	} elseif ($ci->session->userdata ( 'msg' )) {
+	} if ($ci->session->userdata ( 'msg' )) {
 		/*echo '<br/><br/><br/><div class="alert alert-success alert-dismissible fade in" role="alert">
 				<button class="close" aria-label="Close" data-dismiss="alert" type="button">
 					<span aria-hidden="true">×</span>

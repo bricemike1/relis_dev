@@ -1385,9 +1385,13 @@ class Manager_lib
 		);
 		$menu['general']['menu']['home']=array('label'=>'Project','url'=>'home/screening_select','icon'=>'home');
 		
-		if(get_appconfig_element('import_papers_on') AND $can_manage_project AND !$project_published)	
-			$menu['general']['menu']['import_papers']=array( 'label'=>'Import Papers', 'url'=>'relis/manager/import_papers', 'icon'=>'upload');
-			
+		if(get_appconfig_element('import_papers_on') AND $can_manage_project AND !$project_published)	{
+			$menu['general']['menu']['import_papers']=array( 'label'=>'Import Papers', 'url'=>'', 'icon'=>'upload');
+			$menu['general']['menu']['import_papers']['sub_menu']['csv']=array( 'label'=>'Import CSV', 'url'=>'relis/manager/import_papers', '');
+			$menu['general']['menu']['import_papers']['sub_menu']['bibtex']=array( 'label'=>'Import BibTeX', 'url'=>'relis/manager/import_bibtext', '');
+			$menu['general']['menu']['import_papers']['sub_menu']['endnote']=array( 'label'=>'Import EndNote', 'url'=>'relis/manager/import_endnote', '');
+				
+		}
 			$menu['general']['menu']['papers']=array('label'=>'Papers','url'=>'','icon'=>'newspaper-o');
 			$menu['general']['menu']['papers']['sub_menu']['all_papers']=array( 'label'=>'All', 'url'=>'op/entity_list/list_all_papers', '');		
 			$menu['general']['menu']['papers']['sub_menu']['screen_paper_pending']=array( 'label'=>'Pending', 'url'=>'op/entity_list/list_pending_papers', '');

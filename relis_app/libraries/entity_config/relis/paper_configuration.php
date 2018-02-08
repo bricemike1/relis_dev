@@ -530,15 +530,15 @@ WHERE screening_active=1  GROUP BY P.id,S.screening_phase',
 			'top_links'=>array(
 					'clear_logs'=>$clear_papers,
 					'add_bibtex'=>array(
-							'label'=>'Add using bibtex',
-							'title'=>'Add using bibtex',
+							'label'=>'Add BibTeX',
+							'title'=>'Add using BibTeX',
 							'icon'=>'add',
 							'url'=>'relis/manager/add_paper_bibtex',
 					),
 					'add'=>array(
-							'label'=>'',
+							'label'=>' Add new',
 							'title'=>'Add a new paper',
-							'icon'=>'add',
+							'icon'=>'adds',
 							'url'=>'op/add_element/add_paper',
 					),
 					'back'=>array(

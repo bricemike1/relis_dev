@@ -83,6 +83,13 @@ class Biblerproxy_lib
 	public function createentryforreliS($data) {
 		return $this->httpPost($this->url."createentryforrelis/",$data);
 	}
+	public function importbibtexstringforrelis($data) {
+		return $this->httpPost($this->url."importbibtexstringforrelis/",$data);
+	}
+	
+	public function importendnotestringforrelis($data) {
+		return $this->httpPost($this->url."importendnotestringforrelis/",$data);
+	}
 
 	public  function fixJSON($json) {
 		$regex = <<<'REGEX'
@@ -92,7 +99,7 @@ class Biblerproxy_lib
   | '([^'\\]*(?:\\.|[^'\\]*)*)'
 ~x
 REGEX;
-
+	
 		return preg_replace_callback($regex, function($matches) {
 			return '"' . preg_replace('~\\\\.(*SKIP)(*F)|"~', '\\"', $matches[1]) . '"';
 		}, $json);

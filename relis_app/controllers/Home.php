@@ -266,22 +266,25 @@ month={Aug},}
 			//$res=$this->biblerproxy_lib->bibtextohtml($bibtex);
 			//$res=$this->biblerproxy_lib->formatBibtex($bibtex);
 			$res=$this->biblerproxy_lib->createentryforreliS($bibtex);
+			echo "zzzz";
+			print_test($res);
+			echo "yyyy";
 			$correct=False;
-			if (strpos($res, 'Internal Server Error') !== false OR empty($res) ){
+			if (strpos($res, 'Internal Server Error') !== false ){
 				 
-			//	echo " error - ".$i;
+				echo " error - ".$i;
 				$i++;
 			}else{
-			//	echo " ok - ".$i;
+				echo " ok - ".$i;
 				$correct=True;
 				$i=20;
 			}
-			//usleep(500);
+			usleep(500);
 			
 		}
 		
 		$end_time=microtime ();
-		//print_test($res);
+		print_test($res);
 	//	echo "<h1>".($end_time - $init_time)."</h1>";
 		ini_set('auto_detect_line_endings',TRUE);
 		if($correct){
