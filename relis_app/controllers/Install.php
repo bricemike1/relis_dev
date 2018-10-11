@@ -22,23 +22,39 @@ class Install extends CI_Controller {
 	public function relis_editor($type="client"){
 	
 		$data ['page_title'] = lng('ReLiS editor');
-		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'manage' );
-	
+		
 		$data ['page'] = 'install/relis_editor';
 		$data['editor_url']=$this->config->item('editor_url');
-	
+		$data ['top_buttons'] ="";
 		if($type == 'admin'){
 			$data['left_menu_admin']=True;
 			$data['editor_url']=get_adminconfig_element('editor_url');
+			if(has_usergroup(1)){
+				$data ['top_buttons'] = get_top_button ( 'all', lng_min('Manage editor server'), 'home/manage_editor',lng_min('Manage editor server'),' fa-gear','',' btn-info ' );
+			}
 		}else{
 			$data['editor_url']=get_appconfig_element('editor_url');
 		}
+		
+		$this->check_editor($data['editor_url']);
+		//exit;
+		$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
 	
 		/*
 		 * Chargement de la vue avec les données préparés dans le controleur suivant le type d'affichage : (popup modal ou pas)
 		 */
 		$this->load->view ( 'body', $data );
 	
+	}
+	
+	private function check_editor($url){
+		$status = exec("netstat -lnp | grep 8080");
+		if(!empty($status)){// server already runnning
+			
+		}else{
+			$message = exec("/u/relis/tomcat/bin/startup.sh");
+			sleep(2);
+		}    
 	}
 	
 	public function install_form(){
@@ -627,7 +643,7 @@ class Install extends CI_Controller {
 			$this->add_database_config($project_short_name);
 			
 			//sleep to wait for config to be update (to correct for something really sure)
-			sleep(1);
+			sleep(5);
 			
 			//echo "<h2>initialise database</h2>";
 		

@@ -1734,7 +1734,6 @@ class Manager extends CI_Controller {
 		//use save bibtext to get the right answer
 		
 		$data_array=json_decode($post_arr['data_array'],True);
-		//print_test($data_array); exit;
 		
 		$papers_sources = (!empty($post_arr['papers_sources'])?$post_arr['papers_sources']:NULL);
 		$search_strategy = (!empty($post_arr['search_strategy'])?$post_arr['search_strategy']:NULL);
@@ -1767,7 +1766,11 @@ class Manager extends CI_Controller {
 		$imported=0;
 		$exist=0;
 		foreach ($data_array as $key => $paper) {
-			$paper['operation_code']=$operation_code;			
+			$paper['papers_sources']=$papers_sources;
+			$paper['search_strategy']=$search_strategy;
+			$paper['operation_code']=$operation_code;
+			
+			
 			$res=$this->insert_paper_bibtext($paper);
 			if($res=='1'){
 				$imported ++;
@@ -1956,7 +1959,6 @@ class Manager extends CI_Controller {
 			}else{
 				$Tpapers=$this->get_bibler_result($bibtextString,"multi_bibtex");
 			}
-		//	print_test(count($Tpapers['paper_array']));
 			
 			
 	//		vv
@@ -2949,7 +2951,7 @@ class Manager extends CI_Controller {
 		$displayed_fieds=explode('|', $screening_phase_info['displayed_fields']);
 		//print_test($screening_phase_info);
 		//print_test($fieds);
-		
+		$data['screening_phase_info']=$screening_phase_info;
 		if(!empty($data['the_paper'])){
 			
 			$paper_detail= $this->DBConnection_mdl->get_row_details ( 'papers',$data['the_paper'] );
@@ -6333,52 +6335,11 @@ function qa_exlusion($paper_id,$op=1){
  
  private function get_bibler_result($bibtex,$operation="single"){
  	
- 	$bibtexz='
-@article{kitchenham2009systematic,
-	title={Systematic literature reviews in software engineering--a systematic literature review},
-	author={Kitchenham, Barbara and Brereton, O Pearl and Budgen, David and Turner, Mark and Bailey, John and Linkman, Stephen},
-	journal={Information and software technology},
-	volume={51},
-	number={1},
-	pages={7--15},
-	year={2009},
-	publisher={Elsevier}
-} 			
- 			
-@article{Syriani201843,
-title = "Systematic mapping study of template-based code generation ",
-journal = "Computer Languages, Systems and Structures ",
-volume = "52",
-number = "",
-pages = "43 - 62",
-year = "2018",
-note = "",
-issn = "1477-8424",
-doi = "https://doi.org/10.1016/j.cl.2017.11.003",
-url = "https://www.sciencedirect.com/science/article/pii/S1477842417301239",
-author = "Eugene Syriani and Lechanceux Luhunu and Houari Sahraoui",
-keywords = "Code generation",
-keywords = "Systematic mapping study",
-keywords = "Model-driven engineering "
-
-}
- 			
- 			 			
-@article{kitchenham2010systematic,
-  title={Systematic literature reviews in software engineering--a tertiary study},
-  author={Kitchenham, Barbara and Pretorius, Rialette and Budgen, David and Brereton, O Pearl and Turner, Mark and Niazi, Mahmood and Linkman, Stephen},
-  journal={Information and Software Technology},
-  volume={52},	
-  number={8},
-  pages={792--805},
-  year={2010},
-  publisher={Elsevier}
-}
- 			';
+ 	
  //clean the bibtex content
  	$bibtex=strstr($bibtex,'@');
- 	$bibtex=str_replace("\'", "", $bibtex);
- 	$bibtex=str_replace("'", " ", $bibtex);
+ //	$bibtex=str_replace("\'", "", $bibtex);
+ //	$bibtex=str_replace("'", " ", $bibtex);
 // 	$bibtex=str_replace('"', '\"' ,$bibtex);
 //echo $bibtex;
  	$error=1;
@@ -6420,10 +6381,10 @@ keywords = "Model-driven engineering "
  	ini_set('auto_detect_line_endings',TRUE);
  	if($correct){
  		// some result cleanning
- 		$res=str_replace("True,", "'True',", $res);
- 		$res=str_replace("False,", "'False',", $res);
- 		$res=str_replace('"', '' ,$res);
- 		$res = $this->biblerproxy_lib->fixJSON($res);
+ 	//	$res=str_replace("True,", "'True',", $res);
+ 	//	$res=str_replace("False,", "'False',", $res);
+ 	//	$res=str_replace('"', '' ,$res);
+ 	//	$res = $this->biblerproxy_lib->fixJSON($res);
 
  		$Tres = json_decode($res,True);
 
@@ -6439,7 +6400,9 @@ keywords = "Model-driven engineering "
 	 				$year=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
 	 				
 	 				$paper_array['bibtexKey']=$Tres['entry']['entrykey'];
-	 				$paper_array['title']=!empty($Tres['entry']['title']) ? $Tres['entry']['title'] : "";
+	 				$title=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
+	 				$title=str_replace('{', '', $title);
+	 				$paper_array['title']=str_replace('}', '', $title);
 	 				$paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
 	 				$paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
 	 				$paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
@@ -6476,7 +6439,9 @@ keywords = "Model-driven engineering "
  										$paper['venueId']=$venue_id;
  									}*/
  									$paper['bibtexKey']=$value['entry']['entrykey'];
- 									$paper['title']=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
+ 									$title=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
+ 									$title=str_replace('{', '', $title);
+ 									$paper['title']=str_replace('}', '', $title);
  									$paper['preview']=!empty($value['preview']) ? $value['preview'] : "";
  									$paper['bibtex']=!empty($value['bibtex']) ? $value['bibtex']: "";
  									$paper['abstract']=!empty($value['entry']['abstract']) ? $value['entry']['abstract'] : "";
@@ -6549,9 +6514,7 @@ keywords = "Model-driven engineering "
  }
  
  
- public function  save_bibtex_paper(){
- 
- 	
+ public function  save_bibtex_paper(){	
  	$post_arr = $this->input->post ();
  	$data['message_error']="";
  	$data['message_success']="";
@@ -6745,9 +6708,7 @@ keywords = "Model-driven engineering "
  	$stopsearch=False;
  	$i=1;
  	while(!$stopsearch){
- 		$res = $this->db_current->get_where('paper',
- 				array('bibtexKey' => $bibtexKey,'paper_active'=>1))
- 				->row_array();
+ 		$res = $this->db_current->query('SELECT * FROM paper WHERE BINARY bibtexKey = BINARY "'.$bibtexKey.'" and  paper_active=1')->row_array(); 			
  		if(empty($res)){
  			$stopsearch=True;
  			$exist=False;
@@ -6803,9 +6764,8 @@ keywords = "Model-driven engineering "
  	foreach ($author_array as $key => $author) {
  	
  	$author_name=$author['first_name'].' '.$author['last_name'];
- 	$res = $this->db_current->get_where('author',
- 			array('	author_name' =>$author_name,'author_active'=>1))
- 			->row_array();
+ 	$res = $this->db_current->query('SELECT * FROM author WHERE BINARY author_name = BINARY "'.$author_name.'" and  author_active=1')->row_array();
+ 	
  	
  			//print_test($res);
  			if(empty($res['author_id'])){

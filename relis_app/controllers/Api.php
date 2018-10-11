@@ -529,7 +529,6 @@ class Api extends CI_Controller {
 	
 	
 	private function initialise_user($project){
-	
 			
 		/*
 		 * Vérification si login et password sont correct

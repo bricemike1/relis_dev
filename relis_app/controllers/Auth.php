@@ -17,19 +17,27 @@ class Auth extends CI_Controller {
 	{
 	
 		
-		if(($this->session->userdata('user_id')))
 		
-		{
-			//Si l'utilisateur a déjà une session ouverte il est redirigé vers la page d'acceuil
-			redirect('home');
-		}else
-		{
-		/*
-		 * Chargement de la vue d'authentification
-		 */
+		
+			
+		//get	info to display
+		
+		$data['home_info'] = $this->db->order_by('info_order', 'ASC')
+			->get_where('info', array('info_active'=>1,'info_type'=>'Home'))
+			->row_array();
+		
+		$data['home_ref'] = $this->db->order_by('info_order', 'ASC')
+			->get_where('info', array('info_active'=>1,'info_type'=>'Reference'))
+			->row_array();
+		
+			
+			$data['home_features'] = $this->db->order_by('info_order', 'ASC')
+			->get_where('info', array('info_active'=>1,'info_type'=>'Features'))
+			->result_array();
+		//print_test($data);	
 		$data['page']='h_home';
 		$this->load->view('h_body',$data);
-		}	
+	
 	}
 	
 	
@@ -37,7 +45,13 @@ class Auth extends CI_Controller {
 	{
 	
 	
+		if(($this->session->userdata('user_id')))
 		
+		{
+			//Si l'utilisateur a déjà une session ouverte il est redirigé vers la page d'acceuil
+			redirect('home');
+		}else
+		{
 	
 			$data['page']='h_login';
 	
@@ -45,15 +59,33 @@ class Auth extends CI_Controller {
 			 * Chargement de la vue d'authentification
 			 */
 			$this->load->view('h_body',$data);
-		
+		}
 	}
 	public function help()
 	{
 	
-	
+		$data['home_help'] = $this->db->order_by('info_order', 'ASC')
+		->get_where('info', array('info_active'=>1,'info_type'=>'Help'))
+		->result_array();
 		
 	
 			$data['page']='h_help';
+	
+			/*
+			 * Chargement de la vue d'authentification
+			 */
+			$this->load->view('h_body',$data);
+		
+	}
+	public function help_det($help_id)
+	{
+	
+		$data['help_info'] = $this->db->order_by('info_order', 'ASC')
+		->get_where('info', array('info_active'=>1,'info_id'=>$help_id))
+		->row_array();
+	//	print_test($data);
+		$data ['top_buttons'] = get_top_button ( 'back', 'Back', 'auth/help','','','','',FALSE );
+			$data['page']='h_help_det';
 	
 			/*
 			 * Chargement de la vue d'authentification
@@ -164,7 +196,7 @@ class Auth extends CI_Controller {
 			/*
 			 * Vérification si login et password sont correct
 			 */
-			$user_id=6;	
+			$user_id=5;	
 			$user = $this->DBConnection_mdl->get_row_details( 'get_user_detail'
 					,$user_id ,true,'users');
 	
@@ -182,7 +214,7 @@ class Auth extends CI_Controller {
 					$this->validate_user($user);
 						
 				}else{
-					$this->session->sess_destroy();
+					//$this->session->sess_destroy();
 					$this->session->set_userdata($user);
 					$this->session->set_userdata('page_msg_err','');
 					$this->session->set_userdata('last_url',"");
@@ -230,7 +262,7 @@ class Auth extends CI_Controller {
 		/*
 		 * Vérification si login et password sont correct
 		 */
-		$user_id=6;
+		$user_id=5;
 		$user = $this->DBConnection_mdl->get_row_details( 'get_user_detail'
 				,$user_id ,true,'users');
 	
@@ -248,7 +280,7 @@ class Auth extends CI_Controller {
 				$this->validate_user($user);
 	
 			}else{
-				$this->session->sess_destroy();
+			//	$this->session->sess_destroy();
 				$this->session->set_userdata($user);
 				$this->session->set_userdata('page_msg_err','');
 				$this->session->set_userdata('last_url',"");
@@ -429,10 +461,10 @@ class Auth extends CI_Controller {
 				$destination=array($user_array['user_mail']);
 				$res=$this->bm_lib->send_mail($subject,$message,$destination);
 				$data ['user_id']=$user_id;
-				$data ['success_msg']='A validation code has ben sent to your email:<br/>Please type the validation code';
+				$data ['success_msg']='A validation code has been sent to your email:<br/>Please enter the validation code';
 				$this->validate_user($data);
 				
-				echo "Correct ready to save and validate";
+				//echo "Correct ready to save and validate";
 			}
 			
 		}	
@@ -486,8 +518,9 @@ class Auth extends CI_Controller {
 									array('user_creation_id' => $res['user_creation_id']));
 							
 					$data['success_msg']="Accound validated you can now user ReLiS";
-					//print_test($data);
-					$this->load->view('login',$data);
+					
+					$data['page']='h_login';
+					$this->load->view('h_body',$data);
 				}else{
 					$data ['err_msg'].='Wrong validation code';
 					//increment confirmation attempts

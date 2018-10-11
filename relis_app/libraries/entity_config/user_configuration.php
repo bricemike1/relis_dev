@@ -409,6 +409,7 @@ function get_config_user() {
 									'drilldown_display_link'=>'op/display_element/detail_userproject/',
 									
 									),
+									
 						'user_picture'=>array(),
 						'creation_time'=>array(),
 						'created_by'=>array()

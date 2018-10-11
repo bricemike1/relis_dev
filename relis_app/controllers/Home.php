@@ -420,7 +420,8 @@ month={Aug},}
 				);
 				$data['screening_completion']['conflict_papers']=array('value'=>$screening_completion['papers_in_conflict'],
 						'title'=>'Conflicts',
-						'url'=>'op/entity_list/list_papers_screen_conflict'
+						//'url'=>'op/entity_list/list_papers_screen_conflict'
+						'url'=>'op/entity_list/list_papers_screen_my_conflict'
 				);
 				
 				$data['screening_completion']['gauge_all']=$screening_completion['all_papers'];
@@ -1218,6 +1219,65 @@ month={Aug},}
 	}
 	
 	
+	public function test_icse(){
+	
+		$sql= "SELECT * FROM  `paper` WHERE  `classification_status` =  'To classify' AND  `paper_active` =1  ";
+		
+		$i=1;
+		$pred=array(
+				0=>'Predefined',
+				1=>'Output-based',
+				2=>'Rule-based',
+		);
+		$res=$this->db_current->query($sql)->result_array();
+		foreach ($res as $key => $value) {
+			$paper_id=$value['id'];
+			
+			//print_test($value);
+			$temp=rand(0,2);
+			$fields=array(
+					'class_paper_id'=>$paper_id,
+					'year'=>rand(2011,2017 ),
+					'Tool'=>rand(1,5 ),
+					'template_style'=>$pred[$temp],
+					'user_id'=>rand(16,17)
+			
+			);
+			
+			print_test($fields);
+			
+			/*
+			 * Insertion des données
+			 */
+			$headersaved = $this->db_current->insert ( 'classification', $fields );
+			print_test($headersaved);
+		}
+		
+	/*
+		for($i=287;$i<=367;$i++){
+			 
+			$temp=rand(0,2);
+			$fields=array(
+					'class_paper_id'=>$i,
+					'year'=>rand(2011,2017 ),
+					'Tool'=>rand(1,5 ),
+					'template_style'=>$pred[$temp],
+					'user_id'=>rand(16,17)
+	
+			);
+	
+			print_test($fields);
+
+			
+			//$headersaved = $this->db_current->insert ( 'classification', $fields );
+			//print_test($headersaved);
+		}
+	
+		*/
+	
+	}
+	
+	
 	
 	/*
 	 * Affichage des résultat(statistique)  en cours de réaliation------
@@ -1331,7 +1391,7 @@ month={Aug},}
 		public function sql_query($query_type="single"){
 			
 			
-			
+			$data['return_table']=1;
 			$data['query_type']=$query_type;
 			
 			/*
@@ -1379,7 +1439,14 @@ month={Aug},}
 				/*
 				 * Appel du model manage_mdl->run_query  pour executer la requette et recuperer le resultat
 				 */
+				$pre_select_sql=" select* from ( ";
+				$post_select_sql=" ) as T ";
 				if($query_type!='multi'){
+				if(! has_usergroup(1)){
+					//if used is not super admin he can just execute select queries
+					$sql =$pre_select_sql . $sql . $post_select_sql;
+				}
+				
 				$res = $this->manage_mdl->run_query($sql,$return_table);
 				}else{
 					$delimiter=$post_arr['delimiter'];
@@ -1391,6 +1458,10 @@ month={Aug},}
 					foreach ($T_queries as $key => $v_sql) {
 						$v_sql=trim($v_sql);
 						if(!empty($v_sql)){
+							if(! has_usergroup(1)){
+								//if used is not super admin he can just execute select queries
+								$v_sql =$pre_select_sql . $v_sql . $post_select_sql;
+							}
 							$T_res = $this->manage_mdl->run_query($v_sql);
 							if($T_res['code']!=0){
 								$error++;
@@ -2101,6 +2172,12 @@ month={Aug},}
 			print_test($res);
 		}
 		
+		public function test_new_config($ref_table='new_users'){
+			
+			$ref_table_config=get_table_configuration($ref_table);
+			print_test($ref_table_config);
+		}
+		
 		
 		
 		public function import_edouard(){
@@ -2411,5 +2488,103 @@ month={Aug},}
 		
 			return str_replace($search, $replace, $value);
 		}
+		
+		public function start_editor($value=1)
+		{
+			
+			
+			$commands=array(
+				'start'=>"/u/relis/tomcat/bin/startup.sh",
+				'stop'=>"/u/relis/tomcat/bin/shutdown.sh",
+				'status'=>"netstat -lnp | grep 8080",
+				'tail'=>" tail /u/relis/tomcat/logs/catalina.out",			
+			);
+			
+			
+			if($value==1)
+				$cmd="/u/relis/tomcat/bin/startup.sh";
+			elseif($value==2)
+				$cmd="/u/relis/tomcat/bin/shutdown.sh";
+			
+			//$message = exec($cmd);
+			//print_test($message);
+		}
+		
+		
+		/*
+		 * Page permettant de lancer une commande
+		 */
+		public function manage_editor($request="zz",$run=1){
+			if(!has_usergroup(1)){
+				set_top_msg(" You have no access to this feature ",'error');
+				redirect('home');
+			}
+			$commands=array(
+				'Start'=>"/u/relis/tomcat/bin/startup.sh",
+				'Stop'=>"/u/relis/tomcat/bin/shutdown.sh",
+				'Status'=>"netstat -lnp | grep 8080",
+				'Log'=>" tail /u/relis/tomcat/logs/catalina.out",			
+				'g_status'=>"  cd /u/relis/public_html/relis_app  &&   git status",			
+				'g_pull'=>"  cd /u/relis/public_html/relis_app  &&   git pull",			
+			);
+			$script="";
+			
+			$normal =FALSE;
+			//print_test($request);
+			if($this->input->post ()){
+				$post_arr = $this->input->post ();
+				
+				if(!empty($post_arr['script'])){
+					$script=$post_arr['script'];
+				}
+				 
+			}elseif(!empty($request) AND !empty($commands[$request])){
+				$normal=True;
+				$script=$commands[$request];
+				
+			}
+			
+			if(!empty($script)){
+				
+				if($normal ){
+					if($request=='Start'){
+						//chech status
+						$status = exec(trim($commands['Status']));
+						if(!empty($status)){// server already runnning
+							$message = "Server already running.<br/> If you cannot access the editor please wait until the end of the startup process!";
+						}else{
+							$message = exec(trim($script));
+						}
+					}elseif($request=='Status'){
+						$status = exec(trim($commands['Status']));
+						if(!empty($status)){// server already runnning
+							$message = "Server  running";
+						}else{
+							$message = "Server not running";
+						}
+						//$message=$status;
+					}else{
+							$message = exec(trim($script));
+					}
+				}else{
+					$message = exec(trim($script));
+				}
+				$data['command_response']=$message;
+			}else{
+				$data['command_response']='No command run';	
+			}
+			
+			$data['commands']=$commands;
+			if(active_user_id()==1){
+				$data['allow_manual_sript']=true;
+			}
+				
+			$data['title']=lng_min('Editor server');
+			$data['page']='editor_command';
+			$data ['top_buttons'] = get_top_button ( 'all', lng_min('Back to editor'), 'install/relis_editor/admin',lng_min('Back to editor'),' fa-exchange','',' btn-info ' );
+			$data ['top_buttons'] .= get_top_button ( 'back', 'Back', 'manage' );
+			$this->load->view('body',$data);
+		}
+		
 		
 }

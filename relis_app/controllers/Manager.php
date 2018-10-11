@@ -1718,7 +1718,7 @@ class Manager extends CI_Controller {
 			else
 			{$data['projects']['list'][$key]['icon']= base_url().$this->config->item('image_upload_path')."init/model_project1.png";}
 				
-			if(! (user_project($value['project_id']))){
+			if(! (user_project($value['project_id'])) AND !has_usergroup(1)){
 				unset($data['projects']['list'][$key]);
 			}
 		}
@@ -2382,6 +2382,9 @@ class Manager extends CI_Controller {
 		$sql="UPDATE paperauthor SET 	paperauthor_active=3 where paperauthor_active=1 ";
 		$res=$this->db_current->query($sql);
 		
+		$sql="UPDATE ref_affiliation SET 	ref_active=3 where ref_active=1 ";
+		$res=$this->db_current->query($sql);
+		
 		$sql="UPDATE assigned SET assigned_active=3 where assigned_active=1 ";
 		$res=$this->db_current->query($sql);
 		
@@ -2406,6 +2409,11 @@ class Manager extends CI_Controller {
 		
 		$sql="UPDATE screen_decison SET 	decision_active = 3  where 	decision_active=1 ";
 		$res=$this->db_current->query($sql);
+		
+		$sql="UPDATE  venue SET 	 venue_active = 3  where 	 venue_active=1 ";
+		$res=$this->db_current->query($sql);
+		
+		
 		set_top_msg('All papers deleted');
 		redirect ('op/entity_list/list_all_papers');
 	

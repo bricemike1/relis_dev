@@ -1,56 +1,43 @@
 <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="navbar nav_title" style="border: 0;">
-              <a href="<?php echo site_url();?>manager/projects_list.html" class="site_title"><i class="fa fa-book"></i> <span>ReLiS</span></a>
-            </div>
-
-            <div class="clearfix"></div>
-
+	<div class="left_col scroll-view">
+    	<div class="navbar nav_title" style="border: 0;">
+              <a href="<?php echo site_url();?>auth.html" class="site_title"><i class="fa fa-book"></i> <span>ReLiS</span></a>
+		</div>
+		
+		<div class="clearfix"></div>
             <!-- menu profile quick info -->
             
             <a href="<?php echo base_url();?>op/display_element/detail_user_min_ed/<?php echo active_user_id()?>">
-            <div class="profile">
-              <div class="profile_pic">
-              <?php 
-              $images=site_url()."cside/images/img.jpg";
-              
-              if(($this->session->userdata('user_picture'))){
-              	$user_picture=$this->session->userdata('user_picture');
-              	if(!empty($user_picture)){
-              	
-              	$images=display_picture_from_db($user_picture);'data:image/png;base64,'.base64_encode( $user_picture);
-              	}
-                            }
-                            
-                
-                            if(! active_screening_phase()){
-                            	$left_menu = $this->manager_lib->get_left_menu_screen_select();
-                            }else{
-                            	$left_menu = $this->manager_lib->get_left_menu_screen();
-                            }
-                            
-				
-             
-              ?>
-                <img src="<?php echo $images;?>" alt="..." class="img-circle profile_img">
-              </div>
-              <div class="profile_info">
-                
-                <h2><?php 
-                echo $this->session->userdata('user_name')." " ; ?></h2>
-              </div>
-            </div>
+	            <div class="profile">
+	            	<div class="profile_pic">
+		              	<?php 
+		              	$images=site_url()."cside/images/img.jpg";
+		              
+		              	if(($this->session->userdata('user_picture'))){
+		              		$user_picture=$this->session->userdata('user_picture');
+		              		if(!empty($user_picture)){
+		              			$images=display_picture_from_db($user_picture);'data:image/png;base64,'.base64_encode( $user_picture);
+		              		}
+		                }
+		                
+		                if(! active_screening_phase()){
+		                	$left_menu = $this->manager_lib->get_left_menu_screen_select();
+		                }else{
+		                    $left_menu = $this->manager_lib->get_left_menu_screen();
+		                }
+		              	?>
+		                <img src="<?php echo $images;?>" alt="..." class="img-circle profile_img">
+	              	</div>
+			       	<div class="profile_info">
+			       	<h2><?php echo $this->session->userdata('user_name')." " ; ?></h2>
+			        </div>
+	            </div>
             </a>
             <!-- /menu profile quick info -->
 
-            <br />
-            <br />
-            <br />
-            <br />
-           
-            <br />
-
-            <!-- sidebar menu -->
+            <br/><br/><br/><br/>
+            
+          	<!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 			
 			<?php

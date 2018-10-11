@@ -18,6 +18,10 @@ public function get_table_configuration($_table,$target_db='current')
 				require_once("entity_config/user_configuration.php");
 				$table_configurations['users']=get_config_user();
 				break;
+			case 'new_users':
+				require_once("entity_config/new_user_configuration.php");
+				$table_configurations['new_users']=get_config_new_user();
+				break;
 			case 'user_creation':
 				require_once("entity_config/user_creation_configuration.php");
 				$table_configurations['user_creation']=get_user_creation();
@@ -107,6 +111,10 @@ public function get_table_configuration($_table,$target_db='current')
 			case 'logs':
 					require_once("entity_config/logs_configuration.php");
 					$table_configurations['logs']=get_logs();
+					break;
+			case 'info':
+					require_once("entity_config/info_configuration.php");
+					$table_configurations['info']=get_info();
 					break;
 
 			case 'str_mng':

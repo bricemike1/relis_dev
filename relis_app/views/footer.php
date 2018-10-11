@@ -7,9 +7,9 @@
         debug_comment_display();
         ?>
           <div class="pull-right">
-          
-           <a rel="license" target="_BLANK" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.         
-          </div>
+            <a rel="license" target="_BLANK" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.         
+           
+           </div>
           <div class="clearfix"></div>
         </footer>
                   <div class="modal fade bs-example-modal-lg" id="relisformModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -143,6 +143,26 @@ function get_screen_info(){
 		}
 
       $(document).ready(function() {
+    	
+    	    $LEFT_COL = $('.left_col'),
+    	    $RIGHT_COL = $('.right_col'),
+    	    $NAV_MENU = $('.nav_menu'),
+    	    $FOOTER = $('footer');
+    	  var setContentHeights = function () {
+    	        // reset height
+    	        $RIGHT_COL.css('min-height', $(window).height());
+
+    	        var bodyHeight = $BODY.height(),
+    	            leftColHeight = $LEFT_COL.eq(1).height() + $SIDEBAR_FOOTER.height(),
+    	            contentHeight = bodyHeight < leftColHeight ? leftColHeight : bodyHeight;
+
+    	        // normalize content
+    	        contentHeight -= $NAV_MENU.height() + $FOOTER.height();
+
+    	        $RIGHT_COL.css('min-height', contentHeight);
+    	    };
+    	  setContentHeights();
+          
     	  get_screen_info();
     	  $('.datepicker').datepicker({
 			  format: 'yyyy-mm-dd',
@@ -187,6 +207,10 @@ function get_screen_info(){
           
           allowClear: true
         });
+
+       
+		
+        
       });
   
     <!-- /Select2 -->
@@ -213,9 +237,10 @@ function get_screen_info(){
      $(document).ready(function(){
     	 
     	  $("#div_display ").css("display",'none'); 
+    	  setContentHeight();
     	});     
   
-
+   
 	  </script>
 	
 

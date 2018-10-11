@@ -61,7 +61,7 @@ class Bm_lib
 	function checkauthentification()
 	{
 		if(!($this->CI->session->userdata('user_id'))){
-			redirect('auth/');
+			redirect('auth');
 		}
 	}
 

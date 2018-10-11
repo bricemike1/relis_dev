@@ -71,7 +71,7 @@ div.login_description{
     padding: 0px 0 0;
     }
     
- #login{
+ #loginz{
  position: relative;
  padding:0 0 0 10px;
  border-left:1px solid #D8D8D8;
@@ -83,4 +83,27 @@ div.login_description{
  
  .publishedProject{
   border:3px solid #74ec76;
+  }
+  
+ .objectif .tile-stats h3{
+ text-align:center;
+ }
+ .objectif .tile-stats{
+  min-height:100px; padding:5px;
+  
+  border:0px solid #E4E4E4;
+  border-left:1px solid green;
+  border-radius:5px;
+  }
+  
+ .home_page p,.home_page li .title a{
+ font-size:1.2em;
+  }
+  
+ .what_relis .title a{
+  color:green
+  }
+  
+  .udm_logo img{
+  	height:30px;
   }

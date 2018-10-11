@@ -1,0 +1,19 @@
+#;Paper;"Template style";Tool;Year
+1;"Agostinho2015 - Underpinning EISB with enterprise interoperability neighboring scientific domains";Predefined;"Acceleo | JET";2016
+2;"Balasubramanian2017 - Algorithmic Strategies for Solving Complex Problems in Cryptography";Output-based;EGL;2017
+3;"Alam2014 - Using technology tools to innovate assessment, reporting, and teaching practices in engineering education";Output-based;"EGL | MOFScript";2016
+4;"Amrani2016 - Real-time model-driven engineering: An overview";Output-based;"EGL | JET | MOFScript";2016
+5;"Attarzadeh-Niaki2016 - An extensible modeling methodology for embedded and cyber-physical system design";Rule-based;"EGL | JET";2012
+6;"Barbierato2013 - Exploiting product forms solution techniques in multiformalism modeling";Rule-based;"Acceleo | Xpand | Xtend";2013
+7;"Bari\vsic2017 - A requirements engineering approach for usability-driven DSL development";Output-based;"Acceleo | EGL";2017
+8;"David2016 - A multi-paradigm modeling foundation for collaborative multi-view model/system development";Rule-based;"MOFScript | Xpand";2014
+9;"Fitzgerald2014a - Collaborative development of dependable cyber- physical systems by co- modeling and co-simulation";Predefined;Xpand;2011
+10;"Kappel2012 - Model transformation by-example: A survey of the first wave";Predefined;"JET | MOFScript";2015
+11;"Muller2014 - A conceptual reference model of modeling and verification concepts for hybrid systems";Output-based;"Acceleo | EGL | JET | Xpand";2014
+12;"Ruchkin2015 - Analytic dependency loops in architectural models of cyber-physical systems";Output-based;"EGL | MOFScript";2015
+13;"Thomas2016 - Virtual systems integration using model based systems engineering";Predefined;"Acceleo | EGL";2011
+14;"Torngren2014 - Integrating viewpoints in the development of mechatronic products";Rule-based;EGL;2011
+15;"Wang2011 - Service-oriented simulation framework: An overview and unifying methodology";Predefined;"Acceleo | JET";2012
+16;"Xie2013 - PMDA: A physical model driven software architecture for Internet of Things";Rule-based;EGL;2013
+17;"Zeigler2017 - Combining DEVS and model-checking: Concepts and tools for integrating simulation and analysis";Output-based;JET;2015
+18;"Zhang2014 - Integration design and model transformation for cyber physical systems";Predefined;EGL;2015

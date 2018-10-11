@@ -7,6 +7,9 @@ function check_operation($operation,$type="List") {
 			'tab_ref'=>'users',
 			'operation_id'=>'list_users'
 	);
+		
+	
+	
 	$operations['list_usergroups']=array(
 			'type'=>'List',
 			'tab_ref'=>'usergroup',
@@ -96,6 +99,9 @@ function check_operation($operation,$type="List") {
 	
 	include_once('operations/op_debug.php');
 	$operations=array_merge($operations,get_operations_debug());
+	
+	include_once('operations/op_info.php');
+	$operations=array_merge($operations,get_operations_info());
 	
 	if(project_db() != 'default')
 	{	include_once('operations/op_generated.php');

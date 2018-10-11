@@ -16,6 +16,7 @@
 
     <!-- Custom Theme Style -->
     <link href="<?php echo site_url();?>cside/css/custom.css" rel="stylesheet">
+    <link href="<?php echo site_url();?>cside/css/my_styles.css" rel="stylesheet">
   </head>
 
   <body class="nav-md">
@@ -39,8 +40,9 @@
                 <ul class="nav side-menu">
                   <li><a href="<?php echo base_url()?>auth"><i class="fa fa-home"></i> About </span></a></li>
                   <li><a href="<?php echo base_url()?>auth/help"><i class="fa fa-question-circle"></i> Help </span></a></li>
-                  <li><a href="<?php echo base_url()?>auth/login"><i class="fa fa-sign-in"></i> Log In </span></a></li>
+                  <li><a href="<?php echo base_url()?>auth/login"><i class="fa fa-sign-in"></i> Go to ReLiS </span></a></li>
                   <li><a href="<?php echo base_url()?>auth/new_user"><i class="fa fa-plus"></i><i class="fa fa-user"></i>Create Account </span></a></li>
+                  <li><a href="<?php echo base_url()?>auth/demo_user"></i><i class="fa fa-user"></i>Demo user </span></a></li>
                   
                 </ul>
               </div>
@@ -54,21 +56,22 @@
         <!-- top navigation -->
         <div class="top_nav">
 
-          <div class="nav_menu">
+          <div class="nav_menu ">
             <nav class="" role="navigation">
               <div class="nav toggle">
                 <a id="menu_toggle"><i class="fa fa-bars"></i></a>
               </div>
-
+<!-- 
               <ul class="nav navbar-nav navbar-right">
               <li class="">
-                  <a href="<?php echo base_url()?>auth/login" class=" "> Log in </a>                 
+                  <a href="<?php //echo base_url()?>auth/login" class=" "> Log in </a>                 
               </li>
               <li class="">
-                  <a href="<?php echo base_url()?>auth/new_user"> Create account </a>                 
+                  <a href="<?php //echo base_url()?>auth/new_user"> Create account </a>                 
               </li>
              
               </ul>
+   -->
             </nav>
           </div>
 

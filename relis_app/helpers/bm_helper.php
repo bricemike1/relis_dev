@@ -827,9 +827,9 @@ function user_project($project_id , $user=0,$user_role=""){
 			//if an super admin does not have a projected assigned to him he can access
 			// all projects
 			//
-			if(has_usergroup(1,$user))
-				return TRUE;
-			else 
+			//if(has_usergroup(1,$user))
+			//	return TRUE;
+			//else 
 				return False;
 		}
 		

@@ -1,5 +1,5 @@
 	<!-- page content -->
-        <div class="right_col" role="main">
+        <div class="right_col brice" role="main">
           <div class="">
            <?php top_msg(); ?>
           <div class="page-title">
@@ -72,11 +72,7 @@
                    
                   </div>
                   
-                  
-                  
-                  
-                  
-                  
+                   
                 </div>
               </div>
             </div>

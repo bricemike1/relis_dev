@@ -15,17 +15,22 @@
               <h1>Log in</h1><br/>
               
 			  <?php
-                    	if(validation_errors() OR isset($err_msg) OR ($this->session->userdata('page_msg_err')) )
+                    	if(validation_errors() OR !empty($err_msg) OR ($this->session->userdata('page_msg_err')) )
 						{
 							echo '<div class="alert alert-danger" style="text-align:center">';
 							echo validation_errors();
 							
-							 if (isset($err_msg))echo $err_msg;
+							 if (!empty($err_msg))echo $err_msg;
 							 
 							 if (($this->session->userdata('page_msg_err'))){
 							 	echo $this->session->userdata('page_msg_err');
 								$this->session->set_userdata('page_msg_err','');
 							 }
+							echo "</div>";
+						}
+						if(!empty($success_msg)){
+							echo '<div class="alert alert-success" style="text-align:center">';
+							echo $success_msg;
 							echo "</div>";
 						}
                     	?>

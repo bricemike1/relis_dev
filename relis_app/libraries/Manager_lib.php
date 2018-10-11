@@ -1479,11 +1479,12 @@ class Manager_lib
 		
 		$menu['adm']=array(	'label'=>'Administration');
 		
+				
 		$menu['adm']['menu']['logs']=array('label'=>'Logs','url'=>'op/entity_list/list_logs','icon'=>'sliders');		
 		$menu['adm']['menu']['str_mng']=array('label'=>'Label Mangement','url'=>'op/entity_list/list_str_mng','icon'=>'text-width');
 		
 		$menu['adm']['menu']['configuration']=array('label'=>'Settings','url'=>'op/display_element/admin_config/1','icon'=>'cog');
-		
+		$menu['adm']['menu']['info']=array('label'=>'Home page settings','url'=>'op/entity_list/list_info','icon'=>'info');
 		$menu['adm']['menu']['Configuration_managment']=array('label'=>'Configuration_managment','url'=>'admin/list_configurations','icon'=>'cog');
 		
 		}

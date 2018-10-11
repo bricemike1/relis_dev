@@ -43,7 +43,7 @@ class Admin extends CI_Controller {
 		array_push($list_config, array('#','Config','Display structure ','Create table','Generate stored procedures','Create views',));
 		
 		if(project_db()=='admin' || project_db()=='default' ){
-			$configurations=array('users','usergroup','project','user_project','logs','str_mng','config_admin','debug','user_creation');
+			$configurations=array('users','usergroup','project','user_project','logs','str_mng','config_admin','debug','user_creation','info');
 			$data['left_menu_admin']=True;
 		}else{
 			$configurations=array('config','exclusioncrieria','inclusioncriteria','research_question','papers_sources',

@@ -1,7 +1,7 @@
 <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="<?php echo site_url();?>manager/projects_list.html" class="site_title"><i class="fa fa-book"></i> <span>ReLiS</span></a>
+              <a href="<?php echo site_url();?>auth.html" class="site_title"><i class="fa fa-book"></i> <span>ReLiS</span></a>
             </div>
 
             <div class="clearfix"></div>

@@ -22,6 +22,7 @@ function get_paper_author() {
 				'field_size'=>11,
 	   			'field_value'=>'auto_increment',
 				'default_value'=>'auto_increment',
+	   			'on_add'=>'hidden'
 	   	);
 	   
 	   	$fields['paperId']=array(
@@ -34,6 +35,7 @@ function get_paper_author() {
 				'input_select_source_type'=>'drill_down',
 				'drill_down_type'=>'not_linked',
 	   			'input_select_values'=>'papers;title',
+	   			'on_add'=>'hidden'
 	   			
 	   	);
 	   	
@@ -47,6 +49,7 @@ function get_paper_author() {
 				'input_select_source_type'=>'drill_down',
 				'drill_down_type'=>'not_linked',
 	   			'input_select_values'=>'author;author_name',
+				'on_add'=>'hidden'
 				
 		);
 	
@@ -58,7 +61,8 @@ function get_paper_author() {
 				'input_type'=>'text',
 				'field_value'=>'1',
 				'default_value'=>'1',
-				'mandatory'=>' mandatory ' 
+				'mandatory'=>' mandatory ' ,
+				'on_add'=>'hidden'
 						
 	   	);
 	   	
@@ -68,9 +72,43 @@ function get_paper_author() {
 	   			'field_size'=>'1',
 	   			'field_value'=>'1',
 				'default_value'=>'1',
+				'on_add'=>'hidden'
 	   	);
 		
 		$operations=array();
+		
+			$operations['add_paper_author']=array(
+	   			'operation_type'=>'Add',
+	   			'operation_title'=>'New paper author',
+	   			'operation_description'=>'New paper author',
+	   			'page_title'=>'New paper author',
+	   			'save_function'=>'op/save_element',
+	   			'page_template'=>'general/frm_entity',
+	   			'redirect_after_save'=>'op/entity_list/list_papers',
+	   			'db_save_model'=>'add_paper_author',
+	   		  
+	   			'generate_stored_procedure'=>True,
+	   	
+	   			'fields'=>array(
+	   					'paperauthor_id'=>array('mandatory'=>'','field_state'=>'hidden'),
+	   					'paperId'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'authorId'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'author_rank'=>array('mandatory'=>'mandatory','field_state'=>'enabled'),
+	   					'paperauthor_active'=>array('mandatory'=>'mandatory','field_state'=>'enabled')
+	   	
+	   			),
+	   		  
+	   			'top_links'=>array(
+	   						
+	   					'back'=>array(
+	   							'label'=>'',
+	   							'title'=>'Close',
+	   							'icon'=>'close',
+	   							'url'=>'home',
+	   					)
+	   	
+	   			)   	
+	   	);
 		$config['operations']=$operations;
 	   	$config['fields']=$fields;
 	   	
