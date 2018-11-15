@@ -45,6 +45,8 @@
            <?php 
            $paper_filename=FCPATH."cside/export_r/relis_paper_".project_db().".csv";
            $paper_bib_filename=FCPATH."cside/export_r/relis_paper_bibtex_".project_db().".bib";
+           $paper_bib_filename_Included=FCPATH."cside/export_r/relis_paper_bibtex_Included_".project_db().".bib";
+           $paper_bib_filename_Excluded=FCPATH."cside/export_r/relis_paper_bibtex_Excluded_".project_db().".bib";
            $class_filename=FCPATH."cside/export_r/relis_classification_".project_db().".csv";
            if(file_exists($paper_filename)){
            	$paper_size = (filesize($paper_filename)> 1000 ? round(filesize($paper_filename)/1000): round(filesize($paper_filename)/1000,1)).' Kb  Last update:';
@@ -68,6 +70,28 @@
            	$paper_bib_dsc="";
            } 
            
+           if(file_exists($paper_bib_filename_Included)){
+           	$paper_bib_size_Included = (filesize($paper_bib_filename_Included)> 1000 ? round(filesize($paper_bib_filename_Included)/1000): round(filesize($paper_bib_filename_Included)/1000,1)).' Kb  Last update:';
+           	$paper_bib_date_Included = date("Y-m-d h:i:s", filemtime($paper_bib_filename_Included));
+           	 
+           	$paper_bib_dsc_Included="<i class='fa fa-download'></i> Download BibTeX (".$paper_bib_size_Included.$paper_bib_date_Included.")";
+           	 
+           }else{
+           
+           	$paper_bib_dsc_Included="";
+           }
+           
+           
+           if(file_exists($paper_bib_filename_Excluded)){
+           	$paper_bib_size_Excluded = (filesize($paper_bib_filename_Excluded)> 1000 ? round(filesize($paper_bib_filename_Excluded)/1000): round(filesize($paper_bib_filename_Excluded)/1000,1)).' Kb  Last update:';
+           	$paper_bib_date_Excluded = date("Y-m-d h:i:s", filemtime($paper_bib_filename_Excluded));
+           	 
+           	$paper_bib_dsc_Excluded="<i class='fa fa-download'></i> Download BibTeX (".$paper_bib_size_Excluded.$paper_bib_date_Excluded.")";
+           	 
+           }else{
+           	 
+           	$paper_bib_dsc_Excluded="";
+           }
            if(file_exists($class_filename)){
            	$paper_size = (filesize($class_filename)>1000 ? round(filesize($class_filename)/1000): round(filesize($class_filename)/1000,1)).' Kb  Last update:';
            	$paper_date = date("Y-m-d h:i:s", filemtime($class_filename));
@@ -98,6 +122,14 @@
             
            <tr >
            <td>Papers (BibTeX)</td><td><a href="<?php echo base_url();?>relis/manager/download/relis_paper_bibtex_<?php echo project_db();?>.bib"><?php echo  $paper_bib_dsc?></a></td><td><a href="<?php echo base_url();?>relis/manager/result_export_papers_bib"><i class="fa fa-refresh"></i><?php echo lng('Update file')?></a></td>
+           </tr>
+           
+           <tr >
+           <td>Papers included (BibTeX)</td><td><a href="<?php echo base_url();?>relis/manager/download/relis_paper_bibtex_Included_<?php echo project_db();?>.bib"><?php echo  $paper_bib_dsc_Included?></a></td><td><a href="<?php echo base_url();?>relis/manager/result_export_included_papers_bib"><i class="fa fa-refresh"></i><?php echo lng('Update file')?></a></td>
+           </tr>
+           
+           <tr >
+           <td>Papers Excluded (BibTeX)</td><td><a href="<?php echo base_url();?>relis/manager/download/relis_paper_bibtex_Excluded_<?php echo project_db();?>.bib"><?php echo  $paper_bib_dsc_Excluded?></a></td><td><a href="<?php echo base_url();?>relis/manager/result_export_excluded_papers_bib"><i class="fa fa-refresh"></i><?php echo lng('Update file')?></a></td>
            </tr>
            
           

@@ -2,6 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
+	
+	
+	
 
 	function __construct()
 	{
@@ -2586,5 +2589,368 @@ month={Aug},}
 			$this->load->view('body',$data);
 		}
 		
+		
+		///Backup database
+		
+		
+		
+		/**
+		 * Host where the database is located
+		 */
+		var $host;
+		
+		/**
+		 * Username used to connect to database
+		 */
+		var $username;
+		
+		/**
+		 * Password used to connect to database
+		 */
+		var $passwd;
+		
+		/**
+		 * Database to backup
+		 */
+		var $dbName;
+		
+		/**
+		 * Database charset
+		 */
+		var $charset;
+		
+		/**
+		 * Database connection
+		 */
+		var $conn;
+		
+		/**
+		 * Backup directory where backup files are stored
+		 */
+		var $backupDir;
+		
+		/**
+		 * Output backup file
+		 */
+		var $backupFile;
+		
+		/**
+		 * Use gzip compression on backup file
+		 */
+		var $gzipBackupFile;
+		
+		/**
+		 * Content of standard output
+		 */
+		var $output;
+		
+		/**
+		 * Disable foreign key checks
+		 */
+		var $disableForeignKeyChecks;
+		
+		/**
+		 * Batch size, number of rows to process per iteration
+		 */
+		var $batchSize;
+		
+		public function backup_db(){
+			//echo "backup ";
+			//echo $this->db_current->database;
+			//echo $this->db_current->password;
+			//echo $this->db_current->username;
+			$this->initialize_backup();
+			$this->conn                    = $this->initializeDatabase();
+			
+			set_time_limit(900); // 15 minutes
+			
+			if (php_sapi_name() != "cli") {
+				echo '<div style="font-family: monospace;">';
+			}
+			
+			$result = $this->backupTables() ? 'OK' : 'KO';
+			
+			//echo "<h1>$result</h1>";
+			//$backupDatabase->obfPrint('Backup result: ' . $result, 1);
+			
+			// Use $output variable for further processing, for example to send it by email
+			//$output = $backupDatabase->getOutput();
+			
+			if (php_sapi_name() != "cli") {
+				echo '</div>';
+			}
+		}
+		
+		private function  initialize_backup(){
+			
+			$this->host                    = $this->db_current->hostname;
+			$this->username                = $this->db_current->username;
+			$this->passwd                  = $this->db_current->password;
+			$this->dbName                  = $this->db_current->database;
+			$this->charset                 = 'utf8';
+			//$this->conn                    = $this->initializeDatabase();
+			$this->backupDir               = "C:/xampp/htdocs/relis/relis_dev/cside/metrics";
+			$this->backupFile              = 'myphp-backup-'.$this->dbName.'-'.date("Ymd_His", time()).'.sql';
+			$this->gzipBackupFile          = false;
+			$this->disableForeignKeyChecks =  true;
+			$this->batchSize               =  1000; // default 1000 rows
+			//$this->output                  = '';
+			
+		}
+		
+		private function initializeDatabase() {
+			try {
+				$conn = mysqli_connect($this->host, $this->username, $this->passwd, $this->dbName);
+				if (mysqli_connect_errno()) {
+					throw new Exception('ERROR connecting database: ' . mysqli_connect_error());
+					die();
+				}
+				if (!mysqli_set_charset($conn, $this->charset)) {
+					mysqli_query($conn, 'SET NAMES '.$this->charset);
+				}
+			} catch (Exception $e) {
+				print_r($e->getMessage());
+				die();
+			}
+		
+			return $conn;
+		}
+		
+		/**
+		 * Backup the whole database or just some tables
+		 * Use '*' for whole database or 'table1 table2 table3...'
+		 * @param string $tables
+		 */
+		public function backupTables($tables = '*') {
+			try {
+				/**
+				 * Tables to export
+				 */
+				if($tables == '*') {
+					$tables = array();
+					$result = mysqli_query($this->conn, 'SHOW TABLES');
+					while($row = mysqli_fetch_row($result)) {
+						$tables[] = $row[0];
+					}
+				} else {
+					$tables = is_array($tables) ? $tables : explode(',', str_replace(' ', '', $tables));
+				}
+		
+				$sql = 'CREATE DATABASE IF NOT EXISTS `'.$this->dbName."`;\n\n";
+				$sql .= 'USE `'.$this->dbName."`;\n\n";
+		
+				/**
+				 * Disable foreign key checks
+				 */
+				if ($this->disableForeignKeyChecks === true) {
+					$sql .= "SET foreign_key_checks = 0;\n\n";
+				}
+		
+				/**
+				 * Iterate tables
+				 */
+				foreach($tables as $table) {
+					$this->obfPrint("Backing up `".$table."` table...".str_repeat('.', 50-strlen($table)), 0, 0);
+		
+					/**
+					 * CREATE TABLE
+					 */
+					$sql .= 'DROP TABLE IF EXISTS `'.$table.'`;';
+					$row = mysqli_fetch_row(mysqli_query($this->conn, 'SHOW CREATE TABLE `'.$table.'`'));
+					$sql .= "\n\n".$row[1].";\n\n";
+		
+					/**
+					 * INSERT INTO
+					 */
+		
+					$row = mysqli_fetch_row(mysqli_query($this->conn, 'SELECT COUNT(*) FROM `'.$table.'`'));
+					$numRows = $row[0];
+		
+					// Split table in batches in order to not exhaust system memory
+					$numBatches = intval($numRows / $this->batchSize) + 1; // Number of while-loop calls to perform
+		
+					for ($b = 1; $b <= $numBatches; $b++) {
+		
+						$query = 'SELECT * FROM `' . $table . '` LIMIT ' . ($b * $this->batchSize - $this->batchSize) . ',' . $this->batchSize;
+						$result = mysqli_query($this->conn, $query);
+						$realBatchSize = mysqli_num_rows ($result); // Last batch size can be different from $this->batchSize
+						$numFields = mysqli_num_fields($result);
+		
+						if ($realBatchSize !== 0) {
+							$sql .= 'INSERT INTO `'.$table.'` VALUES ';
+		
+							for ($i = 0; $i < $numFields; $i++) {
+								$rowCount = 1;
+								while($row = mysqli_fetch_row($result)) {
+									$sql.='(';
+									for($j=0; $j<$numFields; $j++) {
+										if (isset($row[$j])) {
+											$row[$j] = addslashes($row[$j]);
+											$row[$j] = str_replace("\n","\\n",$row[$j]);
+											$row[$j] = str_replace("\r","\\r",$row[$j]);
+											$row[$j] = str_replace("\f","\\f",$row[$j]);
+											$row[$j] = str_replace("\t","\\t",$row[$j]);
+											$row[$j] = str_replace("\v","\\v",$row[$j]);
+											$row[$j] = str_replace("\a","\\a",$row[$j]);
+											$row[$j] = str_replace("\b","\\b",$row[$j]);
+											$sql .= '"'.$row[$j].'"' ;
+										} else {
+											$sql.= 'NULL';
+										}
+		
+										if ($j < ($numFields-1)) {
+											$sql .= ',';
+										}
+									}
+		
+									if ($rowCount == $realBatchSize) {
+										$rowCount = 0;
+										$sql.= ");\n"; //close the insert statement
+									} else {
+										$sql.= "),\n"; //close the row
+									}
+		
+									$rowCount++;
+								}
+							}
+		
+							$this->saveFile($sql);
+							$sql = '';
+						}
+					}
+		
+					/**
+					 * CREATE TRIGGER
+					 */
+		
+					// Check if there are some TRIGGERS associated to the table
+					/*$query = "SHOW TRIGGERS LIKE '" . $table . "%'";
+					 $result = mysqli_query ($this->conn, $query);
+					 if ($result) {
+					 $triggers = array();
+					 while ($trigger = mysqli_fetch_row ($result)) {
+					 $triggers[] = $trigger[0];
+					 }
+		
+					 // Iterate through triggers of the table
+					 foreach ( $triggers as $trigger ) {
+					 $query= 'SHOW CREATE TRIGGER `' . $trigger . '`';
+					 $result = mysqli_fetch_array (mysqli_query ($this->conn, $query));
+					 $sql.= "\nDROP TRIGGER IF EXISTS `" . $trigger . "`;\n";
+					 $sql.= "DELIMITER $$\n" . $result[2] . "$$\n\nDELIMITER ;\n";
+					 }
+		
+					 $sql.= "\n";
+		
+					 $this->saveFile($sql);
+					 $sql = '';
+					 }*/
+		
+					$sql.="\n\n";
+		
+					///$this->obfPrint('OK');
+				}
+		
+				/**
+				 * Re-enable foreign key checks
+				 */
+				if ($this->disableForeignKeyChecks === true) {
+					$sql .= "SET foreign_key_checks = 1;\n";
+				}
+		
+				$this->saveFile($sql);
+		
+				if ($this->gzipBackupFile) {
+					$this->gzipBackupFile();
+				} else {
+					print_test('Backup file succesfully saved to ' . $this->backupDir.'/'.$this->backupFile, 1, 1);
+					set_log('backup','Database succesfully saved to ' . $this->backupDir.'/'.$this->backupFile);
+				}
+			} catch (Exception $e) {
+				print_test($e->getMessage());
+				return false;
+			}
+		
+			return true;
+		}
+		
+		
+		
+		/**
+		 * Save SQL to file
+		 * @param string $sql
+		 */
+		protected function saveFile(&$sql) {
+			if (!$sql) return false;
+		
+			try {
+		
+				if (!file_exists($this->backupDir)) {
+					mkdir($this->backupDir, 0777, true);
+				}
+		
+				file_put_contents($this->backupDir.'/'.$this->backupFile, $sql, FILE_APPEND | LOCK_EX);
+		
+			} catch (Exception $e) {
+				print_r($e->getMessage());
+				return false;
+			}
+		
+			return true;
+		}
+		
+		/*
+		 * Gzip backup file
+		 *
+		 * @param integer $level GZIP compression level (default: 9)
+		 * @return string New filename (with .gz appended) if success, or false if operation fails
+		 */
+		protected function gzipBackupFile($level = 9) {
+			if (!$this->gzipBackupFile) {
+				return true;
+			}
+		
+			$source = $this->backupDir . '/' . $this->backupFile;
+			$dest =  $source . '.gz';
+		
+			$this->obfPrint('Gzipping backup file to ' . $dest . '... ', 1, 0);
+		
+			$mode = 'wb' . $level;
+			if ($fpOut = gzopen($dest, $mode)) {
+				if ($fpIn = fopen($source,'rb')) {
+					while (!feof($fpIn)) {
+						gzwrite($fpOut, fread($fpIn, 1024 * 256));
+					}
+					fclose($fpIn);
+				} else {
+					return false;
+				}
+				gzclose($fpOut);
+				if(!unlink($source)) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		
+			$this->obfPrint('OK');
+			return $dest;
+		}
+		
+		/**
+		 * Prints message forcing output buffer flush
+		 *
+		 */
+		public function obfPrint ($msg = '', $lineBreaksBefore = 0, $lineBreaksAfter = 1) {
+			print_test($msg);
+		}
+		
+		/**
+		 * Returns full execution output
+		 *
+		 */
+		public function getOutput() {
+			return $this->output;
+		}
 		
 }

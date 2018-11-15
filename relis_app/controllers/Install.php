@@ -544,9 +544,11 @@ class Install extends CI_Controller {
 		if(!empty($res_install_config['screening']) AND !(!empty($res_install_config['screen_action']) AND $res_install_config['screen_action']!='override')){
 			$this->update_screening_values($res_install_config['screening'],$project_short_name);
 				
-			array_push($success_array, 'Screening configuration added');
+			array_push($success_array, 'Screening configuration set');
 		}else{
-			set_appconfig_element('screening_on', 0);
+			if(empty($res_install_config['screening'])){
+				set_appconfig_element('screening_on', 0);
+			}
 		}
 			
 		//adding Qality assessment values
@@ -554,9 +556,11 @@ class Install extends CI_Controller {
 		if(!empty($res_install_config['qa'])  AND !(!empty($res_install_config['qa_action']) AND $res_install_config['qa_action']!='override')){
 			$this->update_qa_values($res_install_config['qa'],$project_short_name);
 				
-			array_push($success_array, 'Quality assessment configuration added');
+			array_push($success_array, 'Quality assessment configuration set');
 		}else{
-			set_appconfig_element('qa_on', 0);
+			if(empty($res_install_config['qa'])){
+				set_appconfig_element('qa_on', 0);
+			}
 		}
 		
 		
