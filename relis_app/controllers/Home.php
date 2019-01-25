@@ -97,16 +97,19 @@ class Home extends CI_Controller {
 			$data['gen_classification_completion']['title']="Overall classification completion";
 			$data['gen_classification_completion']['all_papers']=array('value'=>$gen_class_completion['all_papers'],
 					'title'=>'All',
-					'url'=>'op/entity_list/list_class_assignment'
+					'url'=>'op/entity_list/list_class_assignment',
+					'url'=>'relis/manager/list_paper',
 			);
 			$data['gen_classification_completion']['pending_papers']=array('value'=>$gen_class_completion['pending_papers'],
 					'title'=>'Pending',
-					'url'=>'op/entity_list/list_class_assignment_pending'
+					//'url'=>'op/entity_list/list_class_assignment_pending'
+					'url'=>'relis/manager/list_paper/pending'
 		
 			);
 			$data['gen_classification_completion']['done_papers']=array('value'=>$gen_class_completion['processed_papers'],
 					'title'=>'Processed',
-					'url'=>'op/entity_list/list_class_assignment_done'
+					//'url'=>'op/entity_list/list_class_assignment_done'
+					'url'=>'relis/manager/list_paper/processed'
 			);
 				
 		

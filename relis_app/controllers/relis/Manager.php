@@ -70,7 +70,7 @@ class Manager extends CI_Controller {
 		$rec_per_page=($dynamic_table)?-1:0;
 
 		$data=$this->DBConnection_mdl->get_papers($paper_cat,$ref_table_config,$val,$page,$rec_per_page);
-
+		
 		//for select dropboxes
 
 		/*
@@ -92,7 +92,6 @@ class Manager extends CI_Controller {
 			}
 
 		}
-
 
 		/*
 		 * Vérification des liens (links) a afficher sur la liste
@@ -275,7 +274,6 @@ class Manager extends CI_Controller {
 			 * Ajout des liens(links) sur la liste
 			 */
 
-
 			$action_button="";
 			$arr_buttons=array();
 			$view_link_url="";
@@ -302,7 +300,7 @@ class Manager extends CI_Controller {
 			$element_array['links']=$action_button;
 
 			if(isset($element_array['title']) AND !empty($view_link_url)){
-				$element_array['title']=anchor($view_link_url,"<u><b>".substr($element_array['title'],0,trim_nbr_car())."</b></u>",'title="'.lng_min('Display element').'")');
+				$element_array['title']=anchor($view_link_url,"<u><b>".$element_array['title']."</b></u>",'title="'.lng_min('Display element').'")');
 			}
 			if(isset($element_array[$table_id])){
 				$element_array[$table_id]=$i + $page;
@@ -2380,6 +2378,145 @@ class Manager extends CI_Controller {
 		redirect('relis/manager/result_export');
 
 	}
+	
+	
+	
+	
+	public function result_export_excluded_class(){
+	
+	
+		$this->db2 = $this->load->database(project_db(), TRUE);
+		$extra_sql="";
+		
+		$users= $this->manager_lib->get_reference_select_values('users;user_name');
+		
+		$sql="SELECT id,bibtexKey,title,preview,P.screening_status ,S.exclusion_by as user_id,S.exclusion_criteria,T.ref_value as criteria, S.exclusion_note
+		FROM  paper P
+		INNER JOIN exclusion S ON (P.id = S.exclusion_paper_id AND S.exclusion_active=1 )
+		LEFT JOIN  ref_exclusioncrieria T ON ( S.exclusion_criteria = T.ref_id)
+		WHERE paper_active =1 AND P.paper_excluded = 1  ORDER BY title ";
+		
+		
+		//echo $sql; exit;
+		$data=$this->db2->query ( $sql );
+		//	mysqli_next_result( $this->db2->conn_id );
+		$result=$data->result_array();
+		
+		
+		
+		
+		$papers = array();
+		$i=1;
+		foreach ($result as $key => $value) {
+			$user=!empty($users[$value['user_id']])?$users[$value['user_id']]:$value['user_id'];
+			if(empty ($papers[$value['id']])){
+				$papers[$value['id']] = array(
+						'num'=>$i,
+						'bibtexKey'=>$value['bibtexKey'],
+						'title'=>$value['title'],
+						'preview'=>$value['preview'],
+						'user'=>$user,
+						'criteria'=>$value['criteria'],
+						'exclusion_note'=>$value['exclusion_note'],
+				);
+				$i++;
+			}
+		}
+		
+		$array_header=array('#',"key",'Title','Preview','Excluded By','Criteria','Exclusion note');
+		
+		array_unshift($papers, $array_header);
+		
+		$filename="cside/export_r/relis_paper_excluded_class_".project_db().".csv";
+		
+		//print_test($papers);
+		// Create a stream opening it with read / write mode
+		$stream = fopen('data://text/plain,' . "", 'w+');
+		
+		// Iterate over the data, writting each line to the text stream
+		$f_new = fopen($filename, 'w+');
+		foreach ($papers as $val) {
+		
+			fputcsv($f_new, $val,get_appconfig_element('csv_field_separator_export'));
+		
+		}
+		
+		// Close the stream
+		fclose($f_new);
+		
+		set_top_msg(lng_min('File generated'));
+		
+		redirect('relis/manager/result_export');
+	
+	}
+	
+	public function result_export_excluded_screen(){
+	
+	
+		$this->db2 = $this->load->database(project_db(), TRUE);
+		$extra_sql="";
+		
+		$users= $this->manager_lib->get_reference_select_values('users;user_name');
+		
+		$sql="SELECT id,bibtexKey,title,preview,P.screening_status ,S.user_id,S.exclusion_criteria,T.ref_value as criteria,S.screening_note
+		FROM  paper P
+		INNER JOIN screening_paper S ON (P.id = S.paper_id AND S.screening_active=1 )
+		LEFT JOIN  ref_exclusioncrieria T ON ( S.exclusion_criteria = T.ref_id)
+		WHERE paper_active =1 AND P.screening_status = 'Excluded'  ORDER BY title ";
+		
+		
+		//echo $sql; exit;
+		$data=$this->db2->query ( $sql );
+		//	mysqli_next_result( $this->db2->conn_id );
+		$result=$data->result_array();
+		
+		$papers = array();
+		$i=1;
+		foreach ($result as $key => $value) {
+			$user=!empty($users[$value['user_id']])?$users[$value['user_id']]:$value['user_id'];
+			if(empty ($papers[$value['id']])){
+				$papers[$value['id']] = array(
+						'num'=>$i,
+						'bibtexKey'=>$value['bibtexKey'],
+						'title'=>$value['title'],
+						'preview'=>$value['preview'],
+				);
+				$i++;
+			}
+				$papers[$value['id']]['user_' . $value['user_id']]=$user;
+				$papers[$value['id']]['criteria_' . $value['user_id']]=$value['criteria'];
+				$papers[$value['id']]['screening_note' . $value['user_id']]=$value['screening_note'];
+			
+			
+		}
+		
+	
+		$array_header=array('#',"key",'Title','Preview','Excluded By / Criteria / Note');
+	
+		array_unshift($papers, $array_header);
+	
+		$filename="cside/export_r/relis_paper_excluded_screen_".project_db().".csv";
+		
+		//print_test($papers);
+		// Create a stream opening it with read / write mode
+		$stream = fopen('data://text/plain,' . "", 'w+');
+	
+		// Iterate over the data, writting each line to the text stream
+		$f_new = fopen($filename, 'w+');
+		foreach ($papers as $val) {
+			
+				fputcsv($f_new, $val,get_appconfig_element('csv_field_separator_export'));
+				
+		}
+	
+		// Close the stream
+		fclose($f_new);
+	
+		set_top_msg(lng_min('File generated'));
+	
+		redirect('relis/manager/result_export');
+	
+	}
 
 
 	public function result_export_classification(){
@@ -2438,15 +2575,56 @@ class Manager extends CI_Controller {
 			}
 
 		}
-
-
+		//prepare paper info 
+		$this->db2 = $this->load->database(project_db(), TRUE);
+		$sql = "select id,bibtexKey,title, P.year as paper_year,GROUP_CONCAT(DISTINCT A.author_name SEPARATOR ' | ') as authors ,V.venue_fullName,
+				S.ref_value as papers_sources ,T.ref_value as search_strategy ,
+				GROUP_CONCAT(DISTINCT  G.assigned_user_id SEPARATOR '|') as reviewers
+				FROM paper P
+				JOIN classification C ON (C.class_paper_id=P.id AND C.class_active = 1 ) 
+				LEFT JOIN assigned G ON (G.assigned_paper_id =P.id AND  G.assigned_active =1 )
+				LEFT JOIN ref_papers_sources S ON (S.ref_id	 =P.papers_sources AND  S.ref_active =1 )
+				LEFT JOIN  ref_search_strategy T ON (T.ref_id	 =P.search_strategy AND  T.ref_active =1 )
+				LEFT JOIN venue V ON (V.venue_id =P.venueId AND  venue_active =1 )
+				LEFT JOIN paperauthor ON (paperauthor.paperId =P.id AND  paperauthor_active =1 )
+				LEFT JOIN author A ON (paperauthor.authorId =A.author_id AND  	author_active =1 )
+				WHERE P.paper_active=1
+				GROUP BY P.id ";
+		$paper_data=$this->db2->query ( $sql );
+		
+		//rearange
+		$users= $this->manager_lib->get_reference_select_values('users;user_name');
+		$paper_res=$paper_data->result_array();
+		$arrangedPapers=array();
+		foreach ($paper_res as $key => $value_p) {
+			$user_names="";
+			if(!empty($value_p['reviewers'])){
+				foreach (explode('|',$value_p['reviewers']) as $k =>  $p_user_id) {
+					if($k==0){
+						$user_names.=!empty($users[$p_user_id])? $users[$p_user_id]:'';
+					}else{
+					$user_names.=!empty($users[$p_user_id])? ' | '.$users[$p_user_id]:'';
+					}
+				}
+			}
+			$arrangedPapers[$value_p['id']]=$value_p;
+			$arrangedPapers[$value_p['id']]['reviewers']=$user_names ;
+		}
+		
 		$i=1;
 		$list_to_display=array();
-
-
 		foreach ($data['list'] as $key => $value) {
 			$element_array=array();
-
+			$element_array['nbr']=$i;
+			$element_array['bibtexKey']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['bibtexKey']:'';
+			$element_array['title']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['title']:'';
+			$element_array['paper_year']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['paper_year']:'';
+			$element_array['authors']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['authors']:'';
+			$element_array['venue_fullName']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['venue_fullName']:'';
+			$element_array['papers_sources']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['papers_sources']:'';
+			$element_array['search_strategy']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['search_strategy']:'';
+			$element_array['reviewers']=!empty($arrangedPapers[$value['class_paper_id']])? $arrangedPapers[$value['class_paper_id']]['reviewers']:'';
+			
 			foreach ($field_list as $key_field=> $v_field) {
 				if(isset($value[$v_field])){
 					if(isset($dropoboxes[$v_field][$value[$v_field]]) ){
@@ -2493,10 +2671,14 @@ class Manager extends CI_Controller {
 			}
 
 
+			
 
-
-			if(isset($element_array[$table_id])){
-				$element_array[$table_id]=$i;
+			if(isset($element_array['class_id'])){
+				unset($element_array['class_id']);
+			}
+			
+			if(isset($element_array['class_paper_id'])){
+				unset($element_array['class_paper_id']);
 			}
 			array_push($list_to_display,$element_array);
 			$i++;
@@ -2505,9 +2687,15 @@ class Manager extends CI_Controller {
 		}
 
 
+		//!!!!!!!!!!!!!!!!!!! this is like a hardcode it doesnt follow anny pathern 
 
+		unset($field_list_header[0]);
+		unset($field_list_header[1]);
+		$other_fields=array('nbr','Key','Title','Publication year','Author/s','Venue','Source','Search Type','Reviewer/s');
+		$field_list_header = array_merge($other_fields,$field_list_header);
+		
 
-
+		
 		/*
 		 * Ajout de l'entête de la liste
 		 */
@@ -2516,7 +2704,6 @@ class Manager extends CI_Controller {
 			array_unshift($list_to_display,$field_list_header);
 
 		}
-
 		// Iterate over the data, writting each line to the text stream
 		$f_new = fopen("cside/export_r/relis_classification_".project_db().".csv", 'w+');
 		foreach ($list_to_display as $val) {
@@ -2530,6 +2717,8 @@ class Manager extends CI_Controller {
 		redirect('relis/manager/result_export');
 
 	}
+	
+	
 
 
 	public function pre_assignment_screen($data=""){

@@ -430,6 +430,8 @@ public function get_table_configuration($_table,$target_db='current')
 			//add cliquable link on paper title
 			if(isset($install_config['config']['classification']['operations']['list_classification']['fields']['class_paper_id'])){
 				
+				$install_config['config']['classification']['operations']['list_classification']['table_name']='view_classification_paper';
+				
 				$install_config['config']['classification']['operations']['list_classification']['fields']['class_paper_id']=array(
 						'link'=>array(
 								'url'=>'op/display_element/detail_classification/',

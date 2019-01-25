@@ -49,7 +49,7 @@ class Admin extends CI_Controller {
 			$configurations=array('config','exclusioncrieria','inclusioncriteria','research_question','papers_sources',
 					'search_strategy','author','venue','papers','paper_author',
 					'screen_phase','screening','screen_decison','str_mng','operations'
-					,'qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug','affiliation');
+					,'qa_questions','qa_responses','qa_result','qa_assignment','qa_validation_assignment','assignation','debug','affiliation','classification');
 		}
 		
 		 foreach ($configurations as $key => $value_config) {

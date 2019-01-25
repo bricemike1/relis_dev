@@ -20,7 +20,6 @@ class Op extends CI_Controller {
 		$project_published=project_published();
 		//print_test($project_published);
 		$op=check_operation($operation_name,'List');
-		print_test($op);
 		
 		$ref_table=$op['tab_ref'];
 		$ref_table_operation=$op['operation_id'];

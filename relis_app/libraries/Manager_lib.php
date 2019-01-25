@@ -1526,9 +1526,18 @@ class Manager_lib
 				->get_where('view_class_validation_done', array('assigned_active'=>1,'assigned_user_id'=>$user))
 				->num_rows();
 			}else{
-				$papers_all = $this->CI->db_current->order_by('assigned_id', 'ASC')
-				->get_where('assigned', array('assigned_active'=>1,'assignment_type'=>'Classification','assigned_user_id'=>$user))
-				->num_rows();
+				
+			
+				$sql= "select assigned_id 
+						from assigned,paper 
+						where
+							paper.id= assigned.assigned_paper_id
+							AND paper.paper_excluded=0
+							AND assigned_active=1 
+							AND assignment_type='Classification'
+							AND assigned_user_id = '$user'
+						";
+				$papers_all=$this->CI->db_current->query ( $sql )->num_rows();
 					
 				$papers_done = $this->CI->db_current->order_by('assigned_id', 'ASC')
 				->get_where('view_class_assignment_done', array('assigned_active'=>1,'assignment_type'=>'Classification','assigned_user_id'=>$user))
