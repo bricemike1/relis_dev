@@ -1,52 +1,67 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-class Entity_configuration_lib
-{
-	public function __construct()
+<?php
+/* ReLiS - A Tool for conducting systematic literature reviews and mapping studies.
+ * Copyright (C) 2018  Eugene Syriani
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * --------------------------------------------------------------------------
+ *
+ *  :Author: Brice Michel Bigendako
+ * --------------------------------------------------------------------------
+ *
+ * 
+ */
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+	class Entity_configuration_lib
 	{
-		$this->CI =& get_instance();
-		
-	}
-		
-
-public function get_table_configuration($_table,$target_db='current')
-	{
-		$table_configurations=array();
-		switch($_table)
+		public function __construct()
 		{
-			case 'users':
-				require_once("entity_config/user_configuration.php");
-				$table_configurations['users']=get_config_user();
-				break;
-			case 'new_users':
-				require_once("entity_config/new_user_configuration.php");
-				$table_configurations['new_users']=get_config_new_user();
-				break;
-			case 'user_creation':
-				require_once("entity_config/user_creation_configuration.php");
-				$table_configurations['user_creation']=get_user_creation();
-				break;
-			case 'usergroup':
-				require_once("entity_config/usergroup_configuration.php");
-				$table_configurations['usergroup']=get_config_usergroup();
-				break;
-			case 'project':
-				require_once("entity_config/project_configuration.php");
-				$table_configurations['project']=get_project();
-				break;
-						
-			case 'user_project':
-				require_once("entity_config/user_project_configuration.php");
-				$table_configurations['user_project']=get_user_project();
-				break;	
-				
-						
-			case 'config_admin':
-				require_once("entity_config/config_admin_configuration.php");
-				$table_configurations['config_admin']=get_admin_configuration();
-				break;	
-				
-			case 'config':
+			$this->CI =& get_instance();
+		}
+		public function get_table_configuration($_table, $target_db = 'current')
+		{
+			$table_configurations = array();
+			switch ($_table) {
+				case 'users':
+					require_once("entity_config/user_configuration.php");
+					$table_configurations['users'] = get_config_user();
+					break;
+				case 'new_users':
+					require_once("entity_config/new_user_configuration.php");
+					$table_configurations['new_users'] = get_config_new_user();
+					break;
+				case 'user_creation':
+					require_once("entity_config/user_creation_configuration.php");
+					$table_configurations['user_creation'] = get_user_creation();
+					break;
+				case 'usergroup':
+					require_once("entity_config/usergroup_configuration.php");
+					$table_configurations['usergroup'] = get_config_usergroup();
+					break;
+				case 'project':
+					require_once("entity_config/project_configuration.php");
+					$table_configurations['project'] = get_project();
+					break;
+				case 'user_project':
+					require_once("entity_config/user_project_configuration.php");
+					$table_configurations['user_project'] = get_user_project();
+					break;
+				case 'config_admin':
+					require_once("entity_config/config_admin_configuration.php");
+					$table_configurations['config_admin'] = get_admin_configuration();
+					break;
+				case 'config':
 					require_once("entity_config/config_configuration.php");
 					$table_configurations['config']=get_configuration();
 					break;

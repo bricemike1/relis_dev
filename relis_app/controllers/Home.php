@@ -1,212 +1,174 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-class Home extends CI_Controller {
-	
-	
-	
-
-	function __construct()
+/* ReLiS - A Tool for conducting systematic literature reviews and mapping studies.
+ * Copyright (C) 2018  Eugene Syriani
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * --------------------------------------------------------------------------
+ *
+ *  :Author: Brice Michel Bigendako
+ * --------------------------------------------------------------------------
+ *
+ * This controller contain all the pages user can access before connection to the application
+ * - homepage
+ * - authentification page
+ * - help page
+ */
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+	class Home extends CI_Controller
 	{
-		parent::__construct();
-	
-		
-	}
-	
-	/*
-	 * page d'acceuil	 * 
-	 */
-	public function index()
-	{
-		//$this->session->set_userdata('working_perspective','class');
-		
-	//	print_test($this->session->userdata ( 'project_db' ));
-		
-	//	exit;
-	
-		
-		if(!($this->session->userdata ( 'project_db' )) OR $this->session->userdata ( 'project_db' )=='default'){
-		
-			redirect('manager/projects_list');
-		}
-		//print_test($this->session->userdata('working_perspective'));exit;
-		if($this->session->userdata('working_perspective')=='screen'){
-			redirect('home/screening');
-		}
-		
-		if($this->session->userdata('working_perspective')=='qa'){
-			redirect('home/qa');
-		}
-		
-		$left_menu = $this->manager_lib->get_left_menu();
-		
-		
-		
-		$app_config=get_appconfig();
-		if(!empty($app_config['run_setup']))
+		function __construct()
 		{
-			
-			
-			//redirect('install');
-		}else{
-			$project_published=project_published();
-		/*
-		 * Recuperation du nombre de papiers par catégorie
+			parent::__construct();
+		}
+		
+		
+		
+		/**
+		 * Classification home page
 		 */
-			
-		//	$table_configuration=get_table_configuration('classification');
-		//	print_test($table_configuration);
-			$my_class_completion=$this->DBConnection_mdl->count_papers('all');		
-		$data['processed_papers']=$this->DBConnection_mdl->count_papers('processed');
-		$data['pending_papers']=$this->DBConnection_mdl->count_papers('pending');
-		$data['assigned_me_papers']=$this->DBConnection_mdl->count_papers('assigned_me');
-		$data['excluded_papers']=$this->DBConnection_mdl->count_papers('excluded');
-		
-		$gen_class_completion=$this->get_classification_completion('class','all');
-		
-	
-		$my_class_completion=$this->get_classification_completion('class','');
-		
-		if(get_appconfig_element('class_validation_on')){
-		$gen_validation_completion=$this->get_classification_completion('validation','all');
-		$my_validation_completion=$this->get_classification_completion('validation','');
-		//print_test($gen_validation_completion);
-		}
-		if(!empty($my_class_completion['all_papers'])){
-			$data['classification_completion']['title']="My classification completion";
-			$data['classification_completion']['all_papers']=array('value'=>$my_class_completion['all_papers'],
-					'title'=>'All',
-					'url'=>'op/entity_list/list_class_assignment_mine'
-			);
-			$data['classification_completion']['pending_papers']=array('value'=>$my_class_completion['pending_papers'],
-					'title'=>'Pending',
-					'url'=>'op/entity_list/list_class_assignment_pending_mine'
-		
-			);
-			$data['classification_completion']['done_papers']=array('value'=>$my_class_completion['processed_papers'],
-					'title'=>'Processed',
-					'url'=>'op/entity_list/list_class_assignment_done_mine'
-			);
-			
-				
-			$data['classification_completion']['gauge_all']=$my_class_completion['all_papers'];
-			$data['classification_completion']['gauge_done']=$my_class_completion['processed_papers'];
-		}
-		
-		if(!empty($gen_class_completion['all_papers'])){
-			$data['gen_classification_completion']['title']="Overall classification completion";
-			$data['gen_classification_completion']['all_papers']=array('value'=>$gen_class_completion['all_papers'],
-					'title'=>'All',
-					'url'=>'op/entity_list/list_class_assignment',
-					'url'=>'relis/manager/list_paper',
-			);
-			$data['gen_classification_completion']['pending_papers']=array('value'=>$gen_class_completion['pending_papers'],
-					'title'=>'Pending',
-					//'url'=>'op/entity_list/list_class_assignment_pending'
-					'url'=>'relis/manager/list_paper/pending'
-		
-			);
-			$data['gen_classification_completion']['done_papers']=array('value'=>$gen_class_completion['processed_papers'],
-					'title'=>'Processed',
-					//'url'=>'op/entity_list/list_class_assignment_done'
-					'url'=>'relis/manager/list_paper/processed'
-			);
-				
-		
-			$data['gen_classification_completion']['gauge_all']=$gen_class_completion['all_papers'];
-			$data['gen_classification_completion']['gauge_done']=$gen_class_completion['processed_papers'];
-		}
-		
-		
-		if(!empty($my_validation_completion['all_papers'])){
-			$data['my_validation_completion']['title']="My validation completion";
-			$data['my_validation_completion']['all_papers']=array('value'=>$my_validation_completion['all_papers'],
-					'title'=>'All',
-					'url'=>'op/entity_list/list_class_validation_mine'
-			);
-			$data['my_validation_completion']['pending_papers']=array('value'=>$my_validation_completion['pending_papers'],
-					'title'=>'Pending',
-					'url'=>''
-		
-			);
-			$data['my_validation_completion']['done_papers']=array('value'=>$my_validation_completion['processed_papers'],
-					'title'=>'Processed',
-					'url'=>''
-			);
-				
-		
-			$data['my_validation_completion']['gauge_all']=$my_validation_completion['all_papers'];
-			$data['my_validation_completion']['gauge_done']=$my_validation_completion['processed_papers'];
-		}
-		
-		if(!empty($gen_validation_completion['all_papers'])){
-			$data['gen_validation_completion']['title']="Overall validation completion";
-			$data['gen_validation_completion']['all_papers']=array('value'=>$gen_validation_completion['all_papers'],
-					'title'=>'All',
-					'url'=>'op/entity_list/list_class_validation'
-			);
-			$data['gen_validation_completion']['pending_papers']=array('value'=>$gen_validation_completion['pending_papers'],
-					'title'=>'Pending',
-					'url'=>''
-		
-			);
-			$data['gen_validation_completion']['done_papers']=array('value'=>$gen_validation_completion['processed_papers'],
-					'title'=>'Processed',
-					'url'=>''
-			);
-		
-		
-			$data['gen_validation_completion']['gauge_all']=$gen_validation_completion['all_papers'];
-			$data['gen_validation_completion']['gauge_done']=$gen_validation_completion['processed_papers'];
-		}
-		
-		
-		$action_but=array();
-		if(can_manage_project() AND !$project_published)
-			$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for classification', 'relis/manager/class_assignment_set','Assign papers','fa-mail-forward','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-				
-		if(can_review_project() AND !$project_published)
-			$action_but['screen']=get_top_button ( 'all', 'Classify', 'op/entity_list/list_class_assignment_pending_mine','Classify','fa-search','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-					
-		if(can_manage_project() ){
-				//$action_but['screen_result']=get_top_button ( 'all', 'Screening progress', 'relis/manager/screen_completion','Progress','fa-tasks','',' btn-info action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
-				$action_but['screen_completion']=get_top_button ( 'all', 'Result', 'op/entity_list/list_classification','Result','fa-th','',' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-		}
-					
-		$data['action_but_screen']=$action_but;
-					
-				$action_but=array();
-				if(get_appconfig_element('class_validation_on') ){
-					if(can_validate_project() AND !$project_published){
-						$action_but['assign_screen']=get_top_button ( 'all', 'Assign papers for validation', 'relis/manager/class_assignment_validation_set','Assign papers','fa-mail-forward','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-						$action_but['screen']=get_top_button ( 'all', 'Validate', 'op/entity_list/list_class_validation_mine','Validate','fa-check-square-o','',' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ' ,False);
-					}
-					//$action_but['screen_result']=get_top_button ( 'all', 'Validation progress', 'relis/manager/screen_completion/validate','Progress','fa-tasks','',' btn-primary action_butt col-md-2 col-sm-2 col-xs-12 ' ,False);
-					$action_but['screen_completion']=get_top_button ( 'all', 'Result', 'op/entity_list/list_class_validation','Result','fa-th','',' btn-primary action_butt  col-md-3 col-sm-3 col-xs-12' ,False);
-						
-					$data['action_but_validate']=$action_but;
-						
-				}
-		
-		
-		$data['configuration']=get_project_config($this->session->userdata ( 'project_db' ));
-		/*
-		 * Récuperation des participants dans l'application
-		 */	
-		$data['users']=$this->DBConnection_mdl->get_users_all();
-		foreach ($data['users'] as $key => $value) {
-			if(! (user_project($this->session->userdata('project_id'),$value['user_id'])) OR $value['user_usergroup'] == 1 ){
-				unset($data['users'][$key]);
+		public function index()
+		{
+			if (!($this->session->userdata('project_db')) OR $this->session->userdata('project_db') == 'default') {
+				redirect('manager/projects_list');
 			}
-		}
-		
-		/*
-		 * Chargement de la vue qui va s'afficher
-		 * 
-		 */
-		$data['page']='general/home';
-		$this->load->view('body',$data);
-		
+			if ($this->session->userdata('working_perspective') == 'screen') {
+				redirect('home/screening');
+			}
+			if ($this->session->userdata('working_perspective') == 'qa') {
+				redirect('home/qa');
+			}
+			$left_menu                  = $this->manager_lib->get_left_menu();
+			$project_published          = project_published();
+			$my_class_completion        = $this->DBConnection_mdl->count_papers('all');
+			$data['processed_papers']   = $this->DBConnection_mdl->count_papers('processed');
+			$data['pending_papers']     = $this->DBConnection_mdl->count_papers('pending');
+			$data['assigned_me_papers'] = $this->DBConnection_mdl->count_papers('assigned_me');
+			$data['excluded_papers']    = $this->DBConnection_mdl->count_papers('excluded');
+			$gen_class_completion       = $this->manager_lib->get_classification_completion('class', 'all');
+			$my_class_completion        = $this->manager_lib->get_classification_completion('class', '');
+			if (get_appconfig_element('class_validation_on')) {
+				$gen_validation_completion = $this->manager_lib->get_classification_completion('validation', 'all');
+				$my_validation_completion  = $this->manager_lib->get_classification_completion('validation', '');
+			}
+			if (!empty($my_class_completion['all_papers'])) {
+				$data['classification_completion']['title']          = "My classification completion";
+				$data['classification_completion']['all_papers']     = array(
+						'value' => $my_class_completion['all_papers'],
+						'title' => 'All',
+						'url' => 'op/entity_list/list_class_assignment_mine'
+				);
+				$data['classification_completion']['pending_papers'] = array(
+						'value' => $my_class_completion['pending_papers'],
+						'title' => 'Pending',
+						'url' => 'op/entity_list/list_class_assignment_pending_mine'
+				);
+				$data['classification_completion']['done_papers']    = array(
+						'value' => $my_class_completion['processed_papers'],
+						'title' => 'Processed',
+						'url' => 'op/entity_list/list_class_assignment_done_mine'
+				);
+				$data['classification_completion']['gauge_all']      = $my_class_completion['all_papers'];
+				$data['classification_completion']['gauge_done']     = $my_class_completion['processed_papers'];
+			}
+			if (!empty($gen_class_completion['all_papers'])) {
+				$data['gen_classification_completion']['title']          = "Overall classification completion";
+				$data['gen_classification_completion']['all_papers']     = array(
+						'value' => $gen_class_completion['all_papers'],
+						'title' => 'All',
+						'url' => 'op/entity_list/list_class_assignment'
+				);
+				$data['gen_classification_completion']['pending_papers'] = array(
+						'value' => $gen_class_completion['pending_papers'],
+						'title' => 'Pending',
+						'url' => 'op/entity_list/list_class_assignment_pending'
+				);
+				$data['gen_classification_completion']['done_papers']    = array(
+						'value' => $gen_class_completion['processed_papers'],
+						'title' => 'Processed',
+						'url' => 'op/entity_list/list_class_assignment_done'
+				);
+				$data['gen_classification_completion']['gauge_all']      = $gen_class_completion['all_papers'];
+				$data['gen_classification_completion']['gauge_done']     = $gen_class_completion['processed_papers'];
+			}
+			if (!empty($my_validation_completion['all_papers'])) {
+				$data['my_validation_completion']['title']          = "My validation completion";
+				$data['my_validation_completion']['all_papers']     = array(
+						'value' => $my_validation_completion['all_papers'],
+						'title' => 'All',
+						'url' => 'op/entity_list/list_class_validation_mine'
+				);
+				$data['my_validation_completion']['pending_papers'] = array(
+						'value' => $my_validation_completion['pending_papers'],
+						'title' => 'Pending',
+						'url' => ''
+				);
+				$data['my_validation_completion']['done_papers']    = array(
+						'value' => $my_validation_completion['processed_papers'],
+						'title' => 'Processed',
+						'url' => ''
+				);
+				$data['my_validation_completion']['gauge_all']      = $my_validation_completion['all_papers'];
+				$data['my_validation_completion']['gauge_done']     = $my_validation_completion['processed_papers'];
+			}
+			if (!empty($gen_validation_completion['all_papers'])) {
+				$data['gen_validation_completion']['title']          = "Overall validation completion";
+				$data['gen_validation_completion']['all_papers']     = array(
+						'value' => $gen_validation_completion['all_papers'],
+						'title' => 'All',
+						'url' => 'op/entity_list/list_class_validation'
+				);
+				$data['gen_validation_completion']['pending_papers'] = array(
+						'value' => $gen_validation_completion['pending_papers'],
+						'title' => 'Pending',
+						'url' => ''
+				);
+				$data['gen_validation_completion']['done_papers']    = array(
+						'value' => $gen_validation_completion['processed_papers'],
+						'title' => 'Processed',
+						'url' => ''
+				);
+				$data['gen_validation_completion']['gauge_all']      = $gen_validation_completion['all_papers'];
+				$data['gen_validation_completion']['gauge_done']     = $gen_validation_completion['processed_papers'];
+			}
+			$action_but = array();
+			if (can_manage_project() AND !$project_published)
+				$action_but['assign_screen'] = get_top_button('all', 'Assign papers for classification', 'relis/manager/class_assignment_set', 'Assign papers', 'fa-mail-forward', '', ' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ', False);
+				if (can_review_project() AND !$project_published)
+					$action_but['screen'] = get_top_button('all', 'Classify', 'op/entity_list/list_class_assignment_pending_mine', 'Classify', 'fa-search', '', ' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ', False);
+					if (can_manage_project()) {
+						$action_but['screen_completion'] = get_top_button('all', 'Result', 'op/entity_list/list_classification', 'Result', 'fa-th', '', ' btn-info action_butt col-md-3 col-sm-3 col-xs-12 ', False);
+					}
+					$data['action_but_screen'] = $action_but;
+					$action_but                = array();
+					if (get_appconfig_element('class_validation_on')) {
+						if (can_validate_project() AND !$project_published) {
+							$action_but['assign_screen'] = get_top_button('all', 'Assign papers for validation', 'relis/manager/class_assignment_validation_set', 'Assign papers', 'fa-mail-forward', '', ' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ', False);
+							$action_but['screen']        = get_top_button('all', 'Validate', 'op/entity_list/list_class_validation_mine', 'Validate', 'fa-check-square-o', '', ' btn-primary action_butt col-md-3 col-sm-3 col-xs-12 ', False);
+						}
+						$action_but['screen_completion'] = get_top_button('all', 'Result', 'op/entity_list/list_class_validation', 'Result', 'fa-th', '', ' btn-primary action_butt  col-md-3 col-sm-3 col-xs-12', False);
+						$data['action_but_validate']     = $action_but;
+					}
+					$data['configuration'] = get_project_config($this->session->userdata('project_db'));
+					$data['users']         = $this->DBConnection_mdl->get_users_all();
+					foreach ($data['users'] as $key => $value) {
+						if (!(user_project($this->session->userdata('project_id'), $value['user_id'])) OR $value['user_usergroup'] == 1) {
+							unset($data['users'][$key]);
+						}
+					}
+					$data['page'] = 'general/home';
+					$this->load->view('body', $data);
 		}
 	} 
 	
