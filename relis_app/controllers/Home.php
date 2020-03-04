@@ -169,7 +169,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 					}
 					$data['page'] = 'general/home';
 					$this->load->view('body', $data);
-		}
+		
 	} 
 	
 	
