@@ -6586,10 +6586,6 @@ class Manager extends CI_Controller {
 
 		//clean the bibtex content
 		$bibtex=strstr($bibtex,'@');
-		//	$bibtex=str_replace("\'", "", $bibtex);
-		//	$bibtex=str_replace("'", " ", $bibtex);
-		// 	$bibtex=str_replace('"', '\"' ,$bibtex);
-		//echo $bibtex;
 		$error=1;
 		$error_msg="";
 		$paper_array=array();
@@ -6600,13 +6596,8 @@ class Manager extends CI_Controller {
 		$i=1;
 		$res="init";
 		while($i<10){ //up to ten attempt to connect to server if the connection does not work
-			if($operation =='single'){
-
-				$res=$this->biblerproxy_lib->createentryforreliS($bibtex);
-			}
-			elseif($operation =='endnote'){
-				$res=$this->biblerproxy_lib->importendnotestringforrelis($bibtex);
-
+			if($operation =='endnote'){
+                $res=$this->biblerproxy_lib->importendnotestringforrelis($bibtex);
 			}
 			else{
 				$res=$this->biblerproxy_lib->importbibtexstringforrelis($bibtex);
@@ -6629,42 +6620,41 @@ class Manager extends CI_Controller {
 		$end_time=microtime ();
 		ini_set('auto_detect_line_endings',TRUE);
 		if($correct){
-			// some result cleanning
-			//	$res=str_replace("True,", "'True',", $res);
-			//	$res=str_replace("False,", "'False',", $res);
-			//	$res=str_replace('"', '' ,$res);
-			//	$res = $this->biblerproxy_lib->fixJSON($res);
-
 			$Tres = json_decode($res,True);
-
 			if (json_last_error() === JSON_ERROR_NONE) {
 
-				if($operation =='single'){
+				if($operation =='single' ){
+				    //for single add just consider the first element
+                    if( !empty ($Tres['papers'][0])){
+                        $Tres = $Tres['papers'][0];
+                    }
+
 					$result['bibtext']=$bibtex;
 					$paper_array=array();
-	 			if(!empty($Tres['result_code'])
-	 					AND !empty($Tres['entry']['entrykey'])){
-	 						$error=0;
+                    if(!empty($Tres['result_code'])
+                            AND !empty($Tres['entry']['entrykey'])){
+                                $error=0;
 
-	 						$year=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
+                                $year=!empty($Tres['entry']['year']) ? $Tres['entry']['year'] : "";
 
-	 						$paper_array['bibtexKey']=str_replace('\\', '', $Tres['entry']['entrykey']);
-	 						$title=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
-	 						$title=str_replace('{', '', $title);
-	 						$title=str_replace('\\', '', $title);
-	 						$paper_array['title']=str_replace('}', '', $title);
-	 						$paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
-	 						$paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
-	 						$paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
-	 						$paper_array['doi']=!empty($Tres['entry']['paper']) ? $Tres['entry']['paper'] : "";
-	 						$paper['venue']=!empty($value['venue_full']) ? $value['venue_full'] : "";
-	 						$paper_array['year']=$year;
-	 						$paper_array['authors']=!empty($Tres['authors']) ? $Tres['authors']: "";
-	 							
-	 			}else{
-	 				$error_msg.="Error: check your Bibtext .<br/>".!empty($Tres['result_msg']) ? $Tres['result_msg'] : "";;
-	 					
-	 			}
+                                $paper_array['bibtexKey']=str_replace('\\', '', $Tres['entry']['entrykey']);
+                                $title=!empty($value['entry']['title']) ? $value['entry']['title'] : "";
+                                $title=str_replace('{', '', $title);
+                                $title=str_replace('\\', '', $title);
+                                $paper_array['title']=str_replace('}', '', $title);
+                                $paper_array['preview']=!empty($Tres['preview']) ? $Tres['preview'] : "";
+                                $paper_array['bibtex']=!empty($Tres['bibtex']) ? $Tres['bibtex']: "";
+                                $paper_array['abstract']=!empty($Tres['entry']['abstract']) ? $Tres['entry']['abstract'] : "";
+                                $paper_array['doi']=!empty($Tres['entry']['paper']) ? $Tres['entry']['paper'] : "";
+                                $paper['venue']=!empty($value['venue_full']) ? $value['venue_full'] : "";
+                                $paper_array['year']=$year;
+                                $paper_array['authors']=!empty($Tres['authors']) ? $Tres['authors']: "";
+
+                    }else{
+                        $msg = (!empty($Tres['result_msg']) ? $Tres['result_msg'] : "");
+                        $error_msg.="Error: check your Bibtext .<br/>". $msg ;
+
+                    }
 				}else{
 					if(empty($Tres['error']) AND !empty( $Tres['papers'] )){
 
