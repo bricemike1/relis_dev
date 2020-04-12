@@ -683,7 +683,7 @@ class Install extends CI_Controller {
 			
 			//echo "<h2>initialise stored procedures</h2>";
 			$this->update_stored_procedure('init',FALSE,$project_short_name,TRUE);
-			$this->populate_common_tables_views($project_short_name);
+
 			if($verbose)
 				echo "Database initialised";
 			
@@ -743,7 +743,9 @@ class Install extends CI_Controller {
 				
 			}
 	//		echo $sql_table."<br/>";
-			
+
+            $this->populate_common_tables_views($project_short_name);
+
 			if($verbose)
 				echo "<h3>Project specific tables created</h3>";
 				
