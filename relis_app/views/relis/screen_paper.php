@@ -88,7 +88,7 @@
                   if(!empty($paper_link)){
                   ?>
 		                  <p style="text-align: right; padding:20px;">
-		                  <a href="<?php echo $paper_link?>" target="black" style="color:#aa7777;"><img src='<?php echo base_url() ?>cside/images/pdf.jpg'/></a>
+		                  <a href="//<?php echo $paper_link?>" target="black" style="color:#aa7777;"><img src='<?php echo base_url() ?>cside/images/pdf.jpg'/></a>
 		                 </p>
 		                 
                  <?php }?>
