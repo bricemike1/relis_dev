@@ -525,7 +525,6 @@ class Auth extends CI_Controller {
     private function validateCaptcha( $recaptchaResponse ){
 
         $secret='6LcKU-4UAAAAAJwSMlWsIkPTByYC6aPwAy4z_PnF';
-git
         $credential = array(
             'secret' => $secret,
             'response' => $recaptchaResponse
