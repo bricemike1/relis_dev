@@ -150,6 +150,17 @@ CREATE TABLE IF NOT EXISTS `info` (
   PRIMARY KEY (`info_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 $$
 
+DROP TABLE IF EXISTS `user_creation`$$
+CREATE TABLE IF NOT EXISTS `user_creation` (
+  `user_creation_id` int(11) NOT NULL AUTO_INCREMENT,
+  `creation_user_id` int(11) NOT NULL,
+  `confirmation_code` varchar(50) NOT NULL,
+  `confirmation_expiration` int(10) NOT NULL,
+  `confirmation_try` int(10) NOT NULL,
+  `user_creation_active` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`user_creation_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 $$
+
 -- stored procedures
 
 DROP PROCEDURE IF EXISTS `add_config`$$
@@ -656,6 +667,24 @@ CREATE TABLE IF NOT EXISTS `info` (
   `info_active` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`info_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 $$
+
+DROP PROCEDURE IF EXISTS `add_user_creation`$$
+CREATE PROCEDURE `add_user_creation`(_user_creation_id INT , _creation_user_id INT , _confirmation_code  VARCHAR(55) , _confirmation_try INT , _confirmation_expiration INT)
+BEGIN
+START TRANSACTION;
+INSERT INTO user_creation (creation_user_id , confirmation_code , confirmation_try , confirmation_expiration) VALUES (_creation_user_id , _confirmation_code , _confirmation_try , _confirmation_expiration);
+SELECT user_creation_id AS id_value FROM user_creation WHERE user_creation_id = LAST_INSERT_ID();
+COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `get_detail_user_creation`$$
+CREATE PROCEDURE `get_detail_user_creation`(IN _row_id INT)
+BEGIN
+					START TRANSACTION;
+					SELECT * FROM user_creation
+WHERE user_creation_id= _row_id;
+COMMIT;
+END$$
 
 
 INSERT INTO `info` (`info_id`, `info_title`, `info_desc`, `info_link`, `info_type`, `info_order`, `info_active`) VALUES
