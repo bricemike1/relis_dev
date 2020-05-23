@@ -1,0 +1,23 @@
+[Unit]
+Description=Tomcat 8.5 servlet container
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=/usr/lib/jvm/default-java"
+Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
+
+Environment="CATALINA_BASE=/local/home/relis/tomcat"
+Environment="CATALINA_HOME=/local/home/relis/tomcat"
+Environment="CATALINA_PID=/local/home/relis/tomcat/temp/tomcat.pid"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+
+ExecStart=/local/home/relis/tomcat/bin/startup.sh
+ExecStop=/local/home/relis/tomcat/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target
