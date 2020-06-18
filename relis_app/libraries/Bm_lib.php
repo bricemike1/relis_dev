@@ -59,19 +59,6 @@ class Bm_lib
 			//redirect('home');
 			exit;
 		}
-		
-		
-		//exit;
-	//	$this->CI->output->set_profiler_sections($sections);
-	//$this->CI->output->enable_profiler(true);
-	//$time=time();
-	//$this->CI->session->set_userdata('request_time',  time());
-	
-		//print_test($this->CI->router->fetch_directory());
-		//print_test($this->CI->router->fetch_class());
-		//print_test($this->CI->uri->segment(2));
-		//print_test(current_url());
-	
 	}
 		
 	/*
@@ -134,21 +121,23 @@ class Bm_lib
 	public function send_mail($subject,$message,$destination) {
 		$ci = get_instance();
 		$ci->load->library('email');
-		$config['protocol'] = "smtp";
-		$config['smtp_host'] = "ssl://smtp.gmail.com";
-		$config['smtp_port'] = "465";
-		$config['smtp_user'] = "relisgeodes@gmail.com";
-		$config['smtp_pass'] = "R3l1sApp";
+		$config['protocol'] = get_ci_config('mail_protocol');
+		$config['smtp_host'] = get_ci_config('mail_host');
+		$config['smtp_port'] = get_ci_config('mail_port');
+		$config['smtp_user'] = get_ci_config('mail_user');
+		$config['smtp_pass'] = get_ci_config('mail_password');
 		$config['charset'] = "utf-8";
 		$config['mailtype'] = "html";
 		$config['newline'] = "\r\n";
-			
+
+		$mailFrom = get_ci_config('mail_from');
+		$replyTo = get_ci_config('mail_reply_to');
+
 		$ci->email->initialize($config);
 			
-		$ci->email->from('relisgeodes@gmail.com', 'ReLiS');
-		//$list = array('bbigendako@gmail.com');
+		$ci->email->from($mailFrom, 'ReLiS');
 		$ci->email->to($destination);
-		$ci->email->reply_to('relisgeodes@gmail.com', 'ReLiS');
+		$ci->email->reply_to($replyTo, 'ReLiS');
 		$ci->email->subject($subject);
 		$ci->email->message($message);
 			
@@ -163,7 +152,6 @@ class Bm_lib
 		}
 		
 	}
-	
 	
 	/**
 	 * Generate a random string, 	
