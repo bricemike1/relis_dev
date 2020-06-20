@@ -488,10 +488,14 @@ class Manager extends CI_Controller {
 		$array['title']=$content_item['bibtexKey']." - ".$content_item['title'];
 
 		if(!empty($content_item['doi'])){
+            $paper_link = $content_item['doi'];
+            if( (strpos($paper_link,'http://') === FALSE) && (strpos($paper_link,'https://') === FALSE)){
+                $paper_link = "//".$paper_link;
+            }
 
 			$array['title'].='<ul class="nav navbar-right panel_toolbox">
 				<li>
-					<a title="Go to the page" href="'.$content_item['doi'].'" target="_blank" >
+					<a title="Go to the page" href="' . $paper_link . '" target="_blank" >
 				 		<img src="'.base_url().'cside/images/pdf.jpg"/>
 
 					</a>
@@ -4211,14 +4215,16 @@ class Manager extends CI_Controller {
 		$data['paper_excluded']=$paper_excluded;
 		$item_data=array();
 
-
 		$array['title']=$content_item['bibtexKey']." - ".$content_item['title'];
 
 		if(!empty($content_item['doi'])){
-
+            $paper_link = $content_item['doi'];
+            if( (strpos($paper_link,'http://') === FALSE) && (strpos($paper_link,'https://') === FALSE)){
+                $paper_link = "//".$paper_link;
+            }
 			$array['title'].='<ul class="nav navbar-right panel_toolbox">
 				<li>
-					<a title="Go to the page" href="'.$content_item['doi'].'" target="_blank" >
+					<a title="Go to the page" href="'.$paper_link.'" target="_blank" >
 				 		<img src="'.base_url().'cside/images/pdf.jpg"/>
 
 					</a>
@@ -4414,10 +4420,14 @@ class Manager extends CI_Controller {
 		$array['title']=$content_item['bibtexKey']." - ".$content_item['title'];
 
 		if(!empty($content_item['doi'])){
+            $paper_link = $content_item['doi'];
+            if( (strpos($paper_link,'http://') === FALSE) && (strpos($paper_link,'https://') === FALSE)){
+                $paper_link = "//".$paper_link;
+            }
 
 			$array['title'].='<ul class="nav navbar-right panel_toolbox">
 				<li>
-					<a title="Go to the page" href="'.$content_item['doi'].'" target="_blank" >
+					<a title="Go to the page" href="' . $paper_link . '" target="_blank" >
 				 		<img src="'.base_url().'cside/images/pdf.jpg"/>
 
 					</a>

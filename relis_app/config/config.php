@@ -328,6 +328,15 @@ $config['project_db_prefix'] = "relis_dev_correct_";
 $config['server_OS'] = "WINDOWS";
 $config['support_contact'] = "info@relis.iro.umontreal.ca";
 
+//Mail config
+$config['mail_protocol']    = "smtp";
+$config['mail_host']        = "ssl://smtp.gmail.com";
+$config['mail_port']        = "465";
+$config['mail_user']        = "relisgeodes@gmail.com";
+$config['mail_password']    = "R3l1sApp";
+$config['mail_from']        = "relisgeodes@gmail.com";
+$config['mail_reply_to']    = "relisgeodes@gmail.com";
+
 // Added configuration
 
 
