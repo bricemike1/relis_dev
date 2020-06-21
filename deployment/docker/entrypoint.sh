@@ -1,10 +1,6 @@
 #!/bin/bash
 
-#Run composer to install libs
-#cd /local/home/relis/public_html && composer install
-#cd /local/home/relis/public_html && cp --no-clobber .env_dist .env
-
-
+sh /local/tomcat/bin/startup.sh
 service mysql restart
 /usr/sbin/apache2ctl -D FOREGROUND
 service apache2 restart

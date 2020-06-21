@@ -10,6 +10,7 @@ relis_app/logs/*
 !application/logs/.htaccess
 
 cside/sessions/*
+workspace/dslforge_workspace/*
 
 /vendor/
 

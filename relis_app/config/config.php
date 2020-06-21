@@ -302,7 +302,7 @@ $config['csv_string_dellimitter'] = '"';
 
 $config['base_url'] = "http://localhost/relis/relis_dev";
 
-$config['sess_save_path'] = "C:/xampp/htdocs/relis/relis_dev/cside/sessions";
+$config['sess_save_path'] = "/u/relis/public_html/cside/sessions";
 $config['editor_generated_path'] = "D:\www\dslforge\workspace";
 $config['editor_generated_path'] = "C:/dslforge_workspace";
 $config['editor_url'] = "http://127.0.0.1:8080/relis/texteditor";
@@ -337,51 +337,7 @@ $config['mail_password']    = "R3l1sApp";
 $config['mail_from']        = "relisgeodes@gmail.com";
 $config['mail_reply_to']    = "relisgeodes@gmail.com";
 
+$config['sess_save_path'] = "/u/relis/public_html/cside/sessions";
+
 // Added configuration
 
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost/relis/relis_dev";
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost/relis/relis_dev";
-
-
-//Licence
-// https://www.gnu.org/copyleft/gpl.html
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost:8083";
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost:8083";
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost:8083";
-
-$config['project_db_host'] = "localhost";
- 	$config['project_db_user'] = "root";
- 	$config['project_db_pass'] = "";
- 
-
-$config['base_url'] = "http://localhost:8083";

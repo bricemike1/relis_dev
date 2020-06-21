@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Jun 20 20:57:52 UTC 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0172-d385-f9b3-00001b483510 
+on database directory /u/relis/public_html/workspace/dslforge_workspace/.metadata with class loader org.eclipse.osgi.internal.loader.EquinoxClassLoader@286511e2[org.dslforge.workspace.jpa:0.9.1.201703182347(id=25)] 
+Loaded from file:/local/home/relis/tomcat/work/Catalina/localhost/relis/eclipse/configuration/org.eclipse.osgi/25/0/.cp/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_252-8u252-b09-1~deb9u1-b09
+user.dir=/local/home/relis/public_html/deployment/docker/tomcat
+os.name=Linux
+os.arch=amd64
+os.version=4.19.76-linuxkit
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

@@ -7,9 +7,10 @@ services:
       context: ./docker
       args:
         DIRECTORY_INDEX: index.php
-        DOCUMENT_ROOT: /local/home/relis/public_html
+        DOCUMENT_ROOT: /u/relis/public_html
     entrypoint: /usr/local/bin/entrypoint.sh
     ports:
         - 8083:80
+        - 8088:8080
     volumes:
-      - ..:/local/home/relis/public_html
+      - ..:/u/relis/public_html

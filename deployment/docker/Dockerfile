@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     ksh \
     unzip \
     zip \
+    default-jdk \
     git
 
 RUN wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
@@ -63,6 +64,23 @@ RUN ln -s /etc/apache2/sites-available/vhost.conf /etc/apache2/sites-enabled/vho
 RUN rm /etc/apache2/sites-enabled/000-default.conf
 
 RUN service mysql start && echo 'update user set plugin = "" where User = "root"; flush privileges;' | mysql -uroot mysql
+
+#install tomcat
+RUN wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.51/bin/apache-tomcat-8.5.51.zip -P /tmp/
+RUN mkdir /local/
+RUN unzip /tmp/apache-tomcat-8.5.51.zip -d /tmp/
+RUN mv /tmp/apache-tomcat-8.5.51 /local/tomcat
+COPY ./tomcat/relis.war /local/tomcat/webapps/
+RUN chmod -R +x /local/tomcat
+
+#setup environment variables
+RUN export JAVA_HOME=/usr/lib/jvm/default-java
+RUN export JAVA_OPTS='-Djava.security.egd=file:///dev/urandom'
+
+RUN export CATALINA_BASE=/local/tomcat
+RUN export CATALINA_HOME=/local/tomcat
+RUN export CATALINA_PID=/local/tomcat/temp/tomcat.pid
+RUN export CATALINA_OPTS='-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
 
 RUN a2enmod rewrite
 COPY ./entrypoint.sh /usr/local/bin
