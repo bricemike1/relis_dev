@@ -33,6 +33,7 @@ RUN apt-get install -y php7.1-xml \
     php7.1-dev \
     php7.1-intl \
     php-pear \
+    php7.1-curl\
     php7.1-mysql\
     php7.1-sqlite
 
@@ -64,6 +65,9 @@ RUN ln -s /etc/apache2/sites-available/vhost.conf /etc/apache2/sites-enabled/vho
 RUN rm /etc/apache2/sites-enabled/000-default.conf
 
 RUN service mysql start && echo 'update user set plugin = "" where User = "root"; flush privileges;' | mysql -uroot mysql
+
+COPY db/initial_db.sql  /tmp/initial_db.sql
+RUN service mysql start && cat /tmp/initial_db.sql | mysql -uroot
 
 #install tomcat
 RUN wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.51/bin/apache-tomcat-8.5.51.zip -P /tmp/

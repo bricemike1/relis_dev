@@ -324,8 +324,8 @@ $config['common_relis_configs'] = array('assignation','author','config','exclusi
 $config['project_specific_config_folder']="relis_app/libraries/table_config/project/";
 
 // The prefix that will have the new databases for projects  installed
-$config['project_db_prefix'] = "relis_dev_correct_";
-$config['server_OS'] = "WINDOWS";
+$config['project_db_prefix'] = "relis_project_";
+$config['server_OS'] = "LINUX";
 $config['support_contact'] = "info@relis.iro.umontreal.ca";
 
 //Mail config
@@ -338,6 +338,6 @@ $config['mail_from']        = "relisgeodes@gmail.com";
 $config['mail_reply_to']    = "relisgeodes@gmail.com";
 
 $config['sess_save_path'] = "/u/relis/public_html/cside/sessions";
-
-// Added configuration
-
+$config['base_url'] = "http://localhost:8083";
+$config['project_db_user'] = "root";
+$config['project_db_pass'] = "";
