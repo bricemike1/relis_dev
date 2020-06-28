@@ -12,6 +12,7 @@ cside/sessions/relis_session*
 workspace/dslforge_workspace/*
 
 /vendor/
+derby*
 
 # IDE Files
 #-------------------------

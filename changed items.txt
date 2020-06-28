@@ -1,3 +1,0 @@
-- add library folder entity_config for new config files (user, user_group,)
-
-- add controller manager
